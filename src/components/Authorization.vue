@@ -1,9 +1,29 @@
+<script setup>
+import { ref } from 'vue';
+import router from '../router'
+const auth_err = ref(false);
+const login =  ref('');
+const password =  ref('');
+function authorization() {
+    console.log(login.value);
+    console.log(password.value);
+    //запрос
+    if (login.value == '123' && password.value == '123') {
+        auth_err.value = false;
+        router.push('/about');
+    } else {
+        auth_err.value = true;
+    }
+}
+</script>
+
 <template>
   <div class="container">
     <div class="title">СИСТЕМА КОНТРОЛЯ ОБУЧЕНИЯ СОТРУДНИКОВ</div>
-    <input type="text" class="input" placeholder="Логин">
-    <input type="password" class="input" placeholder="Пароль">
-    <button class="btn_in">ВОЙТИ</button>
+    <input v-model="login" type="text" class="input" placeholder="Логин">
+    <input v-model="password" type="password" class="input" placeholder="Пароль">
+    <div v-if="auth_err" class="auth_err">Логин или пароль неверный</div>
+    <button @click="authorization()" class="btn_in">ВОЙТИ</button>
   </div>
 </template>
 
@@ -63,8 +83,15 @@
     font-weight: 700;
     line-height: normal;
 }
+
+.auth_err {
+    margin: auto;
+    font-family: Arial;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    color: rgb(243, 66, 66)
+}
 </style>
-
-<script setup>
-
-</script>
