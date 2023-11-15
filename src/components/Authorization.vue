@@ -10,7 +10,7 @@ function authorization() {
     //запрос
     if (login.value == '123' && password.value == '123') {
         auth_err.value = false;
-        router.push('/about');
+        router.push('/profile');
     } else {
         auth_err.value = true;
     }
@@ -18,16 +18,23 @@ function authorization() {
 </script>
 
 <template>
-  <div class="container">
-    <div class="title">СИСТЕМА КОНТРОЛЯ ОБУЧЕНИЯ СОТРУДНИКОВ</div>
-    <input v-model="login" type="text" class="input" placeholder="Логин">
-    <input v-model="password" type="password" class="input" placeholder="Пароль">
-    <div v-if="auth_err" class="auth_err">Логин или пароль неверный</div>
-    <button @click="authorization()" class="btn_in">ВОЙТИ</button>
-  </div>
+    <div class="wrapper">
+        <div class="container">
+            <div class="title">СИСТЕМА КОНТРОЛЯ ОБУЧЕНИЯ СОТРУДНИКОВ</div>
+            <input v-model="login" type="text" class="input" placeholder="Логин">
+            <input v-model="password" type="password" class="input" placeholder="Пароль">
+            <div v-if="auth_err" class="auth_err">Логин или пароль неверный</div>
+            <button @click="authorization()" class="btn_in">ВОЙТИ</button>
+        </div>
+    </div>
 </template>
 
 <style scoped>
+.wrapper {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+}
 .container {
     background-color: white;
     width: 451px;
@@ -82,8 +89,12 @@ function authorization() {
     font-style: normal;
     font-weight: 700;
     line-height: normal;
+    cursor: pointer;
+    transition: 0.2s;
 }
-
+.btn_in:hover {
+    transform: scale(1.1);
+}
 .auth_err {
     margin: auto;
     font-family: Arial;
