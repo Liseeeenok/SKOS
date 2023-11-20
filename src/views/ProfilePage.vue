@@ -1,18 +1,14 @@
 <script setup>
+import MenuNav from '../components/MenuNav.vue';
 </script>
 
 <template>
     <div class="wrapper">
-        <nav class="nav">
-            <RouterLink to="/profile"><div class="menu_item active">Профиль</div></RouterLink>
-            <RouterLink to="/profile"><div class="menu_item">Уведомления</div></RouterLink>
-            <RouterLink to="/profile"><div class="menu_item">Обучение</div></RouterLink>
-            <RouterLink to="/"><div class="menu_item">Выход</div></RouterLink>
-        </nav>
+        <MenuNav index="1"/>
         <div class="wrapper_profile">
             <div class="profile">
                 <div class="photo">ФОТО</div>
-                <div>
+                <div class="inform">
                     <table>
                         <tr>
                             <td class="title_table">Фамилия:</td>
@@ -41,30 +37,7 @@
     </div>
 </template>
 
-<style>
-.nav {
-    padding: 99px 14.4% 0 28.7%;
-    display: flex;
-    justify-content: space-between;
-}
-.menu_item {
-    color: #000;
-    font-family: Arial;
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    border-radius: 20px;
-    padding: 15px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-.active {
-    background: rgba(103, 96, 106, 0.50);
-}
-.menu_item:hover {
-    background: rgba(182, 168, 189, 0.50);
-}
+<style scoped>
 .wrapper_profile {
     margin: 10vw 0 0 0;
 }
@@ -86,6 +59,11 @@
     font-style: normal;
     font-weight: 700;
     line-height: normal;
+}
+.inform {
+    background-color: rgba(220, 218, 221, 0.50);
+    padding: 20px;
+    border-radius: 20px;
 }
 .title_table {
     color: #000;
