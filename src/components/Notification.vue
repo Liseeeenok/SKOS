@@ -98,6 +98,7 @@ td {
     font-weight: 700;
     line-height: normal;
     margin: 0 10px;
+    cursor: pointer;
 }
 .decrement {
     transform: rotate(179.195deg);

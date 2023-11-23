@@ -11,7 +11,7 @@ required: true
     <nav class="nav">
         <RouterLink to="/profile"><div class="menu_item" :class="index == '1' ? 'active' : ''">Профиль</div></RouterLink>
         <RouterLink to="/notification"><div class="menu_item" :class="index == '2' ? 'active' : ''">Уведомления</div></RouterLink>
-        <RouterLink to="/profile"><div class="menu_item" :class="index == '3' ? 'active' : ''">Обучение</div></RouterLink>
+        <RouterLink to="/training"><div class="menu_item" :class="index == '3' ? 'active' : ''">Обучение</div></RouterLink>
         <RouterLink to="/"><div class="menu_item">Выход</div></RouterLink>
     </nav>
 </template>
