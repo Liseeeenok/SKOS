@@ -24,7 +24,7 @@ const page = ref(1);
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(notification, index) in arr_notifications.slice(0 + 12 * (page - 1), 12 + 12 * (page - 1))">
+                    <tr v-for="(notification, index) in arr_notifications.slice(0 + 12 * (page - 1), 12 + 12 * (page - 1))" :key="index">
                         <td>{{ index + 1 + 12 * (page - 1)}}</td>
                         <td>{{ notification.directorate }}</td>
                         <td>{{ notification.division }}</td>

@@ -9,8 +9,9 @@ const die_professions = ref(false);
     <div class="container">
         <div>
             <div class="die die_title">План-график</div>
-            <div class="die die_main">План (общ.)</div>
-            <div class="die die_main">План (по дир.)</div>
+            <RouterLink to="/preparation"><div class="die die_main">Подготовка</div></RouterLink>
+            <div class="die die_main">Проф. развитие</div>
+            <div class="die die_main">ДПО</div>
         </div>
         <div>
             <div class="die die_title">Обучающиеся</div>
