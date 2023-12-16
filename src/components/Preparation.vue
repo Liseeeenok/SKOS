@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 const plan = ref([]);
-function addDirection() {
+function addMainDirection() {
     plan.value.push({'division':'','preparation':'','arr_preparation':[], 'arr_preparation_results':[], 'add_preparation':true, 'arr_retraining':[], 'arr_retraining_results':[], 'add_retraining':true});
     console.log(plan.value);
 }
@@ -10,30 +10,8 @@ function addPreparation(index) {
     console.log(plan);
 }
 function blockPreparation(index) {
-    plan.value[index].add_preparation = false; 
-    console.log(plan);
-}
-function addPreparationDirection(index, index2) {
-    plan.value[index].arr_preparation[index2].direction.push('TEST');
-    plan.value[index].arr_preparation[index2].count.push(4);
-    console.log(plan);
-}
-function blockPreparationDirection(index, index2) {
-    plan.value[index].arr_preparation[index2].add_direction = false;
-    let arr_preparation_results = {};
-    if (plan.value[index].arr_preparation) {
-        plan.value[index].arr_preparation.forEach(preparation => {
-            if (preparation.direction) {
-                preparation.direction.forEach((x, ind) => {
-                    if (!arr_preparation_results[x]) {
-                        arr_preparation_results[x] = 0;
-                    }
-                    arr_preparation_results[x] += preparation.count[ind];
-                });
-            }
-        });
-        plan.value[index].arr_preparation_results = arr_preparation_results;
-    }
+    plan.value[index].add_preparation = false;
+    updateCountDirection(index, 'arr_preparation');
     console.log(plan);
 }
 function addRetraining(index) {
@@ -42,83 +20,64 @@ function addRetraining(index) {
 }
 function blockRetraining(index) {
     plan.value[index].add_retraining = false;
+    updateCountDirection(index, 'arr_retraining');
     console.log(plan);
 }
-function addRetrainingDirection(index, index2) {
-    plan.value[index].arr_retraining[index2].direction.push('TEST');
-    plan.value[index].arr_retraining[index2].count.push(4);
+function addDirection(index, index2, arr) {
+    plan.value[index][arr][index2].direction.push('TEST');
+    plan.value[index][arr][index2].count.push(4);
     console.log(plan);
 }
-function blockRetrainingDirection(index, index2) {
-    plan.value[index].arr_retraining[index2].add_direction = false;
-    let arr_retraining_results = {};
-    if (plan.value[index].arr_retraining) {
-        plan.value[index].arr_retraining.forEach(retraining => {
-            if (retraining.direction) {
-                retraining.direction.forEach((x, ind) => {
-                    if (!arr_retraining_results[x]) {
-                        arr_retraining_results[x] = 0;
+function blockDirection(index, index2, arr) {
+    plan.value[index][arr][index2].add_direction = false;
+    console.log(plan);
+}
+function getCountDirection(index, index2, arr) {
+    updateCountDirection(index, arr);
+    if (plan.value[index][arr][index2].count) {
+        let sum = 0;
+        plan.value[index][arr][index2].count.forEach(x => {
+            sum += x;
+        });
+        plan.value[index][arr][index2].count_p = sum;
+        return sum;
+    } else return 0;
+}
+function updateCountDirection(index, arr) {
+    let arr_results = {direction:{}};
+    if (plan.value[index][arr]) {
+        plan.value[index][arr].forEach(training => {
+            if (training.direction) {
+                training.direction.forEach((x, ind) => {
+                    if (!arr_results.direction[x]) {
+                        arr_results.direction[x] = 0;
                     }
-                    arr_retraining_results[x] += retraining.count[ind];
+                    arr_results.direction[x] += training.count[ind];
                 });
             }
         });
-        plan.value[index].arr_retraining_results = arr_retraining_results;
+        plan.value[index][arr+'_results'] = arr_results;
     }
-    console.log(plan);
 }
-function getPreparationCountDirection(index, index2) {
-    if (plan.value[index].arr_preparation[index2].count) {
+function getCountHours(index, arr, column) {
+    if (plan.value[index][arr]) {
         let sum = 0;
-        plan.value[index].arr_preparation[index2].count.forEach(x => {
-            sum += x;
+        plan.value[index][arr].forEach(x => {
+            if (x[column])
+                sum += x[column];
         });
-        plan.value[index].arr_preparation[index2].count_p = sum;
+        plan.value[index][arr+'_results'][column] = sum;
         return sum;
     } else return 0;
 }
-function getRetrainingCountDirection(index, index2) {
-    if (plan.value[index].arr_retraining[index2].count) {
+function getCountHours2(index, arr, column, column2) {
+    if (plan.value[index][arr]) {
         let sum = 0;
-        plan.value[index].arr_retraining[index2].count.forEach(x => {
-            sum += x;
-        });
-        plan.value[index].arr_retraining[index2].count_p = sum;
-        return sum;
-    } else return 0;
-}
-function getPreparationCountHours(index, column) {
-    if (plan.value[index].arr_preparation) {
-        let sum = 0;
-        plan.value[index].arr_preparation.forEach(x => {
-            sum += x[column];
-        });
-        return sum;
-    } else return 0;
-}
-function getPreparationCountHours2(index, column, column2) {
-    if (plan.value[index].arr_preparation) {
-        let sum = 0;
-        plan.value[index].arr_preparation.forEach(x => {
-            sum += x[column] + x[column2];
-        });
-        return sum;
-    } else return 0;
-}
-function getRetrainingCountHours(index, column) {
-    if (plan.value[index].arr_retraining) {
-        let sum = 0;
-        plan.value[index].arr_retraining.forEach(x => {
-            sum += x[column];
-        });
-        return sum;
-    } else return 0;
-}
-function getRetrainingCountHours2(index, column, column2) {
-    if (plan.value[index].arr_retraining) {
-        let sum = 0;
-        plan.value[index].arr_retraining.forEach(x => {
-            sum += x[column] + x[column2];
+        plan.value[index][arr].forEach(x => {
+            if (x[column])
+                sum += x[column];
+                if (x[column2])
+                sum += x[column2];
         });
         return sum;
     } else return 0;
@@ -243,17 +202,17 @@ function getRetrainingCountHours2(index, column, column2) {
                         <td><input type="date" class="input_text" v-model="prof.start_po"></td>
                         <td><input type="date" class="input_text" v-model="prof.end_po"></td>
                         <td><input type="date" class="input_text" v-model="prof.qual_ex"></td>
-                        <td><input type="number" class="input_text" :value="getPreparationCountDirection(index, index2)"></td>
+                        <td><input type="number" class="input_text" :value="getCountDirection(index, index2, 'arr_preparation')"></td>
                         <td class="nested_table">
                             <table class="table_nested">
                                 <tr v-for="(dir, index3) in prof.direction" :key="index3">
                                     <td class="nested_input"><input class="input_text" v-model="prof.direction[index3]"></td>
                                 </tr>
                                 <tr v-if="prof.add_direction">
-                                    <td class="title add_direction" @click="addPreparationDirection(index, index2)">Добавить дирекцию</td>
+                                    <td class="title add_direction" @click="addDirection(index, index2, 'arr_preparation')">Добавить дирекцию</td>
                                 </tr>
                                 <tr v-if="prof.add_direction"   >
-                                    <td class="title add_direction" @click="blockPreparationDirection(index, index2)">Закрыть ввод</td>
+                                    <td class="title add_direction" @click="blockDirection(index, index2, 'arr_preparation')">Закрыть ввод</td>
                                 </tr>
                             </table>
                         </td>
@@ -263,10 +222,10 @@ function getRetrainingCountHours2(index, column, column2) {
                                     <td class="nested_input"><input class="input_text" type="number" v-model="prof.count[index3]"></td>
                                 </tr>
                                 <tr v-if="prof.add_direction">
-                                    <td class="title add_direction" @click="addPreparationDirection(index, index2)">Добавить дирекцию</td>
+                                    <td class="title add_direction" @click="addDirection(index, index2, 'arr_preparation')">Добавить дирекцию</td>
                                 </tr>
                                 <tr v-if="prof.add_direction"   >
-                                    <td class="title add_direction" @click="blockPreparationDirection(index, index2)">Закрыть ввод</td>
+                                    <td class="title add_direction" @click="blockDirection(index, index2, 'arr_preparation')">Закрыть ввод</td>
                                 </tr>
                             </table>
                         </td>
@@ -282,24 +241,24 @@ function getRetrainingCountHours2(index, column, column2) {
                         <td></td>
                         <td>Итого по профессиональной подготовке подразделения {{ division.division }}</td>
                         <td></td>
-                        <td>{{ getPreparationCountHours(index, 'to1') }}</td>
-                        <td>{{ getPreparationCountHours(index, 'per') }}</td>
-                        <td>{{ getPreparationCountHours(index, 'indt') }}</td>
-                        <td>{{ getPreparationCountHours(index, 'tren') }}</td>
-                        <td>{{ getPreparationCountHours(index, 'exam') }}</td>
-                        <td>{{ getPreparationCountHours2(index, 'to1', 'exam') }}</td>
-                        <td>{{ getPreparationCountHours2(index, 'po', 'to2') }}</td>
-                        <td>{{ getPreparationCountHours(index, 'to2') }}</td>
-                        <td>{{ getPreparationCountHours(index, 'po') }}</td>
+                        <td>{{ getCountHours(index, 'arr_preparation', 'to1') }}</td>
+                        <td>{{ getCountHours(index, 'arr_preparation', 'per') }}</td>
+                        <td>{{ getCountHours(index, 'arr_preparation', 'indt') }}</td>
+                        <td>{{ getCountHours(index, 'arr_preparation', 'tren') }}</td>
+                        <td>{{ getCountHours(index, 'arr_preparation', 'exam') }}</td>
+                        <td>{{ getCountHours2(index, 'arr_preparation', 'to1', 'exam') }}</td>
+                        <td>{{ getCountHours2(index, 'arr_preparation', 'po', 'to2') }}</td>
+                        <td>{{ getCountHours(index, 'arr_preparation', 'to2') }}</td>
+                        <td>{{ getCountHours(index, 'arr_preparation', 'po') }}</td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>{{ getPreparationCountHours(index, 'count_p') }}</td>
+                        <td>{{ getCountHours(index, 'arr_preparation', 'count_p') }}</td>
                         <td></td>
-                        <td>{{ getPreparationCountHours(index, 'count_p') }}</td>
+                        <td>{{ getCountHours(index, 'arr_preparation', 'count_p') }}</td>
                     </tr>
-                    <tr v-for="(result, index2) in division.arr_preparation_results" :key="result">
+                    <tr v-for="(result, index2) in division.arr_preparation_results.direction" :key="result">
                         <td></td>
                         <td>{{ index2 }}</td>
                         <td></td>
@@ -318,7 +277,7 @@ function getRetrainingCountHours2(index, column, column2) {
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>{{ division.arr_preparation_results[index2] }}</td>
+                        <td>{{ result }}</td>
                     </tr>
                     </template>
                     <tr>
@@ -344,17 +303,17 @@ function getRetrainingCountHours2(index, column, column2) {
                         <td><input type="date" class="input_text" v-model="prof.start_po"></td>
                         <td><input type="date" class="input_text" v-model="prof.end_po"></td>
                         <td><input type="date" class="input_text" v-model="prof.qual_ex"></td>
-                        <td><input type="number" class="input_text" :value="getRetrainingCountDirection(index, index2)"></td>
+                        <td><input type="number" class="input_text" :value="getCountDirection(index, index2, 'arr_retraining')"></td>
                         <td class="nested_table">
                             <table class="table_nested">
                                 <tr v-for="(dir, index3) in prof.direction" :key="index3">
                                     <td class="nested_input"><input class="input_text" v-model="prof.direction[index3]"></td>
                                 </tr>
                                 <tr v-if="prof.add_direction">
-                                    <td class="title add_direction" @click="addRetrainingDirection(index, index2)">Добавить дирекцию</td>
+                                    <td class="title add_direction" @click="addDirection(index, index2, 'arr_retraining')">Добавить дирекцию</td>
                                 </tr>
                                 <tr v-if="prof.add_direction"   >
-                                    <td class="title add_direction" @click="blockRetrainingDirection(index, index2)">Закрыть ввод</td>
+                                    <td class="title add_direction" @click="blockDirection(index, index2, 'arr_retraining')">Закрыть ввод</td>
                                 </tr>
                             </table>
                         </td>
@@ -364,10 +323,10 @@ function getRetrainingCountHours2(index, column, column2) {
                                     <td class="nested_input"><input class="input_text" type="number" v-model="prof.count[index3]"></td>
                                 </tr>
                                 <tr v-if="prof.add_direction">
-                                    <td class="title add_direction" @click="addRetrainingDirection(index, index2)">Добавить дирекцию</td>
+                                    <td class="title add_direction" @click="addDirection(index, index2, 'arr_retraining')">Добавить дирекцию</td>
                                 </tr>
                                 <tr v-if="prof.add_direction"   >
-                                    <td class="title add_direction" @click="blockRetrainingDirection(index, index2)">Закрыть ввод</td>
+                                    <td class="title add_direction" @click="blockDirection(index, index2, 'arr_retraining')">Закрыть ввод</td>
                                 </tr>
                             </table>
                         </td>
@@ -383,24 +342,24 @@ function getRetrainingCountHours2(index, column, column2) {
                         <td></td>
                         <td>Итого по ПР (переподготовка) {{ division.division }}</td>
                         <td></td>
-                        <td>{{ getRetrainingCountHours(index, 'to1') }}</td>
-                        <td>{{ getRetrainingCountHours(index, 'per') }}</td>
-                        <td>{{ getRetrainingCountHours(index, 'indt') }}</td>
-                        <td>{{ getRetrainingCountHours(index, 'tren') }}</td>
-                        <td>{{ getRetrainingCountHours(index, 'exam') }}</td>
-                        <td>{{ getRetrainingCountHours2(index, 'to1', 'exam') }}</td>
-                        <td>{{ getRetrainingCountHours2(index, 'po', 'to2') }}</td>
-                        <td>{{ getRetrainingCountHours(index, 'to2') }}</td>
-                        <td>{{ getRetrainingCountHours(index, 'po') }}</td>
+                        <td>{{ getCountHours(index, 'arr_retraining', 'to1') }}</td>
+                        <td>{{ getCountHours(index, 'arr_retraining', 'per') }}</td>
+                        <td>{{ getCountHours(index, 'arr_retraining', 'indt') }}</td>
+                        <td>{{ getCountHours(index, 'arr_retraining', 'tren') }}</td>
+                        <td>{{ getCountHours(index, 'arr_retraining', 'exam') }}</td>
+                        <td>{{ getCountHours2(index, 'arr_retraining', 'to1', 'exam') }}</td>
+                        <td>{{ getCountHours2(index, 'arr_retraining', 'po', 'to2') }}</td>
+                        <td>{{ getCountHours(index, 'arr_retraining', 'to2') }}</td>
+                        <td>{{ getCountHours(index, 'arr_retraining', 'po') }}</td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>{{ getRetrainingCountHours(index, 'count_p') }}</td>
+                        <td>{{ getCountHours(index, 'arr_retraining', 'count_p') }}</td>
                         <td></td>
-                        <td>{{ getRetrainingCountHours(index, 'count_p') }}</td>
+                        <td>{{ getCountHours(index, 'arr_retraining', 'count_p') }}</td>
                     </tr>
-                    <tr v-for="(result, index2) in division.arr_retraining_results" :key="result">
+                    <tr v-for="(result, index2) in division.arr_retraining_results.direction" :key="result">
                         <td></td>
                         <td>{{ index2 }}</td>
                         <td></td>
@@ -419,14 +378,14 @@ function getRetrainingCountHours2(index, column, column2) {
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>{{ division.arr_retraining_results[index2] }}</td>
+                        <td>{{ result }}</td>
                     </tr>
                     </template>
                 </tbody>
                 <tbody>
                     <tr>
                         <td colspan="19">
-                            <div class="nested_text"><text class="title add_direction margin_direction" @click="addDirection()">Добавить подразделение</text></div>
+                            <div class="nested_text"><text class="title add_direction margin_direction" @click="addMainDirection()">Добавить подразделение</text></div>
                         </td>
                     </tr>
                 </tbody>
