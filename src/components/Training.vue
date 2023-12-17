@@ -10,7 +10,7 @@ const die_professions = ref(false);
         <div>
             <div class="die die_title">План-график</div>
             <RouterLink to="/preparation"><div class="die die_main">Подготовка</div></RouterLink>
-            <div class="die die_main">Проф. развитие</div>
+            <RouterLink to="/development"><div class="die die_main">Проф. развитие</div></RouterLink>
             <div class="die die_main">ДПО</div>
         </div>
         <div>

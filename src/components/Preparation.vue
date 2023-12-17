@@ -12,7 +12,7 @@ function addPreparation(index) {
 function blockPreparation(index) {
     plan.value[index].add_preparation = false;
     updateCountDirection(index, 'arr_preparation');
-    console.log(plan);
+    console.log(JSON.stringify(plan.value));
 }
 function addRetraining(index) {
     plan.value[index].arr_retraining.push({'number':'1', 'name':'Машинист электровоза', 'code':'МЭ', 'to1':728, 'per':'', 'indt':'', 'tren':'', 'exam':8, 'to2':18.4, 'po':2.6, 'start_o':'2021-10-18', 'start_po':'2022-02-04', 'end_po':'2022-02-22', 'qual_ex':'2021-03-31', 'count_p':'', 'direction':[], 'count':[], 'add_direction':true});
@@ -138,7 +138,7 @@ function getCountHours2(index, arr, column, column2) {
                             Тренажерная подготовка преподавателей
                         </th>
                         <th>
-                            Экзамены
+                            Экзамен
                         </th>
                         <th>
                             Всего
