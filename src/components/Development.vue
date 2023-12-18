@@ -122,7 +122,7 @@ function debug() {
                         <th colspan="4">
                             Календарные сроки обучения
                         </th>
-                        <th rowspan="2">
+                        <th rowspan="2" style="writing-mode: vertical-rl; transform: rotate(180deg);">
                             Количество человек
                         </th>
                         <th colspan="2">
@@ -130,46 +130,46 @@ function debug() {
                         </th>
                     </tr>
                     <tr>
-                        <th>
-                            Теоретическое обучение
+                        <th style="writing-mode: vertical-rl; transform: rotate(180deg);">
+                            Теоретическое <br> обучение
                         </th>
-                        <th>
-                            Индивидуальное занятия по оказанию перв. мед. помощи
+                        <th style="writing-mode: vertical-rl; transform: rotate(180deg);">
+                            Индивидуальное <br> занятия по оказанию <br> перв. мед. помощи
                         </th>
-                        <th>
-                            Тренажерная подготовка преподавателей
+                        <th style="writing-mode: vertical-rl; transform: rotate(180deg);">
+                            Тренажерная <br> подготовка <br> преподавателей
                         </th>
-                        <th>
+                        <th style="writing-mode: vertical-rl; transform: rotate(180deg);">
                             Экзамен
                         </th>
-                        <th>
+                        <th style="writing-mode: vertical-rl; transform: rotate(180deg);">
                             Всего
                         </th>
-                        <th>
+                        <th style="writing-mode: vertical-rl; transform: rotate(180deg);">
                             Всего
                         </th>
-                        <th>
-                            Теоретическое обучение
+                        <th style="writing-mode: vertical-rl; transform: rotate(180deg);">
+                            Теоретическое <br> обучение
                         </th>
-                        <th>
-                            Производственное обучение на рабочем месте
+                        <th style="writing-mode: vertical-rl; transform: rotate(180deg);">
+                            Производственное <br> обучение на рабочем <br> месте
                         </th>
-                        <th>
+                        <th style="writing-mode: vertical-rl; transform: rotate(180deg);">
                             Начало обучения
                         </th>
-                        <th>
-                            Начало производственного обучения
+                        <th style="writing-mode: vertical-rl; transform: rotate(180deg);">
+                            Начало <br> производственного <br> обучения
                         </th>
-                        <th>
-                            Окончание    производственного обучения
+                        <th style="writing-mode: vertical-rl; transform: rotate(180deg);">
+                            Окончание <br> производственного <br> обучения
                         </th>
-                        <th>
-                            Квалификационный экзамен/Зачет
+                        <th style="writing-mode: vertical-rl; transform: rotate(180deg);">
+                            Квалификационный <br> экзамен/Зачет
                         </th>
-                        <th>
-                            Дирекция/Структурное подразделение
+                        <th style="writing-mode: vertical-rl; transform: rotate(180deg);">
+                            Дирекция/<br>структурное <br> подразделение
                         </th>
-                        <th>
+                        <th style="writing-mode: vertical-rl; transform: rotate(180deg);">
                             Количество
                         </th>
                     </tr>
@@ -297,7 +297,7 @@ function debug() {
                     <tr>
                         <td colspan="19">
                             <div class="nested_text"><text class="title add_direction margin_direction" @click="addMainDivision()">Добавить подразделение</text></div>
-                            <div class="nested_text"><text class="title add_direction margin_direction" @click="debug()">DEBUG</text></div>
+                            <div class="nested_text" v-if="false"><text class="title add_direction margin_direction" @click="debug()">DEBUG</text></div>
                         </td>
                     </tr>
                 </tbody>
@@ -309,13 +309,12 @@ function debug() {
 <style scoped>
 .container {
     padding: 100px 20px 0 20px;
-    width: min-content;
 }
 .title {
     text-align: center;
     color: #000;
     font-family: Arial;
-    font-size: 20px;
+    font-size: 14px;
     font-style: normal;
     font-weight: 700;
     line-height: normal;
@@ -325,6 +324,7 @@ function debug() {
 }
 .table {
     margin: 10px 0 0 0;
+    width: 100%;
 }
 table {
     border-collapse: collapse;
@@ -333,7 +333,7 @@ th {
     text-align: center;
     color: #000;
     font-family: Arial;
-    font-size: 20px;
+    font-size: 14px;
     font-style: normal;
     font-weight: 700;
     line-height: normal;
@@ -343,7 +343,7 @@ td {
     text-align: center;
     color: #000;
     font-family: Arial;
-    font-size: 20px;
+    font-size: 14px;
     font-style: normal;
     font-weight: 700;
     line-height: normal;
@@ -388,14 +388,14 @@ td {
     text-align: center;
     color: #000;
     font-family: Arial;
-    font-size: 20px;
+    font-size: 14px;
     font-style: normal;
     font-weight: 700;
     line-height: normal;
     border: 1px solid #000;
     width: 100%;
     box-sizing: border-box;
-    min-width: 130px;
+    min-width: 65px;
 }
 .nested_input {
     padding: 0;

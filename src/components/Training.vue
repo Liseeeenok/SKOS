@@ -53,7 +53,7 @@ const die_professions = ref(false);
             <div class="die die_main">Объект прожив.</div>
             <div class="die die_main">Выселение</div>
         </div>
-        <div>
+        <div style="margin-bottom: 200px;">
             <div class="die die_title">УЦПК</div>
             <div class="die die_main">Подразделения</div>
             <div class="die die_main">Персонал</div>
@@ -71,7 +71,7 @@ const die_professions = ref(false);
     grid-template-columns: auto auto auto auto auto;
 }
 .die {
-    width: 238px;
+    width: 90%;
     height: 53px;
     display: flex;
     justify-content: center;
@@ -88,7 +88,7 @@ const die_professions = ref(false);
 .die_main {
     background: #DCDADD;
     cursor: pointer;
-    margin: 10px 0 0 0;
+    margin: 10px 5px 0 5px;
     transition: 0.2s;
 }
 .die_main:hover {
@@ -100,7 +100,8 @@ const die_professions = ref(false);
     background: #e9ebf0;
 }
 .die_absolute {
-    position: absolute;
+    /*position: absolute;*/
+    display: block;
 }
 .die_hidden {
     overflow: hidden;
