@@ -32,6 +32,7 @@ axios
     });
 const arr_name_profession_groups = ref([]);
 function getProfessionGroups(id_profession) {
+    console.log('getProfessionGroups');
     axios
         .get('https://'+host+'/profession_groups?id_profession='+id_profession)
         .then(response => {
@@ -39,26 +40,32 @@ function getProfessionGroups(id_profession) {
         });
 }
 function addMainDivision() {
-    plan.value.push({division:'', arr_chapter:[{title: '', arr_profession: [], arr_profession_results: {}, results: false}], arr_chapter_results:[], results: false});
+    console.log('addMainDivision');
+    plan.value.push({division:'', arr_chapter:[{title: '', arr_profession: [], arr_profession_results: {}, results: false}], arr_chapter_results: {}, results: false});
 }
 function addProfession(index_division, index_chapter) {
-    plan.value[index_division].arr_chapter[index_chapter].arr_profession.push({name:'Машинист', code:['Маш'], to1:752, per: 0, indt:'', tren:'', exam:8, to2:19, po:3, start_o:['2021-11-16'], start_po:['2021-02-24'], end_po:['2022-03-17'], qual_ex:['2022-04-28'], count_p:'', direction:[], count:[]});
+    console.log('addProfession');
+    plan.value[index_division].arr_chapter[index_chapter].arr_profession.push({name:'Машинист', code:['Маш'], to1:0, per: 0, indt:0, tren:0, exam:0, to2:0, po:0, start_o:['2021-11-16'], start_po:['2021-02-24'], end_po:['2022-03-17'], qual_ex:['2022-04-28'], count_people:0, direction:[], count:[]});
 }
 function addChapter(index_division) {
+    console.log('addChapter');
     plan.value[index_division].arr_chapter.push({title: '', arr_profession: [], arr_profession_results: {}, results: false});
 }
 function getCountPeople(index_division, index_chapter, index_profession) {
+    console.log('getCountPeople');
     if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].count) {
         let sum = 0;
         plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].count.forEach(x => {
             if (x != '')
                 sum += x;
         });
-        plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].count_p = sum;
-        return sum;
-    } else return 0;
+        plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].count_people = sum;
+    };
+    getProfessionColumnResult(index_division, index_chapter);
+    getProdessionDirections(index_division, index_chapter);
 }
 function addCode(index_division, index_chapter, index_profession) {
+    console.log('addCode');
     plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code.push('');
     plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].start_o.push('');
     plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].start_po.push('');
@@ -66,55 +73,50 @@ function addCode(index_division, index_chapter, index_profession) {
     plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].qual_ex.push('');
 }
 function addDirection(index_division, index_chapter, index_profession) {
+    console.log('addDirection');
     plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction.push('');
-    plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].count.push(4);
+    plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].count.push(0);
 }
 function getProfessionResults(index_division, index_chapter) {
+    console.log('getProfessionResults');
+    getProfessionColumnResult(index_division, index_chapter);
+    getProdessionDirections(index_division, index_chapter);
     plan.value[index_division].arr_chapter[index_chapter].results = true;
-    console.log(JSON.stringify(plan.value));
 }
-function getProfessionColumnResult(index_division, index_chapter, column) {
-    plan.value[index_division].arr_chapter[index_chapter].arr_profession_results[column] = 0;
-    if (plan.value[index_division].arr_chapter[index_chapter]) {
-        let sum = 0;
-        plan.value[index_division].arr_chapter[index_chapter].arr_profession.forEach(x => {
-            if (x[column]) {
-                if (x[column] == '')
-                    sum += 0;
-                else
-                    sum += x[column];
-            }
-        });
-        plan.value[index_division].arr_chapter[index_chapter].arr_profession_results[column] = sum;
-        return sum;
-    } else return 0;
-}
-function getProfessionColumnResult2(index_division, index_chapter, column, column2) {
-    if (plan.value[index_division].arr_chapter[index_chapter]) {
-        let sum = 0;
-        plan.value[index_division].arr_chapter[index_chapter].arr_profession.forEach(x => {
-            if (x[column])
-                sum += x[column];
-            if (x[column2])
-                sum += x[column2];
-        });
-        return sum;
-    } else return 0;
+function getProfessionColumnResult(index_division, index_chapter) {
+    console.log('getProfessionColumnResult');
+    let arr_column = ['to1', 'indt', 'tren', 'exam', 'to2', 'po', 'count_people'];
+    arr_column.forEach(column => {
+        plan.value[index_division].arr_chapter[index_chapter].arr_profession_results[column] = 0;
+        if (plan.value[index_division].arr_chapter[index_chapter]) {
+            let sum = 0;
+            plan.value[index_division].arr_chapter[index_chapter].arr_profession.forEach(x => {
+                if (x[column]) {
+                    if (x[column] == '')
+                        sum += 0;
+                    else
+                        sum += x[column];
+                }
+            });
+            plan.value[index_division].arr_chapter[index_chapter].arr_profession_results[column] = sum;
+        }
+    });
+    getChapterColumnResult(index_division);
 }
 function getProdessionDirections(index_division, index_chapter) {
-    let arr_direction_results = {};
+    console.log('getProdessionDirections');
+    plan.value[index_division].arr_chapter[index_chapter].arr_profession_results['directions'] = {};
     plan.value[index_division].arr_chapter[index_chapter].arr_profession.forEach(x => {
         x.direction.forEach((direction, index_direction) => {
-        if (!arr_direction_results[direction]) 
-            arr_direction_results[direction] = 0;
-        if (x.count[index_direction] == '')
-            arr_direction_results[direction] += 0;
-        else
-            arr_direction_results[direction] += x.count[index_direction];
+            if (plan.value[index_division].arr_chapter[index_chapter].arr_profession_results['directions'][direction] == undefined) 
+                plan.value[index_division].arr_chapter[index_chapter].arr_profession_results['directions'][direction] = 0;
+            if (x.count[index_direction] == '')
+                plan.value[index_division].arr_chapter[index_chapter].arr_profession_results['directions'][direction] += 0;
+            else
+                plan.value[index_division].arr_chapter[index_chapter].arr_profession_results['directions'][direction] += x.count[index_direction];
         });
     });
-    plan.value[index_division].arr_chapter[index_chapter].arr_profession_results['directions'] = arr_direction_results; 
-    return arr_direction_results;
+    getChapterDirections(index_division);
 }
 function getNameById(arr, id) {
     let name = '';
@@ -127,50 +129,40 @@ function getNameById(arr, id) {
     return name;
 }
 function getChapterResults(index_division) {
+    console.log('getChapterResults');
+    getChapterColumnResult(index_division);
+    getChapterDirections(index_division);
     plan.value[index_division].results = true;
-    console.log(JSON.stringify(plan.value));
 }
-function getChapterColumnResult(index_division, column) {
-    plan.value[index_division].arr_chapter_results[column] = 0;
-    if (plan.value[index_division]) {
-        let sum = 0;
-        plan.value[index_division].arr_chapter.forEach(x => {
-            if (x['arr_profession_results'][column]) {
-                if (x['arr_profession_results'][column] == '')
-                    sum += 0;
-                else
-                    sum += x['arr_profession_results'][column];
-            }
-        });
-        plan.value[index_division].arr_chapter_results[column] = sum;
-        return sum;
-    } else return 0;
-}
-function getChapterColumnResult2(index_division, column, column2) {
-    if (plan.value[index_division]) {
-        let sum = 0;
-        plan.value[index_division].arr_chapter.forEach(x => {
-            if (x['arr_profession_results'][column])
-                sum += x['arr_profession_results'][column];
-            if (x['arr_profession_results'][column2])
-                sum += x['arr_profession_results'][column2];
-        });
-        return sum;
-    } else return 0;
+function getChapterColumnResult(index_division) {
+    console.log('getChapterColumnResult');
+    let arr_column = ['to1', 'indt', 'tren', 'exam', 'to2', 'po', 'count_people'];
+    arr_column.forEach(column => {
+        plan.value[index_division].arr_chapter_results[column] = 0;
+        if (plan.value[index_division]) {
+            let sum = 0;
+            plan.value[index_division].arr_chapter.forEach(x => {
+                if (x['arr_profession_results'][column]) {
+                    if (x['arr_profession_results'][column] == '')
+                        sum += 0;
+                    else
+                        sum += x['arr_profession_results'][column];
+                }
+            });
+            plan.value[index_division].arr_chapter_results[column] = sum;
+        }
+    });
 }
 function getChapterDirections(index_division) {
-    let arr_direction_results = {};
     console.log('getChapterDirections');
-    return arr_direction_results;
+    plan.value[index_division].arr_chapter_results['directions'] = {};
     plan.value[index_division].arr_chapter.forEach(x => {
         for (let index_direction in x.arr_profession_results.directions) {
-            if (!arr_direction_results[index_direction]) 
-                arr_direction_results[index_direction] = 0;
-            arr_direction_results[index_direction] += x.arr_profession_results.directions[index_direction];
+            if (plan.value[index_division].arr_chapter_results['directions'][index_direction] == undefined) 
+                plan.value[index_division].arr_chapter_results['directions'][index_direction] = 0;
+                plan.value[index_division].arr_chapter_results['directions'][index_direction] += x.arr_profession_results.directions[index_direction];
         };
     });
-    //plan.value[index_division].arr_chapter_results['directions'] = arr_direction_results; 
-    return arr_direction_results;
 }
 function debug() {
     console.log(JSON.stringify(plan.value));
@@ -295,24 +287,24 @@ function debug() {
                                 <option v-for="name_profession_groups in arr_name_profession_groups[profession.name]" :key="name_profession_groups.id" :value="name_profession_groups.id">{{ name_profession_groups.name }}</option>
                             </select>
                         </td>
-                        <td :rowspan="profession.code.length+1"><input type="number" class="input_text" v-model="profession.to1"></td>
-                        <td :rowspan="profession.code.length+1"><input type="number" class="input_text" v-model="profession.indt"></td>
-                        <td :rowspan="profession.code.length+1"><input type="number" class="input_text" v-model="profession.tren"></td>
-                        <td :rowspan="profession.code.length+1"><input type="number" class="input_text" v-model="profession.exam"></td>
-                        <td :rowspan="profession.code.length+1"><input type="number" class="input_text" :value="Number(profession.to1) + Number(profession.exam)"></td>
-                        <td :rowspan="profession.code.length+1"><input type="number" class="input_text" :value="Number(profession.po) + Number(profession.to2)"></td>
-                        <td :rowspan="profession.code.length+1"><input type="number" class="input_text" v-model="profession.to2"></td>
-                        <td :rowspan="profession.code.length+1"><input type="number" class="input_text" v-model="profession.po"></td>
+                        <td :rowspan="profession.code.length+1"><input type="number" class="input_text" v-model="profession.to1" @change="getProfessionColumnResult(index_division, index_chapter)"></td>
+                        <td :rowspan="profession.code.length+1"><input type="number" class="input_text" v-model="profession.indt" @change="getProfessionColumnResult(index_division, index_chapter)"></td>
+                        <td :rowspan="profession.code.length+1"><input type="number" class="input_text" v-model="profession.tren" @change="getProfessionColumnResult(index_division, index_chapter)"></td>
+                        <td :rowspan="profession.code.length+1"><input type="number" class="input_text" v-model="profession.exam" @change="getProfessionColumnResult(index_division, index_chapter)"></td>
+                        <td :rowspan="profession.code.length+1" style="min-width: 50px">{{ Number(profession.to1) + Number(profession.exam) }}</td>
+                        <td :rowspan="profession.code.length+1" style="min-width: 50px">{{ Number(profession.po) + Number(profession.to2) }}</td>
+                        <td :rowspan="profession.code.length+1"><input type="number" class="input_text" v-model="profession.to2" @change="getProfessionColumnResult(index_division, index_chapter)"></td>
+                        <td :rowspan="profession.code.length+1"><input type="number" class="input_text" v-model="profession.po" @change="getProfessionColumnResult(index_division, index_chapter)"></td>
                         <td><input type="date" class="input_text" v-model="profession.start_o[0]"></td>
                         <td><input type="date" class="input_text" v-model="profession.start_po[0]"></td>
                         <td><input type="date" class="input_text" v-model="profession.end_po[0]"></td>
                         <td><input type="date" class="input_text" v-model="profession.qual_ex[0]"></td>
-                        <td :rowspan="profession.code.length+1"><input type="number" class="input_text" :value="getCountPeople(index_division, index_chapter, index_profession)"></td>
+                        <td :rowspan="profession.code.length+1" style="min-width: 50px">{{ profession.count_people }}</td>
                         <td class="nested_table" :rowspan="profession.code.length">
                             <table class="table_nested">
-                                <tr v-for="(dir, index_profession) in profession.direction" :key="index_profession">
+                                <tr v-for="(dir, index_dir) in profession.direction" :key="index_dir">
                                     <td class="nested_input">
-                                        <select v-model="profession.direction[index_profession]" class="input_text">
+                                        <select v-model="profession.direction[index_dir]" class="input_text">
                                             <option v-for="name_direction in arr_name_direction" :key="name_direction.id" :value="name_direction.id">{{ name_direction.name }}</option>
                                         </select>
                                     </td>
@@ -321,9 +313,9 @@ function debug() {
                         </td>
                         <td class="nested_table" :rowspan="profession.code.length">
                             <table class="table_nested">
-                                <tr v-for="(dir, index_profession) in profession.count" :key="index_profession">
+                                <tr v-for="(dir, index_dir) in profession.count" :key="index_dir">
                                     <td class="nested_input">
-                                        <input class="input_text" type="number" v-model="profession.count[index_profession]">
+                                        <input class="input_text" type="number" v-model="profession.count[index_dir]" @change="getCountPeople(index_division, index_chapter, index_profession)">
                                     </td>
                                 </tr>
                             </table>
@@ -361,23 +353,23 @@ function debug() {
                         <td></td>
                         <td>Итого по ПР ({{ getNameById(arr_name_section, chapter.title) }}) {{ getNameById(arr_name_division, division.division) }}</td>
                         <td></td>
-                        <td>{{ getProfessionColumnResult(index_division, index_chapter, 'to1') }}</td>
-                        <td>{{ getProfessionColumnResult(index_division, index_chapter, 'indt') }}</td>
-                        <td>{{ getProfessionColumnResult(index_division, index_chapter, 'tren') }}</td>
-                        <td>{{ getProfessionColumnResult(index_division, index_chapter, 'exam') }}</td>
-                        <td>{{ getProfessionColumnResult2(index_division, index_chapter, 'to1', 'exam') }}</td>
-                        <td>{{ getProfessionColumnResult2(index_division, index_chapter, 'po', 'to2') }}</td>
-                        <td>{{ getProfessionColumnResult(index_division, index_chapter, 'to2') }}</td>
-                        <td>{{ getProfessionColumnResult(index_division, index_chapter, 'po') }}</td>
+                        <td>{{ chapter.arr_profession_results['to1'] }}</td>
+                        <td>{{ chapter.arr_profession_results['indt'] }}</td>
+                        <td>{{ chapter.arr_profession_results['tren'] }}</td>
+                        <td>{{ chapter.arr_profession_results['exam'] }}</td>
+                        <td>{{ chapter.arr_profession_results['to1'] + chapter.arr_profession_results['exam'] }}</td>
+                        <td>{{ chapter.arr_profession_results['to2'] + chapter.arr_profession_results['po'] }}</td>
+                        <td>{{ chapter.arr_profession_results['to2'] }}</td>
+                        <td>{{ chapter.arr_profession_results['po'] }}</td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>{{ getProfessionColumnResult(index_division, index_chapter, 'count_p') }}</td>
+                        <td>{{ chapter.arr_profession_results['count_people'] }}</td>
                         <td></td>
-                        <td>{{ getProfessionColumnResult(index_division, index_chapter, 'count_p') }}</td>
+                        <td>{{ chapter.arr_profession_results['count_people'] }}</td>
                     </tr>
-                    <tr v-for="(result, index_result) in getProdessionDirections(index_division, index_chapter)" :key="result">
+                    <tr v-for="(result, index_result) in chapter.arr_profession_results['directions']" :key="result">
                         <td></td>
                         <td>{{ getNameById(arr_name_direction, index_result) }}</td>
                         <td></td>
@@ -410,23 +402,23 @@ function debug() {
                         <td></td>
                         <td>Итого по подразделению {{ getNameById(arr_name_division, division.division) }}</td>
                         <td></td>
-                        <td>{{ getChapterColumnResult(index_division, 'to1') }}</td>
-                        <td>{{ getChapterColumnResult(index_division, 'indt') }}</td>
-                        <td>{{ getChapterColumnResult(index_division, 'tren') }}</td>
-                        <td>{{ getChapterColumnResult(index_division, 'exam') }}</td>
-                        <td>{{ getChapterColumnResult2(index_division, 'to1', 'exam') }}</td>
-                        <td>{{ getChapterColumnResult2(index_division, 'po', 'to2') }}</td>
-                        <td>{{ getChapterColumnResult(index_division, 'to2') }}</td>
-                        <td>{{ getChapterColumnResult(index_division, 'po') }}</td>
+                        <td>{{ division.arr_chapter_results['to1'] }}</td>
+                        <td>{{ division.arr_chapter_results['indt'] }}</td>
+                        <td>{{ division.arr_chapter_results['tren'] }}</td>
+                        <td>{{ division.arr_chapter_results['exam'] }}</td>
+                        <td>{{ division.arr_chapter_results['to1'] + division.arr_chapter_results['exam'] }}</td>
+                        <td>{{ division.arr_chapter_results['to2'] + division.arr_chapter_results['po'] }}</td>
+                        <td>{{ division.arr_chapter_results['to2'] }}</td>
+                        <td>{{ division.arr_chapter_results['po'] }}</td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>{{ getChapterColumnResult(index_division, 'count_p') }}</td>
+                        <td>{{ division.arr_chapter_results['count_p'] }}</td>
                         <td></td>
-                        <td>{{ getChapterColumnResult(index_division, 'count_p') }}</td>
+                        <td>{{ division.arr_chapter_results['count_p'] }}</td>
                     </tr>
-                    <tr v-for="(result, index_result) in getChapterDirections(index_division)" :key="result">
+                    <tr v-for="(result, index_result) in division.arr_chapter_results['directions']" :key="result">
                         <td></td>
                         <td>{{ getNameById(arr_name_direction, index_result) }}</td>
                         <td></td>

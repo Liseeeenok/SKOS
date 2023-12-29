@@ -10,7 +10,7 @@ function authorization() {
     //запрос
     if (login.value == '123' && password.value == '123') {
         auth_err.value = false;
-        router.push('/profile');
+        router.push('/notification');
     } else {
         auth_err.value = true;
     }
