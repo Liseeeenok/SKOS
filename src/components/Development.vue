@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import axios from 'axios';
 const plan = ref([]);
-const final = ref({year: '', arr_plan: plan, arr_plan_result: []})
+const final = ref({year: '', arr_plan: plan, arr_plan_result: {}, results: false})
 //Обязательное обучение в соответствии с законодательством РФ
 //console.log(JSON.stringify(plan.value));
 const host = 'mypew.ru:7070'; //имя или ip хоста api
@@ -152,6 +152,7 @@ function getChapterColumnResult(index_division) {
             plan.value[index_division].arr_chapter_results[column] = sum;
         }
     });
+    getDivisionColumnResult();
 }
 function getChapterDirections(index_division) {
     console.log('getChapterDirections');
@@ -160,12 +161,48 @@ function getChapterDirections(index_division) {
         for (let index_direction in x.arr_profession_results.directions) {
             if (plan.value[index_division].arr_chapter_results['directions'][index_direction] == undefined) 
                 plan.value[index_division].arr_chapter_results['directions'][index_direction] = 0;
-                plan.value[index_division].arr_chapter_results['directions'][index_direction] += x.arr_profession_results.directions[index_direction];
+            plan.value[index_division].arr_chapter_results['directions'][index_direction] += x.arr_profession_results.directions[index_direction];
+        };
+    });
+    getDivisionDirections();
+}
+function getDivisionResults() {
+    console.log('getDivisionResults');
+    getDivisionColumnResult();
+    getDivisionDirections();
+    final.value.results = true;
+}
+function getDivisionColumnResult() {
+    console.log('getDivisionColumnResult');
+    let arr_column = ['to1', 'indt', 'tren', 'exam', 'to2', 'po', 'count_people'];
+    arr_column.forEach(column => {
+        final.value.arr_plan_result[column] = 0;
+        if (final.value) {
+            let sum = 0;
+            final.value.arr_plan.forEach(x => {
+                if (x['arr_chapter_results'][column]) {
+                    if (x['arr_chapter_results'][column] == '')
+                        sum += 0;
+                    else
+                        sum += x['arr_chapter_results'][column];
+                }
+            });
+            final.value.arr_plan_result[column] = sum;
+        }
+    });
+}
+function getDivisionDirections() {
+    console.log('getDivisionDirections');
+    final.value.arr_plan_result['directions'] = {};
+    final.value.arr_plan.forEach(x => {
+        for (let index_direction in x.arr_chapter_results.directions) {
+            if (final.value.arr_plan_result['directions'][index_direction] == undefined) 
+                final.value.arr_plan_result['directions'][index_direction] = 0;
+            final.value.arr_plan_result['directions'][index_direction] += x.arr_chapter_results.directions[index_direction];
         };
     });
 }
 function debug() {
-    console.log(JSON.stringify(plan.value));
     console.log(JSON.stringify(final.value));
 }
 </script>
@@ -181,7 +218,7 @@ function debug() {
                 год
             </div>
         </div>
-        <div>
+        <div style="margin-bottom: 200px;">
             <table class="table">
                 <thead>
                     <tr>
@@ -414,9 +451,9 @@ function debug() {
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>{{ division.arr_chapter_results['count_p'] }}</td>
+                        <td>{{ division.arr_chapter_results['count_people'] }}</td>
                         <td></td>
-                        <td>{{ division.arr_chapter_results['count_p'] }}</td>
+                        <td>{{ division.arr_chapter_results['count_people'] }}</td>
                     </tr>
                     <tr v-for="(result, index_result) in division.arr_chapter_results['directions']" :key="result">
                         <td></td>
@@ -443,10 +480,53 @@ function debug() {
                 <tbody>
                     <tr>
                         <td colspan="19">
-                            <div class="nested_text"><text class="title add_direction margin_direction" @click="addMainDivision()">Добавить подразделение</text></div>
-                            <div class="nested_text" v-if="false"><text class="title add_direction margin_direction" @click="debug()">DEBUG</text></div>
+                            <div class="nested_text"><text class="title add_direction" @click="addMainDivision()">Добавить подразделение</text></div>
+                            <div class="nested_text" v-if="!final.results"><text class="title add_direction" @click="getDivisionResults()">Подвести общие итоги</text></div>
+                            <div class="nested_text" v-if="true"><text class="title add_direction" @click="debug()">DEBUG</text></div>
                         </td>
                     </tr>
+                    <template v-if="final.results">
+                    <tr>
+                        <td></td>
+                        <td>ВСЕГО ПРОФЕССИОНАЛЬНОМУ РАЗВИТИЮ в УЦПК</td>
+                        <td></td>
+                        <td>{{ final.arr_plan_result['to1'] }}</td>
+                        <td>{{ final.arr_plan_result['indt'] }}</td>
+                        <td>{{ final.arr_plan_result['tren'] }}</td>
+                        <td>{{ final.arr_plan_result['exam'] }}</td>
+                        <td>{{ final.arr_plan_result['to1'] + final.arr_plan_result['exam'] }} 2</td>
+                        <td>{{ final.arr_plan_result['to2'] + final.arr_plan_result['po'] }}</td>
+                        <td>{{ final.arr_plan_result['to2'] }}</td>
+                        <td>{{ final.arr_plan_result['po'] }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>{{ final.arr_plan_result['count_people'] }}</td>
+                        <td></td>
+                        <td>{{ final.arr_plan_result['count_people'] }}</td>
+                    </tr>
+                    <tr v-for="(result, index_result) in final.arr_plan_result['directions']" :key="result">
+                        <td></td>
+                        <td>{{ getNameById(arr_name_direction, index_result) }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>{{ result }}</td>
+                    </tr>
+                    </template> 
                 </tbody>
             </table>
         </div>
@@ -509,9 +589,6 @@ td {
     -webkit-writing-mode: vertical-rl;
     -ms-writing-mode: tb-rl;
     writing-mode: vertical-rl;
-}
-.margin_direction {
-    margin-bottom: 200px;
 }
 .nested_table {
     padding: 0;
