@@ -161,7 +161,7 @@ function getChapterColumnResult2(index_division, column, column2) {
 function getChapterDirections(index_division) {
     let arr_direction_results = {};
     console.log('getChapterDirections');
-    return arr_direction_results;
+    //return arr_direction_results;
     plan.value[index_division].arr_chapter.forEach(x => {
         for (let index_direction in x.arr_profession_results.directions) {
             if (!arr_direction_results[index_direction]) 

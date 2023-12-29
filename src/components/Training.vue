@@ -9,13 +9,13 @@ const die_professions = ref(false);
     <div class="container">
         <div>
             <div class="die die_title">План-график</div>
-            <RouterLink to="/preparation"><div class="die die_main">Подготовка</div></RouterLink>
+            <RouterLink to="/development"><div class="die die_main">Подготовка</div></RouterLink>
             <RouterLink to="/development"><div class="die die_main">Проф. развитие</div></RouterLink>
             <div class="die die_main">ДПО</div>
         </div>
         <div>
             <div class="die die_title">Обучающиеся</div>
-            <div class="die die_main" @click="die_students = !die_students" :class="die_students ? 'die_active':''">Студенты</div>
+            <div class="die die_main" @click="die_students = !die_students" :class="die_students ? 'die_active':''">Сотрудники</div>
             <div class="die_absolute">
                 <div class="die_hidden" :class="die_students ? 'die_active_students':'die_hide'">
                     <div class="die die_main">Опоздание</div>
