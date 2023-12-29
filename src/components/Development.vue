@@ -1,9 +1,43 @@
 <script setup>
 import { ref } from 'vue';
+import axios from 'axios';
 const plan = ref([]);
 const final = ref({year: '', arr_plan: plan, arr_plan_result: []})
 //Обязательное обучение в соответствии с законодательством РФ
 //console.log(JSON.stringify(plan.value));
+const host = 'mypew.ru:7070'; //имя или ip хоста api
+const arr_name_division = ref([]);
+axios
+    .get('https://'+host+'/divisions')
+    .then(response => {
+        arr_name_division.value = response.data;
+    });
+const arr_name_section = ref([]);
+axios
+    .get('https://'+host+'/sections')
+    .then(response => {
+        arr_name_section.value = response.data;
+    });
+const arr_name_direction = ref([]);
+axios
+    .get('https://'+host+'/directions')
+    .then(response => {
+        arr_name_direction.value = response.data;
+    });
+const arr_name_profession = ref([]);
+axios
+    .get('https://'+host+'/professions')
+    .then(response => {
+        arr_name_profession.value = response.data;
+    });
+const arr_name_profession_groups = ref([]);
+function getProfessionGroups(id_profession) {
+    axios
+        .get('https://'+host+'/profession_groups?id_profession='+id_profession)
+        .then(response => {
+            arr_name_profession_groups.value[id_profession] = response.data;
+        });
+}
 function addMainDivision() {
     plan.value.push({division:'', arr_chapter:[{title: '', arr_profession: [], arr_profession_results: {}, results: false}], arr_chapter_results:[], results: false});
 }
@@ -25,14 +59,14 @@ function getCountPeople(index_division, index_chapter, index_profession) {
     } else return 0;
 }
 function addCode(index_division, index_chapter, index_profession) {
-    plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code.push('Ещё одна группа');
+    plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code.push('');
     plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].start_o.push('');
     plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].start_po.push('');
     plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].end_po.push('');
     plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].qual_ex.push('');
 }
 function addDirection(index_division, index_chapter, index_profession) {
-    plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction.push('TEST');
+    plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction.push('');
     plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].count.push(4);
 }
 function getProfessionResults(index_division, index_chapter) {
@@ -64,7 +98,6 @@ function getProfessionColumnResult2(index_division, index_chapter, column, colum
             if (x[column2])
                 sum += x[column2];
         });
-        plan.value[index_division].arr_chapter[index_chapter].arr_profession_results[column] = sum;
         return sum;
     } else return 0;
 }
@@ -81,6 +114,62 @@ function getProdessionDirections(index_division, index_chapter) {
         });
     });
     plan.value[index_division].arr_chapter[index_chapter].arr_profession_results['directions'] = arr_direction_results; 
+    return arr_direction_results;
+}
+function getNameById(arr, id) {
+    let name = '';
+    arr.forEach(item => {
+        if (item.id == id) {
+            name = item.name;
+            return;
+        }
+    });
+    return name;
+}
+function getChapterResults(index_division) {
+    plan.value[index_division].results = true;
+    console.log(JSON.stringify(plan.value));
+}
+function getChapterColumnResult(index_division, column) {
+    plan.value[index_division].arr_chapter_results[column] = 0;
+    if (plan.value[index_division]) {
+        let sum = 0;
+        plan.value[index_division].arr_chapter.forEach(x => {
+            if (x['arr_profession_results'][column]) {
+                if (x['arr_profession_results'][column] == '')
+                    sum += 0;
+                else
+                    sum += x['arr_profession_results'][column];
+            }
+        });
+        plan.value[index_division].arr_chapter_results[column] = sum;
+        return sum;
+    } else return 0;
+}
+function getChapterColumnResult2(index_division, column, column2) {
+    if (plan.value[index_division]) {
+        let sum = 0;
+        plan.value[index_division].arr_chapter.forEach(x => {
+            if (x['arr_profession_results'][column])
+                sum += x['arr_profession_results'][column];
+            if (x['arr_profession_results'][column2])
+                sum += x['arr_profession_results'][column2];
+        });
+        return sum;
+    } else return 0;
+}
+function getChapterDirections(index_division) {
+    let arr_direction_results = {};
+    console.log('getChapterDirections');
+    return arr_direction_results;
+    plan.value[index_division].arr_chapter.forEach(x => {
+        for (let index_direction in x.arr_profession_results.directions) {
+            if (!arr_direction_results[index_direction]) 
+                arr_direction_results[index_direction] = 0;
+            arr_direction_results[index_direction] += x.arr_profession_results.directions[index_direction];
+        };
+    });
+    //plan.value[index_division].arr_chapter_results['directions'] = arr_direction_results; 
     return arr_direction_results;
 }
 function debug() {
@@ -178,20 +267,34 @@ function debug() {
                     <tr>
                         <td colspan="19">
                             Подразделение
-                            <input type="text" class="input_division" v-model="division.division" placeholder="Название подразделения">
+                            <select v-model="division.division" class="input_text input_titles">
+                                <option value="" disabled>Наименование подразделения</option>
+                                <option v-for="name_division in arr_name_division" :key="name_division.id" :value="name_division.id">{{ name_division.name }}</option>
+                            </select>
                         </td>
                     </tr>
                     <template v-for="(chapter, index_chapter) in division.arr_chapter" :key="index_chapter">
                     <tr>
                         <td colspan="18">
-                            <input type="text" class="input_text" placeholder="Название раздела" v-model="chapter.title">
+                            <select v-model="chapter.title" class="input_text input_titles">
+                                <option value="" disabled>Название раздела</option>
+                                <option v-for="name_section in arr_name_section" :key="name_section.id" :value="name_section.id">{{ name_section.name }}</option>
+                            </select>
                         </td>
                     </tr>
                     <template v-for="(profession, index_profession) in chapter.arr_profession" :key="index_profession">
                     <tr>
                         <td :rowspan="profession.code.length+1">{{ index_profession + 1 }}</td>
-                        <td :rowspan="profession.code.length+1"><textarea class="input_text" v-model="profession.name" rows="5"></textarea></td>
-                        <td><textarea class="input_text" v-model="profession.code[0]" rows="5"></textarea></td>
+                        <td :rowspan="profession.code.length+1">
+                            <select v-model="profession.name" class="input_text" @change="getProfessionGroups(profession.name)">
+                                <option v-for="name_profession in arr_name_profession" :key="name_profession.id" :value="name_profession.id">{{ name_profession.name }}</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select v-model="profession.code[0]" class="input_text">
+                                <option v-for="name_profession_groups in arr_name_profession_groups[profession.name]" :key="name_profession_groups.id" :value="name_profession_groups.id">{{ name_profession_groups.name }}</option>
+                            </select>
+                        </td>
                         <td :rowspan="profession.code.length+1"><input type="number" class="input_text" v-model="profession.to1"></td>
                         <td :rowspan="profession.code.length+1"><input type="number" class="input_text" v-model="profession.indt"></td>
                         <td :rowspan="profession.code.length+1"><input type="number" class="input_text" v-model="profession.tren"></td>
@@ -208,20 +311,30 @@ function debug() {
                         <td class="nested_table" :rowspan="profession.code.length">
                             <table class="table_nested">
                                 <tr v-for="(dir, index_profession) in profession.direction" :key="index_profession">
-                                    <td class="nested_input"><input class="input_text" v-model="profession.direction[index_profession]"></td>
+                                    <td class="nested_input">
+                                        <select v-model="profession.direction[index_profession]" class="input_text">
+                                            <option v-for="name_direction in arr_name_direction" :key="name_direction.id" :value="name_direction.id">{{ name_direction.name }}</option>
+                                        </select>
+                                    </td>
                                 </tr>
                             </table>
                         </td>
                         <td class="nested_table" :rowspan="profession.code.length">
                             <table class="table_nested">
                                 <tr v-for="(dir, index_profession) in profession.count" :key="index_profession">
-                                    <td class="nested_input"><input class="input_text" type="number" v-model="profession.count[index_profession]"></td>
+                                    <td class="nested_input">
+                                        <input class="input_text" type="number" v-model="profession.count[index_profession]">
+                                    </td>
                                 </tr>
                             </table>
                         </td>
                     </tr>
                     <tr v-for="n in profession.code.length-1" :key="n">
-                        <td><textarea class="input_text" v-model="profession.code[n]" rows="5"></textarea></td>
+                        <td>
+                            <select v-model="profession.code[n]" class="input_text">
+                                <option v-for="name_profession_groups in arr_name_profession_groups[profession.name]" :key="name_profession_groups.id" :value="name_profession_groups.id">{{ name_profession_groups.name }}</option>
+                            </select>
+                        </td>
                         <td><input type="date" class="input_text" v-model="profession.start_o[n]"></td>
                         <td><input type="date" class="input_text" v-model="profession.start_po[n]"></td>
                         <td><input type="date" class="input_text" v-model="profession.end_po[n]"></td>
@@ -246,7 +359,7 @@ function debug() {
                     <template v-if="chapter.results">
                     <tr>
                         <td></td>
-                        <td>Итого по ПР ({{ chapter.title }}) {{ division.division }}</td>
+                        <td>Итого по ПР ({{ getNameById(arr_name_section, chapter.title) }}) {{ getNameById(arr_name_division, division.division) }}</td>
                         <td></td>
                         <td>{{ getProfessionColumnResult(index_division, index_chapter, 'to1') }}</td>
                         <td>{{ getProfessionColumnResult(index_division, index_chapter, 'indt') }}</td>
@@ -266,7 +379,7 @@ function debug() {
                     </tr>
                     <tr v-for="(result, index_result) in getProdessionDirections(index_division, index_chapter)" :key="result">
                         <td></td>
-                        <td>{{ index_result }}</td>
+                        <td>{{ getNameById(arr_name_direction, index_result) }}</td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -289,9 +402,51 @@ function debug() {
                     <tr>
                         <td colspan="19">
                             <div class="nested_text"><text class="title add_direction" @click="addChapter(index_division)">Добавить раздел</text></div>
-                            <div class="nested_text" v-if="!division.results"><text class="title add_direction" @click="getChapterResults(index_division, index_chapter)">Подвести итоги по подразделению</text></div>
+                            <div class="nested_text" v-if="!division.results"><text class="title add_direction" @click="getChapterResults(index_division)">Подвести итоги по подразделению</text></div>
                         </td>
                     </tr>
+                    <template v-if="division.results">
+                    <tr>
+                        <td></td>
+                        <td>Итого по подразделению {{ getNameById(arr_name_division, division.division) }}</td>
+                        <td></td>
+                        <td>{{ getChapterColumnResult(index_division, 'to1') }}</td>
+                        <td>{{ getChapterColumnResult(index_division, 'indt') }}</td>
+                        <td>{{ getChapterColumnResult(index_division, 'tren') }}</td>
+                        <td>{{ getChapterColumnResult(index_division, 'exam') }}</td>
+                        <td>{{ getChapterColumnResult2(index_division, 'to1', 'exam') }}</td>
+                        <td>{{ getChapterColumnResult2(index_division, 'po', 'to2') }}</td>
+                        <td>{{ getChapterColumnResult(index_division, 'to2') }}</td>
+                        <td>{{ getChapterColumnResult(index_division, 'po') }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>{{ getChapterColumnResult(index_division, 'count_p') }}</td>
+                        <td></td>
+                        <td>{{ getChapterColumnResult(index_division, 'count_p') }}</td>
+                    </tr>
+                    <tr v-for="(result, index_result) in getChapterDirections(index_division)" :key="result">
+                        <td></td>
+                        <td>{{ getNameById(arr_name_direction, index_result) }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>{{ result }}</td>
+                    </tr>
+                    </template> 
                 </tbody>
                 <tbody>
                     <tr>
@@ -372,18 +527,6 @@ td {
 .table_nested {
     width: 100%;
 }
-.input_division {
-    color: #000;
-    font-family: Arial;
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    border: 1px solid #000;
-    width: 400px;
-    box-sizing: border-box;
-    min-width: 130px;
-}
 .input_text {
     text-align: center;
     color: #000;
@@ -396,6 +539,9 @@ td {
     width: 100%;
     box-sizing: border-box;
     min-width: 65px;
+}
+.input_titles {
+    width: auto;
 }
 .nested_input {
     padding: 0;
