@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import router from '../router'
+import router from '../router';
 const auth_err = ref(false);
 const login =  ref('');
 const password =  ref('');
@@ -8,9 +8,15 @@ function authorization() {
     console.log(login.value);
     console.log(password.value);
     //запрос
-    if (login.value == '123' && password.value == '123') {
+    if (login.value == 'ved' && password.value == '123') {
         auth_err.value = false;
         router.push('/notification');
+        localStorage.setItem('skos-token', 'ved');
+    } else if (login.value == 'dirDT' && password.value == '123') {
+        auth_err.value = false;
+        router.push('/notification');
+        localStorage.setItem('skos-token', 'dir');
+        localStorage.setItem('skos-dir', 'ДТ');
     } else {
         auth_err.value = true;
     }

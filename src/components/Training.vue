@@ -13,7 +13,7 @@ const die_professions = ref(false);
             <RouterLink to="/development"><div class="die die_main">Проф. развитие</div></RouterLink>
             <div class="die die_main">ДПО</div>
         </div>
-        <div>
+        <div v-if="false">
             <div class="die die_title">Обучающиеся</div>
             <div class="die die_main" @click="die_students = !die_students" :class="die_students ? 'die_active':''">Сотрудники</div>
             <div class="die_absolute">
@@ -29,7 +29,7 @@ const die_professions = ref(false);
         <div>
             <div class="die die_title">Обучение</div>
             <div class="die die_main">Ведомости</div>
-            <div class="die_absolute">
+            <div class="die_absolute" v-if="false">
                 <div class="die die_main" @click="die_items = !die_items" :class="die_items ? 'die_active':''">Предметы</div>
                 <div class="die_hidden" :class="die_items ? 'die_active_items':'die_hide'">
                     <div class="die die_main">Вид контроля</div>
@@ -41,19 +41,19 @@ const die_professions = ref(false);
                 </div>
             </div>
         </div>
-        <div>
+        <div v-if="false">
             <div class="die die_title">Дирекции</div>
             <div class="die die_main">Дирекции</div>
             <div class="die die_main">Подразделения</div>
             <div class="die die_main">Посещения</div>
         </div>
-        <div>
+        <div v-if="false">
             <div class="die die_title">Проживание</div>
             <div class="die die_main">Проживание</div>
             <div class="die die_main">Объект прожив.</div>
             <div class="die die_main">Выселение</div>
         </div>
-        <div style="margin-bottom: 200px;">
+        <div style="margin-bottom: 200px;" v-if="false">
             <div class="die die_title">УЦПК</div>
             <div class="die die_main">Подразделения</div>
             <div class="die die_main">Персонал</div>

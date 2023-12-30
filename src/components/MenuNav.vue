@@ -4,7 +4,11 @@ index: {
 type: String,
 required: true
 }
-})
+});
+function delLocal() {
+    localStorage.removeItem('skos-token');
+    localStorage.removeItem('skos-dir');
+}
 </script>
 
 <template>
@@ -12,7 +16,7 @@ required: true
         <RouterLink to="/profile"><div class="menu_item" :class="index == '1' ? 'active' : ''">Профиль</div></RouterLink>
         <RouterLink to="/notification"><div class="menu_item" :class="index == '2' ? 'active' : ''">Уведомления</div></RouterLink>
         <RouterLink to="/training"><div class="menu_item" :class="index == '3' ? 'active' : ''">Обучение</div></RouterLink>
-        <RouterLink to="/"><div class="menu_item">Выход</div></RouterLink>
+        <RouterLink to="/"><div @click="delLocal()" class="menu_item">Выход</div></RouterLink>
     </nav>
 </template>
 

@@ -23,6 +23,12 @@ const router = createRouter({
         component: () => import('../views/NotificationPage.vue')
     },
     {
+        path: '/editNotification',
+        name: 'editNotification',
+        props: true,
+        component: () => import('../views/EditNotificationPage.vue')
+    },
+    {
         path: '/training',
         name: 'training',
         component: () => import('../views/TrainingPage.vue')
