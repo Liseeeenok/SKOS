@@ -28,7 +28,7 @@ import MenuNav from '../components/MenuNav.vue';
                         </tr>
                         <tr>
                             <td class="title_table">Должность:</td>
-                            <td class="item_table">Инженер</td>
+                            <td class="item_table">Ведущий Инженер</td>
                         </tr>
                     </table>
                 </div>
