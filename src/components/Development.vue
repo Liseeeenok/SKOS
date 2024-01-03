@@ -494,7 +494,7 @@ function debug() {
                         <td>{{ final.arr_plan_result['indt'] }}</td>
                         <td>{{ final.arr_plan_result['tren'] }}</td>
                         <td>{{ final.arr_plan_result['exam'] }}</td>
-                        <td>{{ final.arr_plan_result['to1'] + final.arr_plan_result['exam'] }} 2</td>
+                        <td>{{ final.arr_plan_result['to1'] + final.arr_plan_result['exam'] }}</td>
                         <td>{{ final.arr_plan_result['to2'] + final.arr_plan_result['po'] }}</td>
                         <td>{{ final.arr_plan_result['to2'] }}</td>
                         <td>{{ final.arr_plan_result['po'] }}</td>

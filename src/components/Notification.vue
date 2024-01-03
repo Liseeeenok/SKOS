@@ -1,13 +1,67 @@
 <script setup>
 import { ref } from 'vue';
 import router from '../router';
+import axios from 'axios';
+//---------------------------API-----------------------------
+const host = 'mypew.ru:7070'; //имя или ip хоста api
+const arr_name_division = ref([]);
+axios
+    .get('https://'+host+'/divisions')
+    .then(response => {
+        arr_name_division.value = response.data;
+        test();
+        getNotification()
+    });
+const arr_name_direction = ref([]);
+axios
+    .get('https://'+host+'/directions')
+    .then(response => {
+        arr_name_direction.value = response.data;
+        test();
+        getNotification()
+    });
+const arr_name_profession = ref([]);
+axios
+    .get('https://'+host+'/professions')
+    .then(response => {
+        arr_name_profession.value = response.data;
+        test();
+        getNotification()
+    });
+function getNameById(arr, id) {
+    let name = '';
+    //while (arr.length == 0)
+    arr.forEach(item => {
+        if (item.id == id) {
+            name = item.name;
+            return;
+        }
+    });
+    return name;
+}
+import { usePlanStore } from '../stores/PlanStore';
+const planStore = usePlanStore();
+console.log(planStore.plans);
 const level = localStorage.getItem('skos-token');
-const arr_notifications_all = [{"direction":"ДТ", "division":"Иркутское", "code":"РПБ.1-2023-1.1", "status":"Прочитано", "date_dispatch":"22.04.2023","date_read":"25.04.2023","number_order":"252345"},{"direction":"ДТ", "division":"Суховское", "code":"РПБ.1-2023-1.1", "status":"Не прочитано", "date_dispatch":"30.04.2023","date_read":"-","number_order":"252345"},{"direction":"ДПО", "division":"Улан-Удэнское", "code":"РПБ.1-2023-1.1", "status":"Не прочитано", "date_dispatch":"23.04.2023","date_read":"-","number_order":"252345"},{"direction":"Т", "division":"Суховское", "code":"ПМТЭ.1-2023-1.1", "status":"Прочитано", "date_dispatch":"22.04.2023","date_read":"25.04.2023","number_order":"252345"},
-{"direction":"ДТ", "division":"Иркутское", "code":"РПБ.1-2023-1.1", "status":"Прочитано", "date_dispatch":"22.04.2023","date_read":"25.04.2023","number_order":"252345"},{"direction":"ДТ", "division":"Суховское", "code":"РПБ.1-2023-1.1", "status":"Не прочитано", "date_dispatch":"30.04.2023","date_read":"-","number_order":"252345"},{"direction":"ДПО", "division":"Северобайкальское", "code":"ПМТЭ.1-2023-1.1", "status":"Прочитано", "date_dispatch":"29.04.2023","date_read":"25.04.2023","number_order":"252345"},{"direction":"ДРП", "division":"Иркутское", "code":"МПД.1-2023-1.1", "status":"Прочитано", "date_dispatch":"22.04.2023","date_read":"25.04.2023","number_order":"252345"},{"direction":"Т", "division":"Суховское", "code":"ПМТЭ.1-2023-1.1", "status":"Прочитано", "date_dispatch":"22.04.2023","date_read":"25.04.2023","number_order":"252345"},{"direction":"ДТ", "division":"Суховское", "code":"РПБ.1-2023-1.1", "status":"Не прочитано", "date_dispatch":"30.04.2023","date_read":"-","number_order":"252345"},{"direction":"ДПО", "division":"Северобайкальское", "code":"ПМТЭ.1-2023-1.1", "status":"Прочитано", "date_dispatch":"29.04.2023","date_read":"25.04.2023","number_order":"252345"},{"direction":"ДПО", "division":"Улан-Удэнское", "code":"РПБ.1-2023-1.1", "status":"Не прочитано", "date_dispatch":"23.04.2023","date_read":"-","number_order":"252345"},{"direction":"Т", "division":"Суховское", "code":"ПМТЭ.1-2023-1.1", "status":"Прочитано", "date_dispatch":"22.04.2023","date_read":"25.04.2023","number_order":"252345"},{"direction":"ДТ", "division":"Иркутское", "code":"РПБ.1-2023-1.1", "status":"Прочитано", "date_dispatch":"22.04.2023","date_read":"25.04.2023","number_order":"252345"},{"direction":"ДПО", "division":"Северобайкальское", "code":"ПМТЭ.1-2023-1.1", "status":"Прочитано", "date_dispatch":"29.04.2023","date_read":"25.04.2023","number_order":"252345"},{"direction":"ДПО", "division":"Улан-Удэнское", "code":"РПБ.1-2023-1.1", "status":"Не прочитано", "date_dispatch":"23.04.2023","date_read":"-","number_order":"252345"},{"direction":"ДРП", "division":"Иркутское", "code":"МПД.1-2023-1.1", "status":"Прочитано", "date_dispatch":"22.04.2023","date_read":"25.04.2023","number_order":"252345"},{"direction":"Т", "division":"Суховское", "code":"ПМТЭ.1-2023-1.1", "status":"Прочитано", "date_dispatch":"22.04.2023","date_read":"25.04.2023","number_order":"252345"},{"direction":"ДТ", "division":"Суховское", "code":"РПБ.1-2023-1.1", "status":"Не прочитано", "date_dispatch":"30.04.2023","date_read":"-","number_order":"252345"},{"direction":"ДПО", "division":"Северобайкальское", "code":"ПМТЭ.1-2023-1.1", "status":"Прочитано", "date_dispatch":"29.04.2023","date_read":"25.04.2023","number_order":"252345"},{"direction":"ДПО", "division":"Улан-Удэнское", "code":"РПБ.1-2023-1.1", "status":"Не прочитано", "date_dispatch":"23.04.2023","date_read":"-","number_order":"252345"},{"direction":"Т", "division":"Суховское", "code":"ПМТЭ.1-2023-1.1", "status":"Прочитано", "date_dispatch":"22.04.2023","date_read":"25.04.2023","number_order":"252345"},{"direction":"ДТ", "division":"Иркутское", "code":"РПБ.1-2023-1.1", "status":"Прочитано", "date_dispatch":"22.04.2023","date_read":"25.04.2023","number_order":"252345"},{"direction":"ДПО", "division":"Северобайкальское", "code":"ПМТЭ.1-2023-1.1", "status":"Прочитано", "date_dispatch":"29.04.2023","date_read":"25.04.2023","number_order":"252345"},{"direction":"ДПО", "division":"Улан-Удэнское", "code":"РПБ.1-2023-1.1", "status":"Не прочитано", "date_dispatch":"23.04.2023","date_read":"-","number_order":"252345"},{"direction":"ДРП", "division":"Иркутское", "code":"МПД.1-2023-1.1", "status":"Прочитано", "date_dispatch":"22.04.2023","date_read":"25.04.2023","number_order":"252345"},
-{"direction":"Т", "division":"Суховское", "code":"ПМТЭ.1-2023-1.1", "status":"Прочитано", "date_dispatch":"22.04.2023","date_read":"25.04.2023","number_order":"252345"},{"direction":"ДТ", "division":"Суховское", "code":"РПБ.1-2023-1.1", "status":"Не прочитано", "date_dispatch":"30.04.2023","date_read":"-","number_order":"252345"},{"direction":"ДПО", "division":"Северобайкальское", "code":"ПМТЭ.1-2023-1.1", "status":"Прочитано", "date_dispatch":"29.04.2023","date_read":"25.04.2023","number_order":"252345"},{"direction":"ДПО", "division":"Улан-Удэнское", "code":"РПБ.1-2023-1.1", "status":"Не прочитано", "date_dispatch":"23.04.2023","date_read":"-","number_order":"252345"},{"direction":"Т", "division":"Суховское", "code":"ПМТЭ.1-2023-1.1", "status":"Прочитано", "date_dispatch":"22.04.2023","date_read":"25.04.2023","number_order":"252345"}]
+let arr_notifications_all = [];
+function test() {
+    arr_notifications_all = [];
+planStore.plans.forEach((plan) => {
+    plan.arr_plan.forEach((division) => [
+        division.arr_chapter.forEach((chapter) => {
+            chapter.arr_profession.forEach((profession) => {
+                profession.direction.forEach((direction) => {
+                    arr_notifications_all.push({id: arr_notifications_all.length, direction: getNameById(arr_name_direction.value, direction), division: getNameById(arr_name_division.value, division.division), code: getNameById(arr_name_profession.value, profession.name), status: 'Не прочитано', date_read: '-'});
+                })
+            })
+        })
+    ])
+});
+}
 const arr_notifications = ref([]);
 const page = ref(1);
 function getNotification() {
+    console.log(arr_notifications_all);
     if (level == 'dir') {
         let dir = localStorage.getItem('skos-dir');
         arr_notifications.value = arr_notifications_all.filter((el) => {
@@ -18,6 +72,7 @@ function getNotification() {
     arr_notifications.value = arr_notifications_all;
     return arr_notifications.value;
 }
+//---------------------------API-----------------------------
 function openNotification(notification) {
     router.push({name: 'editNotification'});
 }

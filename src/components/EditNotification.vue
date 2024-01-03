@@ -167,13 +167,11 @@ select, input {
 .button_save {
     font-size: 20px;
     padding: 10px;
-    //background-color: #eed462;
     cursor: pointer;
 }
 .button_notice {
     font-size: 20px;
     padding: 10px;
-    //background-color: #9aee62;
     cursor: pointer;
 }
 </style>
