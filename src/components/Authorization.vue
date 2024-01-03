@@ -12,11 +12,11 @@ function authorization() {
         auth_err.value = false;
         router.push('/notification');
         localStorage.setItem('skos-token', 'ved');
-    } else if (login.value == 'dirDT' && password.value == '123') {
+    } else if (login.value == 'dirDPMV' && password.value == '123') {
         auth_err.value = false;
         router.push('/notification');
         localStorage.setItem('skos-token', 'dir');
-        localStorage.setItem('skos-dir', 'ДТ');
+        localStorage.setItem('skos-dir', 'ДПМВ');
     } else {
         auth_err.value = true;
     }
