@@ -1,5 +1,6 @@
 <script setup>
 import MenuNav from '../components/MenuNav.vue';
+const level = localStorage.getItem('skos-token');
 </script>
 
 <template>
@@ -28,7 +29,7 @@ import MenuNav from '../components/MenuNav.vue';
                         </tr>
                         <tr>
                             <td class="title_table">Должность:</td>
-                            <td class="item_table">Ведущий Инженер</td>
+                            <td class="item_table">{{ level == 'ved' ? 'Ведущий Инженер': 'Инженер ДПМВ'}}</td>
                         </tr>
                     </table>
                 </div>

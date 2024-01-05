@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
+import router from '../router';
 const level = localStorage.getItem('skos-token');
-const notification = {"direction":"ДТ", "division":"Иркутское", "code":"РПБ.1-2023-1.1", "status":"Прочитано", "date_dispatch":"22.04.2023","date_read":"25.04.2023","number_order":"252345"};
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 const arr_company_name = ref([{id:1, name:'Предприятие 1'},{id:2, name:'Предприятие 2'},{id:3, name:'Предприятие 3'}]);
 /*
@@ -15,6 +15,12 @@ const arr_company = ref([]);
 function addCompany() {
     arr_company.value.push({telegram:'',name:'',count:0});
 };
+//---------------------------API-----------------------------
+import { usePlanStore } from '../stores/PlanStore';
+const planStore = usePlanStore();
+console.log(planStore.notification);
+const notification = planStore.notification;
+//---------------------------API-----------------------------
 </script>
 
 <template>
@@ -28,6 +34,7 @@ function addCompany() {
                         <th>Подразд. УЦПК</th>
                         <th>Шифр группы</th>
                         <th>Статус</th>
+                        <th>Начало обучения</th>
                         <th>Дата прочтения</th>
                     </tr>
                 </thead>
@@ -37,6 +44,7 @@ function addCompany() {
                         <td>{{ notification.division }}</td>
                         <td>{{ notification.code }}</td>
                         <td :class="notification.status == 'Не прочитано' ? 'red' : ''">{{ notification.status }}</td>
+                        <td>{{ notification.start_o }}</td>
                         <td>{{ notification.date_read }}</td>
                     </tr>
                 </tbody>
@@ -72,12 +80,13 @@ function addCompany() {
                     </tr>
                     <tr>
                         <td colspan="3">
-                            <text @click="addCompany()" style="cursor: pointer;">Добавить предприятие</text>
+                            <button @click="addCompany()" class="addCompany">Добавить предприятие</button>
                         </td>
                     </tr>
                 </tbody>
             </table>
             <div class="div_button">
+                <button class="button_save" @click="router.back()">Назад</button>
                 <button class="button_save">Сохранить</button>
                 <button class="button_notice">Отметить прочитанным</button>
             </div>
@@ -173,5 +182,20 @@ select, input {
     font-size: 20px;
     padding: 10px;
     cursor: pointer;
+}
+.addCompany {
+    cursor: pointer;
+    transition: 0.2s;
+    color: #000;
+    font-family: Arial;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    background: #e9ebf0;
+    border: 0px;
+}
+.addCompany:hover {
+    transform: scale(1.1);
 }
 </style>

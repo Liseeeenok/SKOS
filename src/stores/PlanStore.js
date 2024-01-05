@@ -174,8 +174,8 @@ export const usePlanStore = defineStore("planStore", {
                             "to2": 0,
                             "po": 0,
                             "start_o": [
-                              "2022-11-16",
-                              "2022-11-19"
+                              "2022-11-20",
+                              "2022-11-20"
                             ],
                             "start_po": [
                               "2022-02-24",
@@ -212,9 +212,9 @@ export const usePlanStore = defineStore("planStore", {
                             "to2": 0,
                             "po": 0,
                             "start_o": [
-                              "2022-11-16",
-                              "2022-11-16",
-                              "2022-11-16"
+                              "2022-11-24",
+                              "2022-11-24",
+                              "2022-11-24"
                             ],
                             "start_po": [
                               "2022-02-24",
@@ -298,5 +298,11 @@ export const usePlanStore = defineStore("planStore", {
                 "results": true
             }
         ],
+        notification: {id:0, direction:'',division:'',code:'',status:'',start_o:'',date_read:''}
     }),
+    actions: {
+        setNotification(notification) {
+            this.notification = notification;
+        }
+    }
 });

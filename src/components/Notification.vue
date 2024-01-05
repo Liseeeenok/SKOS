@@ -3,30 +3,27 @@ import { ref } from 'vue';
 import router from '../router';
 import axios from 'axios';
 //---------------------------API-----------------------------
+import { usePlanStore } from '../stores/PlanStore';
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 const arr_name_division = ref([]);
+const arr_name_direction = ref([]);
+const arr_name_profession = ref([]);
 axios
     .get('https://'+host+'/divisions')
     .then(response => {
         arr_name_division.value = response.data;
-        test();
-        getNotification()
-    });
-const arr_name_direction = ref([]);
-axios
-    .get('https://'+host+'/directions')
-    .then(response => {
-        arr_name_direction.value = response.data;
-        test();
-        getNotification()
-    });
-const arr_name_profession = ref([]);
-axios
-    .get('https://'+host+'/professions')
-    .then(response => {
-        arr_name_profession.value = response.data;
-        test();
-        getNotification()
+        axios
+            .get('https://'+host+'/directions')
+            .then(response => {
+                arr_name_direction.value = response.data;
+                axios
+                    .get('https://'+host+'/professions')
+                    .then(response => {
+                        arr_name_profession.value = response.data;
+                        test();
+                        getNotification()
+                    });
+            });
     });
 function getNameById(arr, id) {
     let name = '';
@@ -39,9 +36,7 @@ function getNameById(arr, id) {
     });
     return name;
 }
-import { usePlanStore } from '../stores/PlanStore';
 const planStore = usePlanStore();
-console.log(planStore.plans);
 const level = localStorage.getItem('skos-token');
 let arr_notifications_all = [];
 function test() {
@@ -51,7 +46,7 @@ planStore.plans.forEach((plan) => {
         division.arr_chapter.forEach((chapter) => {
             chapter.arr_profession.forEach((profession) => {
                 profession.direction.forEach((direction) => {
-                    arr_notifications_all.push({id: arr_notifications_all.length, direction: getNameById(arr_name_direction.value, direction), division: getNameById(arr_name_division.value, division.division), code: getNameById(arr_name_profession.value, profession.name), status: 'Не прочитано', date_read: '-'});
+                    arr_notifications_all.push({id: arr_notifications_all.length, direction: getNameById(arr_name_direction.value, direction), division: getNameById(arr_name_division.value, division.division), code: getNameById(arr_name_profession.value, profession.name), status: 'Не прочитано', start_o: profession.start_o[0], date_read: '-'});
                 })
             })
         })
@@ -61,7 +56,6 @@ planStore.plans.forEach((plan) => {
 const arr_notifications = ref([]);
 const page = ref(1);
 function getNotification() {
-    console.log(arr_notifications_all);
     if (level == 'dir') {
         let dir = localStorage.getItem('skos-dir');
         arr_notifications.value = arr_notifications_all.filter((el) => {
@@ -70,10 +64,10 @@ function getNotification() {
         return arr_notifications.value;
     }
     arr_notifications.value = arr_notifications_all;
-    return arr_notifications.value;
 }
 //---------------------------API-----------------------------
 function openNotification(notification) {
+    planStore.setNotification(notification);
     router.push({name: 'editNotification'});
 }
 </script>
@@ -90,16 +84,18 @@ function openNotification(notification) {
                         <th>Подразд. УЦПК</th>
                         <th>Шифр группы</th>
                         <th>Статус</th>
+                        <th>Начало обучения</th>
                         <th>Дата прочтения</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(notification, index) in getNotification().slice(0 + 12 * (page - 1), 12 + 12 * (page - 1))" :key="index" @click="openNotification(notification)">
+                    <tr v-for="(notification, index) in arr_notifications.slice(0 + 12 * (page - 1), 12 + 12 * (page - 1))" :key="index" @click="openNotification(notification)" class="tr_notification">
                         <td>{{ index + 1 + 12 * (page - 1)}}</td>
                         <td>{{ notification.direction }}</td>
                         <td>{{ notification.division }}</td>
                         <td>{{ notification.code }}</td>
                         <td :class="notification.status == 'Не прочитано' ? 'red' : ''">{{ notification.status }}</td>
+                        <td>{{ notification.start_o }}</td>
                         <td>{{ notification.date_read }}</td>
                     </tr>
                 </tbody>
@@ -171,5 +167,8 @@ td {
 }
 .decrement {
     transform: rotate(179.195deg);
+}
+.tr_notification {
+    cursor: pointer;
 }
 </style>
