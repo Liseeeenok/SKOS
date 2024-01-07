@@ -120,6 +120,9 @@ const notification = planStore.notification;
                     </tr>
                 </tbody>
             </table>
+            <div class="div_button">
+                <button class="button_save" @click="router.back()">Назад</button>
+            </div>
             </template>
         </div>
     </div>
@@ -168,7 +171,7 @@ select, input {
     font-size: 20px;
 }
 .div_button {
-    margin: auto;
+    margin: 50px auto;
     width: 60%;
     display: flex;
     justify-content: space-around;

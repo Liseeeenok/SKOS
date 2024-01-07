@@ -1,12 +1,14 @@
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
+import router from '../router';
 const plan = ref([]);
 const final = ref({year: '', arr_plan: plan, arr_plan_result: {}, results: false})
 //Обязательное обучение в соответствии с законодательством РФ
 //console.log(JSON.stringify(plan.value));
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 //---------------------------API-----------------------------
+const level = localStorage.getItem('skos-token');
 import { usePlanStore } from '../stores/PlanStore';
 const planStore = usePlanStore();
 final.value = planStore.plans[0];
@@ -233,7 +235,7 @@ function debug() {
                 год
             </div>
         </div>
-        <div style="margin-bottom: 200px;">
+        <div>
             <table class="table">
                 <thead>
                     <tr>
@@ -439,7 +441,7 @@ function debug() {
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>{{ result }}</td>
+                        <td>{{ result == 0 ? ' ': result }}</td>
                     </tr>
                     </template> 
                     </template>
@@ -488,7 +490,7 @@ function debug() {
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>{{ result }}</td>
+                        <td>{{ result == 0 ? ' ': result }}</td>
                     </tr>
                     </template> 
                 </tbody>
@@ -539,11 +541,15 @@ function debug() {
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>{{ result }}</td>
+                        <td>{{ result == 0 ? ' ': result }}</td>
                     </tr>
                     </template> 
                 </tbody>
             </table>
+            <div class="div_button">
+                <button class="button_save" @click="router.back()">Назад</button>
+                <button class="button_save" v-if="level == 'ved'">Сохранить</button>
+            </div>
         </div>
     </div>
 </template>
@@ -633,5 +639,16 @@ td {
 .nested_text {
     display: flex;
     justify-content: center;
+}
+.div_button {
+    margin: 50px auto;
+    width: 60%;
+    display: flex;
+    justify-content: space-around;
+}
+.button_save {
+    font-size: 20px;
+    padding: 10px;
+    cursor: pointer;
 }
 </style>
