@@ -333,11 +333,13 @@ function debug() {
                         <td :rowspan="profession.code.length+1">{{ index_profession + 1 }}</td>
                         <td :rowspan="profession.code.length+1">
                             <select v-model="profession.name" class="input_text" @change="getProfessionGroups(profession.name)">
+                                <option value=""></option>
                                 <option v-for="name_profession in arr_name_profession" :key="name_profession.id" :value="name_profession.id">{{ name_profession.name }}</option>
                             </select>
                         </td>
                         <td>
                             <select v-model="profession.code[0]" class="input_text">
+                                <option value=""></option>
                                 <option v-for="name_profession_groups in arr_name_profession_groups[profession.name]" :key="name_profession_groups.id" :value="name_profession_groups.id">{{ name_profession_groups.name }}</option>
                             </select>
                         </td>
@@ -359,6 +361,7 @@ function debug() {
                                 <tr v-for="(dir, index_dir) in profession.direction" :key="index_dir">
                                     <td class="nested_input">
                                         <select v-model="profession.direction[index_dir]" class="input_text">
+                                            <option value=""></option>
                                             <option v-for="name_direction in arr_name_direction" :key="name_direction.id" :value="name_direction.id">{{ name_direction.name }}</option>
                                         </select>
                                     </td>
@@ -378,6 +381,7 @@ function debug() {
                     <tr v-for="n in profession.code.length-1" :key="n">
                         <td>
                             <select v-model="profession.code[n]" class="input_text">
+                                <option value=""></option>
                                 <option v-for="name_profession_groups in arr_name_profession_groups[profession.name]" :key="name_profession_groups.id" :value="name_profession_groups.id">{{ name_profession_groups.name }}</option>
                             </select>
                         </td>
