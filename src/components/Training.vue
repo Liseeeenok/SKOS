@@ -9,9 +9,9 @@ const die_professions = ref(false);
     <div class="container">
         <div>
             <div class="die die_title">План-график</div>
-            <RouterLink to="/development"><div class="die die_main">Подготовка</div></RouterLink>
+            <RouterLink to="/preparation"><div class="die die_main" v-if="false">Подготовка</div></RouterLink>
             <RouterLink to="/development"><div class="die die_main">Проф. развитие</div></RouterLink>
-            <div class="die die_main">ДПО</div>
+            <div class="die die_main" v-if="false">ДПО</div>
         </div>
         <div v-if="false">
             <div class="die die_title">Обучающиеся</div>
@@ -28,7 +28,7 @@ const die_professions = ref(false);
         </div>
         <div>
             <div class="die die_title">Обучение</div>
-            <div class="die die_main">Ведомости</div>
+            <RouterLink to="/statement"><div class="die die_main">Ведомости</div></RouterLink>
             <div class="die_absolute" v-if="false">
                 <div class="die die_main" @click="die_items = !die_items" :class="die_items ? 'die_active':''">Предметы</div>
                 <div class="die_hidden" :class="die_items ? 'die_active_items':'die_hide'">
