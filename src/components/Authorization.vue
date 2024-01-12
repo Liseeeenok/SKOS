@@ -1,25 +1,38 @@
 <script setup>
 import { ref } from 'vue';
 import router from '../router';
+import axios from 'axios';
+import { jwtDecode } from "jwt-decode";
 const auth_err = ref(false);
 const login =  ref('');
 const password =  ref('');
+const host = 'mypew.ru:7070'; //имя или ip хоста api
 function authorization() {
-    console.log(login.value);
-    console.log(password.value);
     //запрос
-    if (login.value == 'ved' && password.value == '123') {
-        auth_err.value = false;
-        router.push('/notification');
-        localStorage.setItem('skos-token', 'ved');
-    } else if (login.value == 'dirDPMV' && password.value == '123') {
-        auth_err.value = false;
-        router.push('/notification');
-        localStorage.setItem('skos-token', 'dir');
-        localStorage.setItem('skos-dir', 'ДПМВ');
-    } else {
-        auth_err.value = true;
+    let article = {
+        "login": login.value,
+        "password": password.value
     }
+    console.log(article);
+    axios
+        .post('https://' + host + '/login', article)
+        .then((response_jwt) => {
+            console.log(response_jwt);
+            if (response_jwt.data.jwt) {
+                let response = jwtDecode(response_jwt.data.jwt);
+                console.log(response);
+                auth_err.value = false;
+                localStorage.setItem('skos-token', response_jwt.data.jwt);
+                localStorage.setItem('skos-role', response.role);
+                if (response.role == 4) {
+                    localStorage.setItem('skos-dir', 'ДПМВ');
+                }
+                router.push('/notification');
+                
+            } else {
+                auth_err.value = true;
+            }
+        })
 }
 </script>
 

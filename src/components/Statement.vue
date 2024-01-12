@@ -5,7 +5,7 @@ import axios from 'axios';
 
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 //---------------------------API-----------------------------
-const level = localStorage.getItem('skos-token');
+const level = localStorage.getItem('skos-role');
 import { usePlanStore } from '../stores/PlanStore';
 const planStore = usePlanStore();
 const final = ref(planStore.plans[0]);

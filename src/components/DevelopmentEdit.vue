@@ -8,7 +8,7 @@ const final = ref({year: '', arr_plan: plan, arr_plan_result: {}, results: false
 //console.log(JSON.stringify(plan.value));
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 //---------------------------API-----------------------------
-const level = localStorage.getItem('skos-token');
+const level = localStorage.getItem('skos-role');
 import { usePlanStore } from '../stores/PlanStore';
 const planStore = usePlanStore();
 final.value = planStore.plans[0];
@@ -218,6 +218,36 @@ function getDivisionDirections() {
             final.value.arr_plan_result['directions'][index_direction] += x.arr_chapter_results.directions[index_direction];
         };
     });
+}
+function SAVE() {
+    let answer = {
+        "request_type": "SAVE",
+        "training_list":[],
+    }
+    console.log(plan.value);
+    plan.value.forEach((division) => [
+        division.arr_chapter.forEach((chapter) => {
+            chapter.arr_profession.forEach((profession) => {
+                answer.training_list.push({
+                    "id":null, 
+                    "status":2,
+                    "academic_year":final.value.year,
+                    "table_type":2,
+                    "id_division":division.division,
+                    "id_section":chapter.title,
+                    "id_profession":profession.name,
+                    "profession_groups": [],
+                    "to1":20.2,
+                    "per":54.8,
+                    "indt":67.1,
+                    "tren":83,
+                    "exam":0.02,
+                    "to2":0.1,
+                    "po":1
+                });
+            })
+        })
+    ])
 }
 function debug() {
     console.log(JSON.stringify(final.value));
@@ -552,7 +582,7 @@ function debug() {
             </table>
             <div class="div_button">
                 <button class="button_save" @click="router.back()">Назад</button>
-                <button class="button_save" v-if="level == 'ved'">Сохранить</button>
+                <button class="button_save" v-if="level == 2" @click="SAVE()">Сохранить</button>
             </div>
         </div>
     </div>
