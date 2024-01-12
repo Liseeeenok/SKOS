@@ -4,7 +4,7 @@ export const usePlanStore = defineStore("planStore", {
     state: () => ({
         plans: [
             {   
-                id: 1,
+                "table_type": 2,
                 "year": 2022,
                 "arr_plan": [
                   {
@@ -14,7 +14,9 @@ export const usePlanStore = defineStore("planStore", {
                         "title": 1,
                         "arr_profession": [
                           {
+                            "status":1,
                             "name": 14,
+                            "status_code":[1, 1],
                             "code": [
                               9,
                               10
@@ -43,6 +45,7 @@ export const usePlanStore = defineStore("planStore", {
                               "2022-04-28"
                             ],
                             "count_people": 14,
+                            "status_direction":[1],
                             "direction": [
                               92
                             ],
@@ -51,7 +54,9 @@ export const usePlanStore = defineStore("planStore", {
                             ]
                           },
                           {
+                            "status":1,
                             "name": 17,
+                            "status_code":[1, 1, 1],
                             "code": [
                               18,
                               19,
@@ -85,6 +90,7 @@ export const usePlanStore = defineStore("planStore", {
                               "2022-04-28"
                             ],
                             "count_people": 15,
+                            "status_direction":[1, 1, 1],
                             "direction": [
                               92,
                               94,
@@ -151,7 +157,7 @@ export const usePlanStore = defineStore("planStore", {
                 "results": true
             },
             {   
-                id: 2,
+                "table_type": 2,
                 "year": 2023,
                 "arr_plan": [
                   {
@@ -161,7 +167,9 @@ export const usePlanStore = defineStore("planStore", {
                         "title": 1,
                         "arr_profession": [
                           {
+                            "status": 1,
                             "name": 14,
+                            "status_code":[1, 1],
                             "code": [
                               9,
                               10
@@ -190,6 +198,7 @@ export const usePlanStore = defineStore("planStore", {
                               "2023-04-28"
                             ],
                             "count_people": 14,
+                            "status_direction":[1],
                             "direction": [
                               92
                             ],
@@ -198,7 +207,9 @@ export const usePlanStore = defineStore("planStore", {
                             ]
                           },
                           {
+                            "status": 1,
                             "name": 17,
+                            "status_code":[1, 1, 1],
                             "code": [
                               18,
                               19,
@@ -232,6 +243,7 @@ export const usePlanStore = defineStore("planStore", {
                               "2023-04-28"
                             ],
                             "count_people": 15,
+                            "status_direction":[1, 1, 1],
                             "direction": [
                               92,
                               94,
