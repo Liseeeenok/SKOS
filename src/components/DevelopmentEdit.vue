@@ -288,27 +288,52 @@ function SAVE() {
         .post('https://' + host + '/table', answer)
         .then((response) => {
             console.log(response);
-            //router.go(0);
+            router.go(0);
         })
 }
 function setProfessionStatusChange(index_division, index_chapter, index_profession) {
     console.log('setProfessionStatusChange');
+    if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].name == '') {
+        if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].id == undefined) {
+            plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].status = undefined;
+        } else {
+            plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].status = 0;
+        }
+        return;
+    }
     if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].status == 2) return;
     else plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].status = 1;
 }
 function setCodeStatusChange(index_division, index_chapter, index_profession, index_code) {
     console.log('setCodeStatusChange');
     setProfessionStatusChange(index_division, index_chapter, index_profession);
+    if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code[index_code].name == '') {
+        if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code[index_code].id == undefined) {
+            plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code[index_code].status = undefined;
+        } else {
+            plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code[index_code].status = 0;
+        }
+        return;
+    }
     if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code[index_code].status == 2) return;
-    else plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code[index_code].status == 1;
+    else plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code[index_code].status = 1;
 }
 function setDirectionStatusChange(index_division, index_chapter, index_profession, index_direction) {
     console.log('setDirectionStatusChange');
     setProfessionStatusChange(index_division, index_chapter, index_profession);
+    if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_direction].name == '') {
+        if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_direction].id == undefined) {
+            plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_direction].status = undefined;
+        } else {
+            plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_direction].status = 0;
+        }
+        return;
+    }
     if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_direction].status == 2) return;
-    else plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_direction].status == 1;
+    else plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_direction].status = 1;
 }
 function debug() {
+    console.log(final.value);
     console.log(JSON.stringify(final.value));
 }
 </script>
