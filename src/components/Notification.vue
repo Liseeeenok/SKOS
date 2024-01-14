@@ -8,23 +8,39 @@ const host = 'mypew.ru:7070'; //имя или ip хоста api
 const arr_name_division = ref([]);
 const arr_name_direction = ref([]);
 const arr_name_profession = ref([]);
+let counter = 0;
 axios
     .get('https://'+host+'/divisions')
     .then(response => {
         arr_name_division.value = response.data;
-        axios
-            .get('https://'+host+'/directions')
-            .then(response => {
-                arr_name_direction.value = response.data;
-                axios
-                    .get('https://'+host+'/professions')
-                    .then(response => {
-                        arr_name_profession.value = response.data;
-                        test();
-                        getNotification()
-                    });
-            });
+        counter++;
+        if (counter == 3) {
+            formNotification();
+            getNotification();
+        }
     });
+axios
+    .get('https://'+host+'/directions')
+    .then(response => {
+        arr_name_direction.value = response.data;
+        counter++;
+        if (counter == 3) {
+            formNotification();
+            getNotification();
+        }
+    });
+axios
+    .get('https://'+host+'/professions')
+    .then(response => {
+        arr_name_profession.value = response.data;
+        counter++;
+        if (counter == 3) {
+            formNotification();
+            getNotification();
+        }
+    });
+    
+    
 function getNameById(arr, id) {
     let name = '';
     //while (arr.length == 0)
@@ -37,26 +53,26 @@ function getNameById(arr, id) {
     return name;
 }
 const planStore = usePlanStore();
-const level = localStorage.getItem('skos-token');
+const level = localStorage.getItem('skos-role');
 let arr_notifications_all = [];
-function test() {
+function formNotification() {
     arr_notifications_all = [];
-planStore.plans.forEach((plan) => {
-    plan.arr_plan.forEach((division) => [
-        division.arr_chapter.forEach((chapter) => {
-            chapter.arr_profession.forEach((profession) => {
-                profession.direction.forEach((direction) => {
-                    arr_notifications_all.push({id: arr_notifications_all.length, direction: getNameById(arr_name_direction.value, direction), division: getNameById(arr_name_division.value, division.division), code: getNameById(arr_name_profession.value, profession.name), status: 'Не прочитано', start_o: profession.start_o[0], date_read: '-'});
+    planStore.plans.forEach((plan) => {
+        plan.arr_plan.forEach((division) => [
+            division.arr_chapter.forEach((chapter) => {
+                chapter.arr_profession.forEach((profession) => {
+                    profession.direction.forEach((direction) => {
+                        arr_notifications_all.push({id: arr_notifications_all.length, direction: getNameById(arr_name_direction.value, direction), division: getNameById(arr_name_division.value, division.division), code: getNameById(arr_name_profession.value, profession.name), status: 'Не прочитано', start_o: profession.start_o[0], date_read: '-'});
+                    })
                 })
             })
-        })
-    ])
-});
+        ])
+    });
 }
 const arr_notifications = ref([]);
 const page = ref(1);
 function getNotification() {
-    if (level == 'dir') {
+    if (level == 4) {
         let dir = localStorage.getItem('skos-dir');
         arr_notifications.value = arr_notifications_all.filter((el) => {
             return el.direction == dir;

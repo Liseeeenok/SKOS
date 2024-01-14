@@ -8,7 +8,7 @@ const final = ref({year: '', arr_plan: plan, arr_plan_result: {}, results: false
 //console.log(JSON.stringify(plan.value));
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 //---------------------------API-----------------------------
-const level = localStorage.getItem('skos-token');
+const level = localStorage.getItem('skos-role');
 import { usePlanStore } from '../stores/PlanStore';
 const planStore = usePlanStore();
 final.value = planStore.plans[0];
@@ -62,7 +62,8 @@ function addMainDivision() {
 }
 function addProfession(index_division, index_chapter) {
     console.log('addProfession');
-    plan.value[index_division].arr_chapter[index_chapter].arr_profession.push({name:'Машинист', code:['Маш'], to1:0, per: 0, indt:0, tren:0, exam:0, to2:0, po:0, start_o:['2021-11-16'], start_po:['2021-02-24'], end_po:['2022-03-17'], qual_ex:['2022-04-28'], count_people:0, direction:[], count:[]});
+    //plan.value[index_division].arr_chapter[index_chapter].arr_profession.push({name:'', code:[], to1:0, per: 0, indt:0, tren:0, exam:0, to2:0, po:0, start_o:['2021-11-16'], start_po:['2021-02-24'], end_po:['2022-03-17'], qual_ex:['2022-04-28'], count_people:0, direction:[], count:[]});
+    plan.value[index_division].arr_chapter[index_chapter].arr_profession.push({status: 2, name:'', status_code: [2], code:[''], to1:0, per: 0, indt:0, tren:0, exam:0, to2:0, po:0, start_o:[''], start_po:[''], end_po:[''], qual_ex:[''], count_people:0, status_direction: [], direction:[], count:[]});
 }
 function addChapter(index_division) {
     console.log('addChapter');
@@ -83,6 +84,7 @@ function getCountPeople(index_division, index_chapter, index_profession) {
 }
 function addCode(index_division, index_chapter, index_profession) {
     console.log('addCode');
+    plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].status_code.push(2);
     plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code.push('');
     plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].start_o.push('');
     plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].start_po.push('');
@@ -91,6 +93,7 @@ function addCode(index_division, index_chapter, index_profession) {
 }
 function addDirection(index_division, index_chapter, index_profession) {
     console.log('addDirection');
+    plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].status_direction.push(2);
     plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction.push('');
     plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].count.push(0);
 }
@@ -218,6 +221,72 @@ function getDivisionDirections() {
             final.value.arr_plan_result['directions'][index_direction] += x.arr_chapter_results.directions[index_direction];
         };
     });
+}
+function SAVE() {
+    let answer = {
+        "request_type": "SAVE",
+        "training_list":[],
+    }
+    plan.value.forEach((division) => {
+        division.arr_chapter.forEach((chapter) => {
+            chapter.arr_profession.forEach((profession) => {
+                let profession_groups = [];
+                profession.code.forEach((group, index_group) => {
+                    profession_groups.push({
+                        "id":null,
+                        "id_PG":group,
+                        "status":profession.status_code[index_group],
+                        "date_start_training":profession.start_o[index_group],
+                        "date_start_industrial_training":profession.start_po[index_group],
+                        "date_end_industrial_training":profession.end_po[index_group],
+                        "date_exam":profession.qual_ex[index_group]
+                    });
+                });
+                let directions = [];
+                profession.direction.forEach((direction, index_direction) => {
+                    directions.push({
+                        "id":null,
+                        "status":profession.status_direction[index_direction],
+                        "id_direction":direction,
+                        "count_people":profession.count[index_direction]
+                    });
+                });
+                answer.training_list.push({
+                    "id":null, 
+                    "status":profession.status,
+                    "academic_year":final.value.year,
+                    "table_type":2,
+                    "id_division":division.division,
+                    "id_section":chapter.title,
+                    "id_profession":profession.name,
+                    "profession_groups": profession_groups,
+                    "to1":profession.to1,
+                    "per":profession.per,
+                    "indt":profession.indt,
+                    "tren":profession.tren,
+                    "exam":profession.exam,
+                    "to2":profession.to2,
+                    "po":profession.po,
+                    "directions":directions
+                });
+            });
+        });
+    });
+    console.log((final.value));
+    console.log((answer));
+    console.log(JSON.stringify(final.value));
+    console.log(JSON.stringify(answer));
+    axios
+        .post('https://' + host + '/table', answer)
+        .then((response) => {
+            console.log(response);
+        })
+}
+function setProfessionStatusChange(index_division, index_chapter, index_profession) {
+    console.log('setProfessionStatusChange');
+    console.log(plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].status);
+    if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].status == 2) return;
+    else plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].status == 1;
 }
 function debug() {
     console.log(JSON.stringify(final.value));
@@ -552,7 +621,7 @@ function debug() {
             </table>
             <div class="div_button">
                 <button class="button_save" @click="router.back()">Назад</button>
-                <button class="button_save" v-if="level == 'ved'">Сохранить</button>
+                <button class="button_save" v-if="level == 2" @click="SAVE()">Сохранить</button>
             </div>
         </div>
     </div>

@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import router from '../router';
-const level = localStorage.getItem('skos-token');
+const level = localStorage.getItem('skos-role');
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 const arr_company_name = ref([{id:1, name:'Предприятие 1'},{id:2, name:'Предприятие 2'},{id:3, name:'Предприятие 3'}]);
 /*
@@ -49,7 +49,7 @@ const notification = planStore.notification;
                     </tr>
                 </tbody>
             </table>
-            <template v-if="level == 'dir'">
+            <template v-if="level == 4">
             <table class="answer_table">
                 <thead>
                     <tr>
@@ -91,7 +91,7 @@ const notification = planStore.notification;
                 <button class="button_notice">Отметить прочитанным</button>
             </div>
             </template>
-            <template v-if="level == 'ved'">
+            <template v-if="level == 2">
             <table class="answer_table">
                 <thead>
                     <tr>

@@ -8,7 +8,7 @@ const final = ref({year: '', arr_plan: plan, arr_plan_result: {}, results: false
 //console.log(JSON.stringify(plan.value));
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 //---------------------------API-----------------------------
-const level = localStorage.getItem('skos-token');
+const level = localStorage.getItem('skos-role');
 import { usePlanStore } from '../stores/PlanStore';
 const planStore = usePlanStore();
 final.value = planStore.plans[0];
@@ -350,7 +350,7 @@ function openEditor() {
             </table>
             <div class="div_button">
                 <button class="button_save" @click="router.back()">Назад</button>
-                <button class="button_save" v-if="level == 'ved'" @click="openEditor()">Редактировать</button>
+                <button class="button_save" v-if="level == 2" @click="openEditor()">Редактировать</button>
             </div>
         </div>
     </div>
