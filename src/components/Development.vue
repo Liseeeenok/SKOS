@@ -4,24 +4,30 @@ import axios from 'axios';
 import router from '../router';
 const plan = ref([]);
 const final = ref({year: '', arr_plan: plan, arr_plan_result: {}, results: false})
-//Обязательное обучение в соответствии с законодательством РФ
-//console.log(JSON.stringify(plan.value));
 const host = 'mypew.ru:7070'; //имя или ip хоста api
-//---------------------------API-----------------------------
 const level = localStorage.getItem('skos-role');
-import { usePlanStore } from '../stores/PlanStore';
-const planStore = usePlanStore();
-final.value = planStore.plans[0];
-plan.value = planStore.plans[0].arr_plan;
-console.log(planStore);
-console.log(plan);
-plan.value.forEach((division) => {
-    division.arr_chapter.forEach((chapter) => {
-        chapter.arr_profession.forEach((profession) => {
-            getProfessionGroups(profession.name);
+//---------------------------API-----------------------------
+let article = {
+    request_type: 'VIEW',
+    academic_year: 2022,
+    table_type: 2
+}
+axios
+    .post('https://'+host+'/table', article)
+    .then(response => {
+        console.log(response.data);
+        final.value.year = response.data.year;
+        final.value.arr_plan_result = response.data.arr_plan_result;
+        final.value.results = response.data.results;
+        plan.value = response.data.arr_plan;
+        plan.value.forEach((division) => {
+            division.arr_chapter.forEach((chapter) => {
+                chapter.arr_profession.forEach((profession) => {
+                    getProfessionGroups(profession.name);
+                });
+            });
         });
     });
-});
 //---------------------------API-----------------------------
 const arr_name_division = ref([]);
 axios
@@ -156,7 +162,7 @@ function openEditor() {
                 </thead>
                 <tbody v-for="(division, index_division) in plan" :key="index_division">
                     <tr>
-                        <td colspan="19">
+                        <td colspan="18">
                             Подразделение {{ getNameById(arr_name_division, division.division) }}
                         </td>
                     </tr>
@@ -173,7 +179,7 @@ function openEditor() {
                             {{ getNameById(arr_name_profession, profession.name) }}
                         </td>
                         <td>
-                            {{ getNameById(arr_name_profession_groups[profession.name], profession.code[0]) }}
+                            {{ getNameById(arr_name_profession_groups[profession.name], profession.code[0].name) }}
                         </td>
                         <td :rowspan="profession.code.length">{{ profession.to1 }}</td>
                         <td :rowspan="profession.code.length">{{ profession.indt}}</td>
@@ -192,7 +198,7 @@ function openEditor() {
                             <table class="table_nested">
                                 <tr v-for="(dir, index_dir) in profession.direction" :key="index_dir">
                                     <td class="nested_input">
-                                        {{ getNameById(arr_name_direction, profession.direction[index_dir]) }}
+                                        {{ getNameById(arr_name_direction, profession.direction[index_dir].name) }}
                                     </td>
                                 </tr>
                             </table>
@@ -207,9 +213,9 @@ function openEditor() {
                             </table>
                         </td>
                     </tr>
-                    <tr v-for="n in profession.code.length-1" :key="n">
+                    <tr v-for="n in Math.max(profession.code.length-1, 0)" :key="n">
                         <td>
-                            {{ getNameById(arr_name_profession_groups[profession.name], profession.code[n]) }}
+                            {{ getNameById(arr_name_profession_groups[profession.name], profession.code[n].name) }}
                         </td>
                         <td>{{ profession.start_o[n] }}</td>
                         <td>{{ profession.start_po[n] }}</td>
