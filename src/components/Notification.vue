@@ -84,7 +84,7 @@ function getNotification() {
 //---------------------------API-----------------------------
 function openNotification(notification) {
     planStore.setNotification(notification);
-    router.push({name: 'editNotification'});
+    router.push({name: 'notificationEdit'});
 }
 </script>
 

@@ -107,9 +107,6 @@ function filterPlan() {
         }
     });
 }
-function openEditor() {
-    router.push({name: 'statementEdit'});
-}
 </script>
 
 <template>
