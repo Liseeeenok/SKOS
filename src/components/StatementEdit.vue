@@ -107,6 +107,35 @@ function filterPlan() {
         }
     });
 }
+function getCountPeople(index_profession, id_profession, name_arr, index_direction) {
+    statement.value.forEach(profession => {
+        if (profession.id_profession == id_profession) {
+            profession.directions[index_direction]['count_people' + name_arr] = statement_filter.value[index_profession].directions[index_direction]['count_people' + name_arr];
+            profession.status = 1;
+            profession.directions[index_direction].status = 1;
+        }
+    });
+    filterPlan();
+}
+function SAVE() {
+    let answer = {
+        request_type: "SAVE_STATEMENT",
+        training_list: [],
+        academic_year: page_data.value.year,
+        table_type: 2
+    }
+    answer.training_list = statement.value.filter((profession) => {
+        if (profession.status == 1) return true;
+    })
+    console.log((answer));
+    console.log(JSON.stringify(answer));
+    axios
+        .post('https://' + host + '/table', answer)
+        .then((response) => {
+            console.log(response);
+            router.go(0);
+        })
+}
 </script>
 
 <template>
@@ -189,10 +218,14 @@ function filterPlan() {
                     <td>{{ profession.directions[0].count_people }}</td>
                     <td :rowspan="Math.max(profession.directions.length, 1)">{{ profession.count_people }}</td>
                     <td>{{ getNameById(arr_name_direction, profession.directions[0].id_direction) }}</td>
-                    <td>{{ profession.directions[0].count_people_fact }}</td>
+                    <td>
+                        <input type="number" class="input_number" v-model="profession.directions[0].count_people_fact" @change="getCountPeople(index_profession, profession.id_profession, '_fact', 0)">
+                    </td>
                     <td :rowspan="Math.max(profession.directions.length, 1)">{{ profession.count_people_fact }}</td>
                     <td>{{ getNameById(arr_name_direction, profession.directions[0].id_direction) }}</td>
-                    <td>{{ profession.directions[0].count_people_trained }}</td>
+                    <td>
+                        <input type="number" class="input_number" v-model="profession.directions[0].count_people_trained" @change="getCountPeople(index_profession, profession.id_profession, '_trained', 0)">
+                    </td>
                     <td :rowspan="Math.max(profession.directions.length, 1)">{{ profession.count_people_trained }}</td>
                 </tr>
                 <template v-for="(direction, index_direction) in profession.directions" :key="index_direction">
@@ -200,9 +233,13 @@ function filterPlan() {
                     <td>{{ getNameById(arr_name_direction, direction.id_direction) }}</td>
                     <td>{{ profession.directions[index_direction].count_people }}</td>
                     <td>{{ getNameById(arr_name_direction, direction.id_direction) }}</td>
-                    <td>{{ profession.directions[index_direction].count_people_fact }}</td>
+                    <td>
+                        <input type="number" class="input_number" v-model="profession.directions[index_direction].count_people_fact" @change="getCountPeople(index_profession, profession.id_profession, '_fact', index_direction)">
+                    </td>
                     <td>{{ getNameById(arr_name_direction, direction.id_direction) }}</td>
-                    <td>{{ profession.directions[index_direction].count_people_trained }}</td>
+                    <td>
+                        <input type="number" class="input_number" v-model="profession.directions[index_direction].count_people_trained" @change="getCountPeople(index_profession, profession.id_profession, '_trained', index_direction)">
+                    </td>
                 </tr>
                 </template>
                 </template>
@@ -210,7 +247,7 @@ function filterPlan() {
         </table>
         <div class="div_button">
             <button class="button_save" @click="router.back()">Назад</button>
-            <button class="button_save" v-if="level == 3" @click="openEditor()">Редактировать</button>
+            <button class="button_save" v-if="level == 3" @click="SAVE()">Сохранить</button>
         </div>
     </div>
 </template>
@@ -281,5 +318,18 @@ td {
     font-size: 20px;
     padding: 10px;
     cursor: pointer;
+}
+.input_number {
+    text-align: center;
+    color: #000;
+    font-family: Arial;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    border: 1px solid #000;
+    width: 100%;
+    box-sizing: border-box;
+    min-width: 65px;
 }
 </style>
