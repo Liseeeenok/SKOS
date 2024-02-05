@@ -70,7 +70,7 @@ function addMainDivision() {
 }
 function addProfession(index_division, index_chapter) {
     console.log('addProfession');
-    plan.value[index_division].arr_chapter[index_chapter].arr_profession.push({id:null, status: 2, name:'', status_code: [2], code:[{id:null,name:'',status:2}], to1:0, per: 0, indt:0, tren:0, exam:0, to2:0, po:0, start_o:[''], start_po:[''], end_po:[''], qual_ex:[''], count_people:0, status_direction: [], direction:[], count:[]});
+    plan.value[index_division].arr_chapter[index_chapter].arr_profession.push({id:null, status: 2, name:'', status_code: [2], code:[{id:null,name:'',status:2}], to1:0, per: 0, indt:0, tren:0, exam:0, to2:0, po:0, start_o:[''], start_po:[''], end_po:[''], qual_ex:[''], count_people:0, status_direction: [], direction:[[]], count:[[]]});
 }
 function addChapter(index_division) {
     console.log('addChapter');
@@ -80,9 +80,11 @@ function getCountPeople(index_division, index_chapter, index_profession) {
     console.log('getCountPeople');
     if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].count) {
         let sum = 0;
-        plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].count.forEach(x => {
-            if (x != '')
+        plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].count.forEach(array => {
+            array.forEach(x => {
+                if (x != '')
                 sum += x;
+            });
         });
         plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].count_people = sum;
     };
@@ -97,12 +99,14 @@ function addCode(index_division, index_chapter, index_profession) {
     plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].start_po.push('');
     plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].end_po.push('');
     plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].qual_ex.push('');
+    plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction.push([]);
+    plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].count.push([]);
 }
-function addDirection(index_division, index_chapter, index_profession) {
+function addDirection(index_division, index_chapter, index_profession, index_code) {
     console.log('addDirection');
     setProfessionStatusChange(index_division, index_chapter, index_profession);
-    plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction.push({id:null,name:'',status:2});
-    plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].count.push(0);
+    plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_code].push({id:null,id_direction:'',status:2});
+    plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].count[index_code].push(0);
 }
 function getProfessionResults(index_division, index_chapter) {
     console.log('getProfessionResults');
@@ -134,11 +138,13 @@ function getProfessionDirections(index_division, index_chapter) {
     console.log('getProfessionDirections');
     plan.value[index_division].arr_chapter[index_chapter].arr_profession_results['directions'] = {};
     plan.value[index_division].arr_chapter[index_chapter].arr_profession.forEach(profession => {
-        profession.direction.forEach((direction, index_direction) => {
-            if (plan.value[index_division].arr_chapter[index_chapter].arr_profession_results['directions'][direction.name] == undefined) 
-                plan.value[index_division].arr_chapter[index_chapter].arr_profession_results['directions'][direction.name] = 0;
-            if (profession.count[index_direction] != '')
-                plan.value[index_division].arr_chapter[index_chapter].arr_profession_results['directions'][direction.name] += profession.count[index_direction];
+        profession.direction.forEach((code, index_code) => { 
+            code.forEach((direction, index_direction) => {
+                if (plan.value[index_division].arr_chapter[index_chapter].arr_profession_results['directions'][direction.id_direction] == undefined) 
+                    plan.value[index_division].arr_chapter[index_chapter].arr_profession_results['directions'][direction.id_direction] = 0;
+                if (profession.count[index_code][index_direction] != '')
+                    plan.value[index_division].arr_chapter[index_chapter].arr_profession_results['directions'][direction.id_direction] += profession.count[index_code][index_direction];
+            });
         });
     });
     getChapterDirections(index_division);
@@ -240,6 +246,15 @@ function SAVE() {
                 if (profession.status == undefined) return;
                 let profession_groups = [];
                 profession.code.forEach((group, index_group) => {
+                    let directions = [];
+                    profession.direction[index_group].forEach((direction, index_direction) => {
+                        directions.push({
+                            "id":direction.id,
+                            "status":direction.status,
+                            "id_direction":direction.id_direction,
+                            "count_people":profession.count[index_group][index_direction]
+                        });
+                    });
                     profession_groups.push({
                         "id":group.id,
                         "id_PG":group.name,
@@ -247,16 +262,8 @@ function SAVE() {
                         "date_start_training":profession.start_o[index_group],
                         "date_start_industrial_training":profession.start_po[index_group],
                         "date_end_industrial_training":profession.end_po[index_group],
-                        "date_exam":profession.qual_ex[index_group]
-                    });
-                });
-                let directions = [];
-                profession.direction.forEach((direction, index_direction) => {
-                    directions.push({
-                        "id":direction.id,
-                        "status":direction.status,
-                        "id_direction":direction.name,
-                        "count_people":profession.count[index_direction]
+                        "date_exam":profession.qual_ex[index_group],
+                        "directions":directions
                     });
                 });
                 answer.training_list.push({
@@ -274,8 +281,7 @@ function SAVE() {
                     "tren":profession.tren,
                     "exam":profession.exam,
                     "to2":profession.to2,
-                    "po":profession.po,
-                    "directions":directions
+                    "po":profession.po
                 });
             });
         });
@@ -318,19 +324,19 @@ function setCodeStatusChange(index_division, index_chapter, index_profession, in
     if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code[index_code].status == 2) return;
     else plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code[index_code].status = 1;
 }
-function setDirectionStatusChange(index_division, index_chapter, index_profession, index_direction) {
+function setDirectionStatusChange(index_division, index_chapter, index_profession, index_direction, index_code) {
     console.log('setDirectionStatusChange');
-    setProfessionStatusChange(index_division, index_chapter, index_profession);
-    if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_direction].name == '') {
-        if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_direction].id == undefined) {
-            plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_direction].status = undefined;
+    setCodeStatusChange(index_division, index_chapter, index_profession, index_code);
+    if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_code][index_direction].id_direction == '') {
+        if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_code][index_direction].id == undefined) {
+            plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_code][index_direction].status = undefined;
         } else {
-            plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_direction].status = 0;
+            plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_code][index_direction].status = 0;
         }
         return;
     }
-    if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_direction].status == 2) return;
-    else plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_direction].status = 1;
+    if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_code][index_direction].status == 2) return;
+    else plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_code][index_direction].status = 1;
 }
 function debug() {
     console.log(final.value);
@@ -499,28 +505,34 @@ function debug() {
                             <input type="date" class="input_text" v-model="profession.qual_ex[0]" @change="setProfessionStatusChange(index_division, index_chapter, index_profession)">
                         </td>
                         <td :rowspan="Math.max(profession.code.length+1, 2)" style="min-width: 50px">{{ profession.count_people }}</td>
-                        <td class="nested_table" :rowspan="Math.max(profession.code.length, 1)">
+                        <td class="nested_table">
                             <table class="table_nested">
-                                <tr v-for="(dir, index_dir) in profession.direction" :key="index_dir">
+                                <tr v-for="(dir, index_dir) in profession.direction[0]" :key="index_dir">
                                     <td class="nested_input">
-                                        <select v-model="profession.direction[index_dir].name" class="input_text" 
+                                        <select v-model="dir.id_direction" class="input_text" 
                                         @change="getCountPeople(index_division, index_chapter, index_profession);
-                                        setDirectionStatusChange(index_division, index_chapter, index_profession, index_dir)">
+                                        setDirectionStatusChange(index_division, index_chapter, index_profession, index_dir, 0)">
                                             <option value=""></option>
                                             <option v-for="name_direction in arr_name_direction" :key="name_direction.id" :value="name_direction.id">{{ name_direction.name }}</option>
                                         </select>
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td class="title add_direction" @click="addDirection(index_division, index_chapter, index_profession, 0)">Добавить дирекцию</td>
+                                </tr>
                             </table>
                         </td>
-                        <td class="nested_table" :rowspan="Math.max(profession.code.length, 1)">
+                        <td class="nested_table">
                             <table class="table_nested">
-                                <tr v-for="(dir, index_dir) in profession.count" :key="index_dir">
+                                <tr v-for="(dir, index_dir) in profession.count[0]" :key="index_dir">
                                     <td class="nested_input">
-                                        <input class="input_text" type="number" v-model="profession.count[index_dir]" 
+                                        <input class="input_text" type="number" v-model="profession.count[0][index_dir]" 
                                         @change="getCountPeople(index_division, index_chapter, index_profession);
-                                        setDirectionStatusChange(index_division, index_chapter, index_profession, index_dir)">
+                                        setDirectionStatusChange(index_division, index_chapter, index_profession, index_dir, 0)">
                                     </td>
+                                </tr>
+                                <tr>
+                                    <td class="title add_direction" style="opacity: 0;">Добавить дирекцию</td>
                                 </tr>
                             </table>
                         </td>
@@ -544,6 +556,37 @@ function debug() {
                         <td>
                             <input type="date" class="input_text" v-model="profession.qual_ex[n]" @change="setProfessionStatusChange(index_division, index_chapter, index_profession)">
                         </td>
+                        <td class="nested_table">
+                            <table class="table_nested">
+                                <tr v-for="(dir, index_dir) in profession.direction[n]" :key="index_dir">
+                                    <td class="nested_input">
+                                        <select v-model="dir.id_direction" class="input_text" 
+                                        @change="getCountPeople(index_division, index_chapter, index_profession);
+                                        setDirectionStatusChange(index_division, index_chapter, index_profession, index_dir, n)">
+                                            <option value=""></option>
+                                            <option v-for="name_direction in arr_name_direction" :key="name_direction.id" :value="name_direction.id">{{ name_direction.name }}</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="title add_direction" @click="addDirection(index_division, index_chapter, index_profession, n)">Добавить дирекцию</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td class="nested_table">
+                            <table class="table_nested">
+                                <tr v-for="(dir, index_dir) in profession.count[n]" :key="index_dir">
+                                    <td class="nested_input">
+                                        <input class="input_text" type="number" v-model="profession.count[n][index_dir]" 
+                                        @change="getCountPeople(index_division, index_chapter, index_profession);
+                                        setDirectionStatusChange(index_division, index_chapter, index_profession, index_dir, n)">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="title add_direction" style="opacity: 0;">Добавить дирекцию</td>
+                                </tr>
+                            </table>
+                        </td>
                     </tr>
                     <tr>
                         <td class="add_direction" @click="addCode(index_division, index_chapter, index_profession)">Добавить группу</td>
@@ -551,7 +594,7 @@ function debug() {
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td class="title add_direction" @click="addDirection(index_division, index_chapter, index_profession)">Добавить дирекцию</td>
+                        <td></td>
                         <td></td>
                     </tr>
                     </template>
