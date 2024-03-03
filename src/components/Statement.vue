@@ -96,18 +96,30 @@ function filterPlan() {
         if (division_filter.value == '' || division_filter.value == profession.id_division) {
             let contains_direction = false;
             if (profession_filter.value == '' || profession_filter.value == profession.id_profession) {
+                profession.count_directions = 0;
                 profession.count_people = 0;
                 profession.count_people_fact = 0;
                 profession.count_people_trained = 0;
-                profession.directions = profession.directions.filter((direction, index_direction) => {
-                    if (direction_filter.value == '' || direction_filter.value == direction.id_direction) {
-                        profession.count_people += direction.count_people;
-                        profession.count_people_fact += direction.count_people_fact;
-                        profession.count_people_trained += direction.count_people_trained;
+                profession.profession_groups = profession.profession_groups.filter((profession_group, index_profession_group) => {
+                    let contains_direction_in_profession_group = false;
+                    profession_group.directions = profession_group.directions.filter((direction, index_direction) => {
+                        if (direction_filter.value == '' || direction_filter.value == direction.id_direction) {
+                            profession.count_people += direction.count_people;
+                            profession.count_people_fact += direction.count_people_fact;
+                            profession.count_people_trained += direction.count_people_trained;
+                            profession.count_directions++;
+                            contains_direction = true;
+                            contains_direction_in_profession_group = true;
+                            return contains_direction;
+                        }
+                    });
+                    if (direction_filter.value == '' && profession_group.directions.length == 0) {
+                        profession.count_directions++;
                         contains_direction = true;
-                        return true;
+                        contains_direction_in_profession_group = true;
                     }
-                });
+                    return contains_direction_in_profession_group;
+                })
                 return contains_direction;
             }
             return contains_direction;
@@ -240,7 +252,7 @@ function openEditor() {
                 <template v-for="(profession_group, index_profession_group) in profession.profession_groups" :key="index_profession_group">
                 <tr v-if="index_profession_group > 0">
                     <td :rowspan="Math.max(profession_group.directions.length, 1)">
-                        id = {{ profession_group.id }}
+                        id2 = {{ profession_group.id }}
                     </td>
                     <template v-if="profession_group.directions.length > 0">
                     <td>{{ getNameById(arr_name_direction, profession_group.directions[0].id_direction) }}</td>
