@@ -26,6 +26,7 @@ axios
             profession.count_people = 0;
             profession.count_people_fact = 0;
             profession.count_people_trained = 0;
+            getProfessionGroups(profession.id_profession);
             profession.profession_groups.forEach((profession_group, index_profession_group) => {
                 profession_group.directions.forEach((direction, index_direction) => {
                     profession.count_people += direction.count_people;
@@ -209,7 +210,7 @@ function openEditor() {
                     <td :rowspan="Math.max(profession.count_directions, 1)">{{ index_profession + 1 }}</td>
                     <td :rowspan="Math.max(profession.count_directions, 1)">{{ getNameById(arr_name_profession, profession.id_profession) }}</td>
                     <td :rowspan="Math.max(profession.profession_groups[0].directions.length, 1)">
-                        id = {{ profession.profession_groups[0].id }}
+                        {{ getNameById(arr_name_profession_groups[profession.id_profession], profession.profession_groups[0].id_PG) }}
                     </td>
                     <template v-if="profession.profession_groups[0].directions.length > 0">
                     <td>{{ getNameById(arr_name_direction, profession.profession_groups[0].directions[0].id_direction) }}</td>
@@ -252,7 +253,7 @@ function openEditor() {
                 <template v-for="(profession_group, index_profession_group) in profession.profession_groups" :key="index_profession_group">
                 <tr v-if="index_profession_group > 0">
                     <td :rowspan="Math.max(profession_group.directions.length, 1)">
-                        id2 = {{ profession_group.id }}
+                        {{ getNameById(arr_name_profession_groups[profession.id_profession], profession_group.id_PG) }}
                     </td>
                     <template v-if="profession_group.directions.length > 0">
                     <td>{{ getNameById(arr_name_direction, profession_group.directions[0].id_direction) }}</td>
