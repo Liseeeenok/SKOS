@@ -7,13 +7,16 @@ const final = ref({year: '', arr_plan: plan, arr_plan_result: {}, results: false
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 const level = localStorage.getItem('skos-role');
 //---------------------------API-----------------------------
-let article = {
+const date = new Date();
+const article = ref({
     request_type: 'VIEW',
-    academic_year: 2022,
+    academic_year: date.getFullYear(),
     table_type: 2
-}
-axios
-    .post('https://'+host+'/table', article)
+});
+getPlan();
+function getPlan() {
+    axios
+    .post('https://'+host+'/table', article.value)
     .then(response => {
         console.log(response.data);
         final.value.year = response.data.year;
@@ -28,7 +31,7 @@ axios
             });
         });
     });
-//---------------------------API-----------------------------
+}
 const arr_name_division = ref([]);
 axios
     .get('https://'+host+'/divisions')
@@ -84,7 +87,7 @@ function openEditor() {
             <div class="title">План-график</div>
             <div class="title">профессианального развития рабочих и служащих в Восточно-Сибирском учебном центре профессиональных квалификаций</div>
             <div class="title">Восточно-Сибирской железной дороги - филиала ОАО "РЖД"</div>
-            <div class="title">на {{ final.year }} год</div>
+            <div class="title">на <input type="number" style="width: 60px;" v-model="article.academic_year" @change="getPlan()"/> год</div>
         </div>
         <div>
             <table class="table">
