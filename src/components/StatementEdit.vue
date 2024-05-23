@@ -137,7 +137,15 @@ function getCountPeople(index_profession, id_profession, name_arr, index_directi
     filterPlan();
 }
 function setDirectionStatus(index_profession, index_profession_group, index_direction) {
-    return 0;
+    statement.value[index_profession].profession_groups[index_profession_group].directions[index_direction].status = 1;
+    setProfessionGroupStatus(index_profession, index_profession_group)
+}
+function setProfessionGroupStatus(index_profession, index_profession_group) {
+    statement.value[index_profession].profession_groups[index_profession_group].status = 1;
+    setProfessionStatus(index_profession)
+}
+function setProfessionStatus(index_profession) {
+    statement.value[index_profession].status = 1;
 }
 function SAVE() {
     let answer = {
