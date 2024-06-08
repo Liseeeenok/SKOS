@@ -15,22 +15,21 @@ const article = ref({
 });
 getPlan();
 function getPlan() {
-    axios
-    .post('https://'+host+'/table', article.value)
-    .then(response => {
-        console.log(response.data);
-        final.value.year = response.data.year;
-        final.value.arr_plan_result = response.data.arr_plan_result;
-        final.value.results = response.data.results;
-        plan.value = response.data.arr_plan;
-        plan.value.forEach((division) => {
-            division.arr_chapter.forEach((chapter) => {
-                chapter.arr_profession.forEach((profession) => {
-                    getProfessionGroups(profession.name);
+    axios.post('https://'+host+'/table', article.value)
+        .then(response => {
+            console.log(response.data);
+            final.value.year = response.data.year;
+            final.value.arr_plan_result = response.data.arr_plan_result;
+            final.value.results = response.data.results;
+            plan.value = response.data.arr_plan;
+            plan.value.forEach((division) => {
+                division.arr_chapter.forEach((chapter) => {
+                    chapter.arr_profession.forEach((profession) => {
+                        getProfessionGroups(profession.name);
+                    });
                 });
             });
         });
-    });
 }
 const arr_name_division = ref([]);
 axios
