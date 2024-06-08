@@ -120,10 +120,10 @@ const notification = planStore.notification;
                     </tr>
                 </tbody>
             </table>
+            </template>
             <div class="div_button">
                 <button class="button_save" @click="router.back()">Назад</button>
             </div>
-            </template>
         </div>
     </div>
 </template>

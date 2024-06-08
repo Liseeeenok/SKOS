@@ -23,10 +23,10 @@ const router = createRouter({
         component: () => import('../views/NotificationPage.vue')
     },
     {
-        path: '/editNotification',
-        name: 'editNotification',
+        path: '/notificationEdit',
+        name: 'notificationEdit',
         props: true,
-        component: () => import('../views/EditNotificationPage.vue')
+        component: () => import('../views/NotificationEditPage.vue')
     },
     {
         path: '/training',
@@ -52,6 +52,11 @@ const router = createRouter({
         path: '/statement',
         name: 'statement',
         component: () => import('../views/StatementPage.vue')
+    },
+    {
+        path: '/statementEdit',
+        name: 'statementEdit',
+        component: () => import('../views/StatementEditPage.vue')
     }
   ]
 })

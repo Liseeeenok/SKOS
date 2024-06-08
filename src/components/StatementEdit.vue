@@ -26,7 +26,6 @@ axios
             profession.count_people = 0;
             profession.count_people_fact = 0;
             profession.count_people_trained = 0;
-            getProfessionGroups(profession.id_profession);
             profession.profession_groups.forEach((profession_group, index_profession_group) => {
                 profession_group.directions.forEach((direction, index_direction) => {
                     profession.count_people += direction.count_people;
@@ -127,8 +126,45 @@ function filterPlan() {
         }
     });
 }
-function openEditor() {
-    router.push({name: 'statementEdit'});
+function getCountPeople(index_profession, id_profession, name_arr, index_direction) {
+    statement.value.forEach(profession => {
+        if (profession.id_profession == id_profession) {
+            profession.directions[index_direction]['count_people' + name_arr] = statement_filter.value[index_profession].directions[index_direction]['count_people' + name_arr];
+            profession.status = 1;
+            profession.directions[index_direction].status = 1;
+        }
+    });
+    filterPlan();
+}
+function setDirectionStatus(index_profession, index_profession_group, index_direction) {
+    statement.value[index_profession].profession_groups[index_profession_group].directions[index_direction].status = 1;
+    setProfessionGroupStatus(index_profession, index_profession_group)
+}
+function setProfessionGroupStatus(index_profession, index_profession_group) {
+    statement.value[index_profession].profession_groups[index_profession_group].status = 1;
+    setProfessionStatus(index_profession)
+}
+function setProfessionStatus(index_profession) {
+    statement.value[index_profession].status = 1;
+}
+function SAVE() {
+    let answer = {
+        request_type: "SAVE_STATEMENT",
+        training_list: [],
+        academic_year: page_data.value.year,
+        table_type: 2
+    }
+    answer.training_list = statement.value.filter((profession) => {
+        if (profession.status == 1) return true;
+    })
+    console.log((answer));
+    console.log(JSON.stringify(answer));
+    axios
+        .post('https://' + host + '/table', answer)
+        .then((response) => {
+            console.log(response);
+            router.go(0);
+        })
 }
 </script>
 
@@ -290,7 +326,7 @@ function openEditor() {
         </table>
         <div class="div_button">
             <button class="button_save" @click="router.back()">Назад</button>
-            <button class="button_save" v-if="level == 3" @click="openEditor()">Редактировать</button>
+            <button class="button_save" v-if="level == 3" @click="SAVE()">Сохранить</button>
         </div>
     </div>
 </template>
@@ -361,5 +397,18 @@ td {
     font-size: 20px;
     padding: 10px;
     cursor: pointer;
+}
+.input_number {
+    text-align: center;
+    color: #000;
+    font-family: Arial;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    border: 1px solid #000;
+    width: 100%;
+    box-sizing: border-box;
+    min-width: 65px;
 }
 </style>

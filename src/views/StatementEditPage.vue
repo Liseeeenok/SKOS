@@ -1,12 +1,12 @@
 <script setup>
 import MenuNav from '../components/MenuNav.vue';
-import EditNotification from '../components/EditNotification.vue';
+import StatementEdit from '../components/StatementEdit.vue';
 </script>
 
 <template>
     <div class="wrapper">
-        <MenuNav index="2"/>
-        <EditNotification></EditNotification>
+        <MenuNav index="3"/>
+        <StatementEdit></StatementEdit>
     </div>
 </template>
 

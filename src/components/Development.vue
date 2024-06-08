@@ -4,25 +4,33 @@ import axios from 'axios';
 import router from '../router';
 const plan = ref([]);
 const final = ref({year: '', arr_plan: plan, arr_plan_result: {}, results: false})
-//Обязательное обучение в соответствии с законодательством РФ
-//console.log(JSON.stringify(plan.value));
 const host = 'mypew.ru:7070'; //имя или ip хоста api
-//---------------------------API-----------------------------
 const level = localStorage.getItem('skos-role');
-import { usePlanStore } from '../stores/PlanStore';
-const planStore = usePlanStore();
-final.value = planStore.plans[0];
-plan.value = planStore.plans[0].arr_plan;
-console.log(planStore);
-console.log(plan);
-plan.value.forEach((division) => {
-    division.arr_chapter.forEach((chapter) => {
-        chapter.arr_profession.forEach((profession) => {
-            getProfessionGroups(profession.name);
-        });
-    });
-});
 //---------------------------API-----------------------------
+const date = new Date();
+const article = ref({
+    request_type: 'VIEW',
+    academic_year: date.getFullYear(),
+    table_type: 2
+});
+getPlan();
+function getPlan() {
+    axios.post('https://'+host+'/table', article.value)
+        .then(response => {
+            console.log(response.data);
+            final.value.year = response.data.year;
+            final.value.arr_plan_result = response.data.arr_plan_result;
+            final.value.results = response.data.results;
+            plan.value = response.data.arr_plan;
+            plan.value.forEach((division) => {
+                division.arr_chapter.forEach((chapter) => {
+                    chapter.arr_profession.forEach((profession) => {
+                        getProfessionGroups(profession.name);
+                    });
+                });
+            });
+        });
+}
 const arr_name_division = ref([]);
 axios
     .get('https://'+host+'/divisions')
@@ -78,7 +86,7 @@ function openEditor() {
             <div class="title">План-график</div>
             <div class="title">профессианального развития рабочих и служащих в Восточно-Сибирском учебном центре профессиональных квалификаций</div>
             <div class="title">Восточно-Сибирской железной дороги - филиала ОАО "РЖД"</div>
-            <div class="title">на {{ final.year }} год</div>
+            <div class="title">на <input type="number" style="width: 60px;" v-model="article.academic_year" @change="getPlan()"/> год</div>
         </div>
         <div>
             <table class="table">
@@ -156,7 +164,7 @@ function openEditor() {
                 </thead>
                 <tbody v-for="(division, index_division) in plan" :key="index_division">
                     <tr>
-                        <td colspan="19">
+                        <td colspan="18">
                             Подразделение {{ getNameById(arr_name_division, division.division) }}
                         </td>
                     </tr>
@@ -173,7 +181,7 @@ function openEditor() {
                             {{ getNameById(arr_name_profession, profession.name) }}
                         </td>
                         <td>
-                            {{ getNameById(arr_name_profession_groups[profession.name], profession.code[0]) }}
+                            {{ getNameById(arr_name_profession_groups[profession.name], profession.code[0].name) }}
                         </td>
                         <td :rowspan="profession.code.length">{{ profession.to1 }}</td>
                         <td :rowspan="profession.code.length">{{ profession.indt}}</td>
@@ -188,33 +196,51 @@ function openEditor() {
                         <td>{{ profession.end_po[0] }}</td>
                         <td>{{ profession.qual_ex[0] }}</td>
                         <td :rowspan="profession.code.length" style="min-width: 50px">{{ profession.count_people }}</td>
-                        <td class="nested_table" :rowspan="profession.code.length">
+                        <td class="nested_table">
                             <table class="table_nested">
-                                <tr v-for="(dir, index_dir) in profession.direction" :key="index_dir">
+                                <tr v-for="(dir, index_dir) in profession.direction[0]" :key="index_dir">
                                     <td class="nested_input">
-                                        {{ getNameById(arr_name_direction, profession.direction[index_dir]) }}
+                                        {{ getNameById(arr_name_direction, dir.id_direction) }}
                                     </td>
                                 </tr>
                             </table>
                         </td>
-                        <td class="nested_table" :rowspan="profession.code.length">
+                        <td class="nested_table">
                             <table class="table_nested">
-                                <tr v-for="(dir, index_dir) in profession.count" :key="index_dir">
+                                <tr v-for="(dir, index_dir) in profession.count[0]" :key="index_dir">
                                     <td class="nested_input">
-                                        {{ profession.count[index_dir] }}
+                                        {{ dir }}
                                     </td>
                                 </tr>
                             </table>
                         </td>
                     </tr>
-                    <tr v-for="n in profession.code.length-1" :key="n">
+                    <tr v-for="n in Math.max(profession.code.length-1, 0)" :key="n">
                         <td>
-                            {{ getNameById(arr_name_profession_groups[profession.name], profession.code[n]) }}
+                            {{ getNameById(arr_name_profession_groups[profession.name], profession.code[n].name) }}
                         </td>
                         <td>{{ profession.start_o[n] }}</td>
                         <td>{{ profession.start_po[n] }}</td>
                         <td>{{ profession.end_po[n] }}</td>
                         <td>{{ profession.qual_ex[n] }}</td>
+                        <td class="nested_table">
+                            <table class="table_nested">
+                                <tr v-for="(dir, index_dir) in profession.direction[n]" :key="index_dir">
+                                    <td class="nested_input">
+                                        {{ getNameById(arr_name_direction, dir.id_direction) }}
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td class="nested_table">
+                            <table class="table_nested">
+                                <tr v-for="(dir, index_dir) in profession.count[n]" :key="index_dir">
+                                    <td class="nested_input">
+                                        {{ dir }}
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
                     </tr>
                     </template>
                     <template v-if="chapter.results">
