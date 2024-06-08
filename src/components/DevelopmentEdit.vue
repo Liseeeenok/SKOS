@@ -273,7 +273,7 @@ function SAVE() {
                     "id_section":chapter.title,
                     "id_profession":profession.name,
                     "profession_groups": profession_groups,
-                    "direction":directions,
+                    "directions":directions,
                     "to1":profession.to1,
                     "per":profession.per,
                     "indt":profession.indt,
@@ -293,7 +293,7 @@ function SAVE() {
         .post('https://' + host + '/table', answer)
         .then((response) => {
             console.log(response);
-            //router.go(0);
+            router.go(0);
         })
 }
 function setProfessionStatusChange(index_division, index_chapter, index_profession) {
@@ -552,7 +552,7 @@ function debug() {
                                     <td class="nested_input">
                                         <select v-model="dir.id_direction" class="input_text" 
                                         @change="getCountPeople(index_division, index_chapter, index_profession);
-                                        setDirectionStatusChange(index_division, index_chapter, index_profession, index_dir, 0)">
+                                        setDirectionStatusChange(index_division, index_chapter, index_profession, index_dir)">
                                             <option value=""></option>
                                             <option v-for="name_direction in arr_name_direction" :key="name_direction.id" :value="name_direction.id">{{ name_direction.name }}</option>
                                         </select>
@@ -569,7 +569,7 @@ function debug() {
                                     <td class="nested_input">
                                         <input class="input_text" type="number" v-model="profession.count[index_dir]" 
                                         @change="getCountPeople(index_division, index_chapter, index_profession);
-                                        setDirectionStatusChange(index_division, index_chapter, index_profession, index_dir, 0)">
+                                        setDirectionStatusChange(index_division, index_chapter, index_profession, index_dir)">
                                     </td>
                                 </tr>
                                 <tr>

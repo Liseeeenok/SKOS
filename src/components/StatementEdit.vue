@@ -125,7 +125,7 @@ function SAVE() {
     let answer = {
         request_type: "SAVE_STATEMENT",
         training_list: [],
-        academic_year: page_data.value.year,
+        academic_year: article.value.academic_year,
         table_type: 2
     }
     answer.training_list = statement.value.filter((profession) => {
@@ -137,7 +137,7 @@ function SAVE() {
         .post('https://' + host + '/table', answer)
         .then((response) => {
             console.log(response);
-            //router.go(0);
+            router.go(0);
         })
 }
 </script>
@@ -221,7 +221,7 @@ function SAVE() {
                         <template v-if="profession.directions.length > 0">
                             <td>{{ getNameById(arr_name_direction, profession.directions[0].id_direction) }}</td>
                             <td>
-                                {{ direction.count_people }}
+                                {{ profession.count_people }}
                             </td>
                         </template>
                         <template v-else>
