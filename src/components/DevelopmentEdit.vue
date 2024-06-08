@@ -7,14 +7,19 @@ const final = ref({year: '', arr_plan: plan, arr_plan_result: {}, results: false
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 const level = localStorage.getItem('skos-role');
 //---------------------------API-----------------------------
-const date = new Date();
+let year = localStorage.getItem('skos-year');
+if (!year) {
+    const date = new Date();
+    year = date.getFullYear();
+}
 const article = ref({
     request_type: 'VIEW',
-    academic_year: date.getFullYear(),
+    academic_year: year,
     table_type: 2
 });
 getPlan();
 function getPlan() {
+    localStorage.setItem('skos-year', article.value.academic_year)
     axios.post('https://'+host+'/table', article.value)
         .then(response => {
             console.log(response.data);
@@ -268,7 +273,7 @@ function SAVE() {
                     "id_section":chapter.title,
                     "id_profession":profession.name,
                     "profession_groups": profession_groups,
-                    "directions":directions,
+                    "direction":directions,
                     "to1":profession.to1,
                     "per":profession.per,
                     "indt":profession.indt,
@@ -280,15 +285,15 @@ function SAVE() {
             });
         });
     });
-    console.log((final.value));
+    console.log('answer:');
     console.log((answer));
-    console.log(JSON.stringify(final.value));
+    console.log('answer string:');
     console.log(JSON.stringify(answer));
     axios
         .post('https://' + host + '/table', answer)
         .then((response) => {
             console.log(response);
-            router.go(0);
+            //router.go(0);
         })
 }
 function setProfessionStatusChange(index_division, index_chapter, index_profession) {
@@ -499,6 +504,9 @@ function debug() {
                                         <input type="date" class="input_text" v-model="profession.start_o[index_start_o]" @change="setProfessionStatusChange(index_division, index_chapter, index_profession)">
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td class="title add_direction" style="opacity: 0;">Добавить дирекцию</td>
+                                </tr>
                             </table>
                         </td>
                         <td class="nested_table">
@@ -507,6 +515,9 @@ function debug() {
                                     <td class="nested_input">
                                         <input type="date" class="input_text" v-model="profession.start_po[index_start_po]" @change="setProfessionStatusChange(index_division, index_chapter, index_profession)">
                                     </td>
+                                </tr>
+                                <tr>
+                                    <td class="title add_direction" style="opacity: 0;">Добавить дирекцию</td>
                                 </tr>
                             </table>
                         </td>
@@ -517,6 +528,9 @@ function debug() {
                                         <input type="date" class="input_text" v-model="profession.end_po[index_end_po]" @change="setProfessionStatusChange(index_division, index_chapter, index_profession)">
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td class="title add_direction" style="opacity: 0;">Добавить дирекцию</td>
+                                </tr>
                             </table>
                         </td>
                         <td class="nested_table">
@@ -525,6 +539,9 @@ function debug() {
                                     <td class="nested_input">
                                         <input type="date" class="input_text" v-model="profession.qual_ex[index_qual_ex]" @change="setProfessionStatusChange(index_division, index_chapter, index_profession)">
                                     </td>
+                                </tr>
+                                <tr>
+                                    <td class="title add_direction" style="opacity: 0;">Добавить дирекцию</td>
                                 </tr>
                             </table>
                         </td>

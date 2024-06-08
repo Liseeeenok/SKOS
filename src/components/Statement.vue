@@ -5,43 +5,42 @@ import axios from 'axios';
 
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 const level = localStorage.getItem('skos-role');
-const page_data = ref({});
-page_data.value.year = 2022;
-//---------------------------API-----------------------------
 const statement = ref([]);
 const statement_filter = ref([]);
-let article = {
-    request_type: 'VIEW_STATEMENT',
-    academic_year: page_data.value.year,
-    table_type: 2
+//---------------------------API-----------------------------
+let year = localStorage.getItem('skos-year');
+if (!year) {
+    const date = new Date();
+    year = date.getFullYear();
 }
-axios
-    .post('https://'+host+'/table', article)
-    .then(response => {
-        console.log(response.data);
-        statement.value = response.data;
-        statement.value.forEach(profession => {
-            getProfessionGroups(profession.id_profession);
-            profession.count_directions = 0;
-            profession.count_people = 0;
-            profession.count_people_fact = 0;
-            profession.count_people_trained = 0;
-            getProfessionGroups(profession.id_profession);
-            profession.profession_groups.forEach((profession_group, index_profession_group) => {
-                profession_group.directions.forEach((direction, index_direction) => {
+const article = ref({
+    request_type: 'VIEW_STATEMENT',
+    academic_year: year,
+    table_type: 2
+});
+getStatement();
+function getStatement() {
+    localStorage.setItem('skos-year', article.value.academic_year)
+    axios.post('https://'+host+'/table', article.value)
+        .then(response => {
+            console.log(response.data);
+            statement.value = response.data;
+            statement.value.forEach(profession => {
+                getProfessionGroups(profession.id_profession);
+                profession.count_directions = 0;
+                profession.count_people = 0;
+                profession.count_people_fact = 0;
+                profession.count_people_trained = 0;
+                profession.directions.forEach((direction, index_direction) => {
                     profession.count_people += direction.count_people;
                     profession.count_people_fact += direction.count_people_fact;
                     profession.count_people_trained += direction.count_people_trained;
                     profession.count_directions++;
                 });
-                if (profession_group.directions.length == 0) {
-                    profession.count_directions++;
-                }
             });
+            statement_filter.value = JSON.parse(JSON.stringify(statement.value));
         });
-        statement_filter.value = JSON.parse(JSON.stringify(statement.value));
-    });
-//---------------------------API-----------------------------
+}
 const arr_name_division = ref([]);
 axios
     .get('https://'+host+'/divisions')
@@ -101,26 +100,16 @@ function filterPlan() {
                 profession.count_people = 0;
                 profession.count_people_fact = 0;
                 profession.count_people_trained = 0;
-                profession.profession_groups = profession.profession_groups.filter((profession_group, index_profession_group) => {
-                    let contains_direction_in_profession_group = false;
-                    profession_group.directions = profession_group.directions.filter((direction, index_direction) => {
-                        if (direction_filter.value == '' || direction_filter.value == direction.id_direction) {
-                            profession.count_people += direction.count_people;
-                            profession.count_people_fact += direction.count_people_fact;
-                            profession.count_people_trained += direction.count_people_trained;
-                            profession.count_directions++;
-                            contains_direction = true;
-                            contains_direction_in_profession_group = true;
-                            return contains_direction;
-                        }
-                    });
-                    if (direction_filter.value == '' && profession_group.directions.length == 0) {
+                profession.directions = profession.directions.filter((direction, index_direction) => {
+                    if (direction_filter.value == '' || direction_filter.value == direction.id_direction) {
+                        profession.count_people += direction.count_people;
+                        profession.count_people_fact += direction.count_people_fact;
+                        profession.count_people_trained += direction.count_people_trained;
                         profession.count_directions++;
                         contains_direction = true;
-                        contains_direction_in_profession_group = true;
+                        return contains_direction;
                     }
-                    return contains_direction_in_profession_group;
-                })
+                });
                 return contains_direction;
             }
             return contains_direction;
@@ -168,14 +157,13 @@ function openEditor() {
             </div>
         </div>
         <div>
-            <h1>Ведомость на {{ page_data.year }} год</h1>
+            <h1>Ведомость на <input type="number" style="width: 100px; font-size: 1em;" v-model="article.academic_year" @change="getStatement()"/> год</h1>
         </div>
         <table class="table">
             <thead>
                 <tr>
                     <th rowspan="2">№</th>
                     <th rowspan="2">Наименование профессии</th>
-                    <th rowspan="2">Шифр группы </th>
                     <th colspan="3">План</th>
                     <th colspan="3">Факт</th>
                     <th colspan="3">Количество прошедших обучение</th>
@@ -206,85 +194,47 @@ function openEditor() {
             </thead>
             <tbody>
                 <template v-for="(profession, index_profession) in statement_filter" :key="index_profession">
-                <tr>
-                    <td :rowspan="Math.max(profession.count_directions, 1)">{{ index_profession + 1 }}</td>
-                    <td :rowspan="Math.max(profession.count_directions, 1)">{{ getNameById(arr_name_profession, profession.id_profession) }}</td>
-                    <td :rowspan="Math.max(profession.profession_groups[0].directions.length, 1)">
-                        {{ getNameById(arr_name_profession_groups[profession.id_profession], profession.profession_groups[0].id_PG) }}
-                    </td>
-                    <template v-if="profession.profession_groups[0].directions.length > 0">
-                    <td>{{ getNameById(arr_name_direction, profession.profession_groups[0].directions[0].id_direction) }}</td>
-                    <td>{{ profession.profession_groups[0].directions[0].count_people }}</td>
+                    <tr>
+                        <td :rowspan="Math.max(profession.count_directions, 1)">{{ index_profession + 1 }}</td>
+                        <td :rowspan="Math.max(profession.count_directions, 1)">{{ getNameById(arr_name_profession, profession.id_profession) }}</td>
+                        <template v-if="profession.directions.length > 0">
+                            <td>{{ getNameById(arr_name_direction, profession.directions[0].id_direction) }}</td>
+                            <td>{{ profession.directions[0].count_people }}</td>
+                        </template>
+                        <template v-else>
+                            <td></td>
+                            <td></td>
+                        </template>
+                        <td :rowspan="Math.max(profession.count_directions, 1)">{{ profession.count_people }}</td>
+                        <template v-if="profession.directions.length > 0">
+                            <td>{{ getNameById(arr_name_direction, profession.directions[0].id_direction) }}</td>
+                            <td>{{ profession.directions[0].count_people_fact }}</td>
+                        </template>
+                        <template v-else>
+                            <td></td>
+                            <td></td>
+                        </template>
+                        <td :rowspan="Math.max(profession.count_directions, 1)">{{ profession.count_people_fact }}</td>
+                        <template v-if="profession.directions.length > 0">
+                            <td>{{ getNameById(arr_name_direction, profession.directions[0].id_direction) }}</td>
+                            <td>{{ profession.directions[0].count_people_trained }}</td>
+                        </template>
+                        <template v-else>
+                            <td></td>
+                            <td></td>
+                        </template>
+                        <td :rowspan="Math.max(profession.count_directions, 1)">{{ profession.count_people_trained }}</td>
+                    </tr>
+                    <template v-for="(direction, index_direction) in profession.directions" :key="index_direction">
+                        <tr v-if="index_direction > 0">
+                            <td>{{ getNameById(arr_name_direction, direction.id_direction) }}</td>
+                            <td>{{ direction.count_people }}</td>
+                            <td>{{ getNameById(arr_name_direction, direction.id_direction) }}</td>
+                            <td>{{ direction.count_people_fact }}</td>
+                            <td>{{ getNameById(arr_name_direction, direction.id_direction) }}</td>
+                            <td>{{ direction.count_people_trained }}</td>
+                        </tr>
                     </template>
-                    <template v-else>
-                    <td></td>
-                    <td></td>
-                    </template>
-                    <td :rowspan="Math.max(profession.count_directions, 1)">{{ profession.count_people }}</td>
-                    <template v-if="profession.profession_groups[0].directions.length > 0">
-                    <td>{{ getNameById(arr_name_direction, profession.profession_groups[0].directions[0].id_direction) }}</td>
-                    <td>{{ profession.profession_groups[0].directions[0].count_people_fact }}</td>
-                    </template>
-                    <template v-else>
-                    <td></td>
-                    <td></td>
-                    </template>
-                    <td :rowspan="Math.max(profession.count_directions, 1)">{{ profession.count_people_fact }}</td>
-                    <template v-if="profession.profession_groups[0].directions.length > 0">
-                    <td>{{ getNameById(arr_name_direction, profession.profession_groups[0].directions[0].id_direction) }}</td>
-                    <td>{{ profession.profession_groups[0].directions[0].count_people_trained }}</td>
-                    </template>
-                    <template v-else>
-                    <td></td>
-                    <td></td>
-                    </template>
-                    <td :rowspan="Math.max(profession.count_directions, 1)">{{ profession.count_people_trained }}</td>
-                </tr>
-                <template v-for="(direction, index_direction) in profession.profession_groups[0].directions" :key="index_direction">
-                <tr v-if="index_direction > 0">
-                    <td>{{ getNameById(arr_name_direction, direction.id_direction) }}</td>
-                    <td>{{ direction.count_people }}</td>
-                    <td>{{ getNameById(arr_name_direction, direction.id_direction) }}</td>
-                    <td>{{ direction.count_people_fact }}</td>
-                    <td>{{ getNameById(arr_name_direction, direction.id_direction) }}</td>
-                    <td>{{ direction.count_people_trained }}</td>
-                </tr>
-                </template>
-                <template v-for="(profession_group, index_profession_group) in profession.profession_groups" :key="index_profession_group">
-                <tr v-if="index_profession_group > 0">
-                    <td :rowspan="Math.max(profession_group.directions.length, 1)">
-                        {{ getNameById(arr_name_profession_groups[profession.id_profession], profession_group.id_PG) }}
-                    </td>
-                    <template v-if="profession_group.directions.length > 0">
-                    <td>{{ getNameById(arr_name_direction, profession_group.directions[0].id_direction) }}</td>
-                    <td>{{ profession_group.directions[0].count_people }}</td>
-                    <td>{{ getNameById(arr_name_direction, profession_group.directions[0].id_direction) }}</td>
-                    <td>{{ profession_group.directions[0].count_people_fact }}</td>
-                    <td>{{ getNameById(arr_name_direction, profession_group.directions[0].id_direction) }}</td>
-                    <td>{{ profession_group.directions[0].count_people_trained }}</td>
-                    </template>
-                    <template v-else>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    </template>
-                </tr>
-                <template v-if="index_profession_group > 0" >
-                <template v-for="(direction, index_direction) in profession_group.directions" :key="index_direction">
-                <tr v-if="index_direction > 0">
-                    <td>{{ getNameById(arr_name_direction, direction.id_direction) }}</td>
-                    <td>{{ direction.count_people }}</td>
-                    <td>{{ getNameById(arr_name_direction, direction.id_direction) }}</td>
-                    <td>{{ direction.count_people_fact }}</td>
-                    <td>{{ getNameById(arr_name_direction, direction.id_direction) }}</td>
-                    <td>{{ direction.count_people_trained }}</td>
-                </tr>
-                </template>
-                </template>
-                </template>
                 </template>
             </tbody>
         </table>

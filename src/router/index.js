@@ -5,56 +5,48 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
+      path: '/', //Страница авторизации
       name: 'home',
       component: AuthorizationPage
     },
     {
-      path: '/profile',
+      path: '/profile', //Страница профиля
       name: 'profile',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: () => import('../views/ProfilePage.vue')
     },
     {
-        path: '/notification',
+        path: '/notification', //Страница уведомлений
         name: 'notification',
         component: () => import('../views/NotificationPage.vue')
     },
     {
-        path: '/notificationEdit',
+        path: '/notificationEdit', //Страница редактирования уведомлений
         name: 'notificationEdit',
         props: true,
         component: () => import('../views/NotificationEditPage.vue')
     },
     {
-        path: '/training',
+        path: '/training', //Страница обучения
         name: 'training',
         component: () => import('../views/TrainingPage.vue')
     },
     {
-        path: '/preparation',
-        name: 'preparation',
-        component: () => import('../views/PreparationPage.vue')
-    },
-    {
-        path: '/development',
+        path: '/development', //Страница план графика
         name: 'development',
         component: () => import('../views/DevelopmentPage.vue')
     },
     {
-        path: '/developmentEdit',
+        path: '/developmentEdit', //Страница редактирования план графика
         name: 'developmentEdit',
         component: () => import('../views/DevelopmentEditPage.vue')
     },
     {
-        path: '/statement',
+        path: '/statement', //Страница ведомости
         name: 'statement',
         component: () => import('../views/StatementPage.vue')
     },
     {
-        path: '/statementEdit',
+        path: '/statementEdit', //Страница редактирования ведомости
         name: 'statementEdit',
         component: () => import('../views/StatementEditPage.vue')
     }
