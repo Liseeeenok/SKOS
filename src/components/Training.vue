@@ -15,7 +15,7 @@ const die_professions = ref(false);
         </div>
         <div v-if="false">
             <div class="die die_title">Обучающиеся</div>
-            <div class="die die_main" @click="die_students = !die_students" :class="die_students ? 'die_active':''">Студенты</div>
+            <div class="die die_main" @click="die_students = !die_students" :class="die_students ? 'die_active':''">Сотрудники</div>
             <div class="die_absolute">
                 <div class="die_hidden" :class="die_students ? 'die_active_students':'die_hide'">
                     <div class="die die_main">Опоздание</div>
