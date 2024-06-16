@@ -20,17 +20,19 @@ function addDirection() {
 }
 function deleteDirection(index_direction) {
     let result = confirm(`Вы уверены что хотите удалить подразделение ${directions.value[index_direction].name}?`);
-    if (result && directions.value[index_direction].status != 2) directions.value[index_direction].status = 0;
-    if (result && directions.value[index_direction].status == 2) directions.value[index_direction].status = 3;
+    if (result) {
+        if (directions.value[index_direction].status != 2) directions.value[index_direction].status = 0;
+        else directions.value[index_direction].status = 3;
+        save();
+    }
 }
 function save() {
-    let answer = directions.value.filter((direction) => typeof direction.status !== "undefined" && direction.status != 3);
-    console.log(1, answer);
+    let answer = {'directions': directions.value.filter((direction) => typeof direction.status !== "undefined" && direction.status != 3)};
     axios
         .post('https://' + host + '/directions', answer)
         .then((response) => {
             console.log(response);
-            //router.go(0);
+            router.go(0);
         })
 }
 </script>

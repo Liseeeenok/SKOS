@@ -20,17 +20,19 @@ function addSection() {
 }
 function deleteSection(index_section) {
     let result = confirm(`Вы уверены что хотите удалить направление ${sections.value[index_section].name}?`);
-    if (result && sections.value[index_section].status != 2) sections.value[index_section].status = 0;
-    if (result && sections.value[index_section].status == 2) sections.value[index_section].status = 3;
+    if (result) {
+        if (sections.value[index_section].status != 2) sections.value[index_section].status = 0;
+        else sections.value[index_section].status = 3;
+        save();
+    }
 }
 function save() {
-    let answer = sections.value.filter((section) => typeof section.status !== "undefined" && section.status != 3);
-    console.log(1, answer);
+    let answer = {'sections': sections.value.filter((section) => typeof section.status !== "undefined" && section.status != 3)};
     axios
         .post('https://' + host + '/sections', answer)
         .then((response) => {
             console.log(response);
-            //router.go(0);
+            router.go(0);
         })
 }
 </script>

@@ -20,17 +20,19 @@ function addDivision() {
 }
 function deleteDivision(index_division) {
     let result = confirm(`Вы уверены что хотите удалить подразделение ${divisions.value[index_division].name}?`);
-    if (result && divisions.value[index_division].status != 2) divisions.value[index_division].status = 0;
-    if (result && divisions.value[index_division].status == 2) divisions.value[index_division].status = 3;
+    if (result) {
+        if (divisions.value[index_division].status != 2) divisions.value[index_division].status = 0;
+        else divisions.value[index_division].status = 3;
+        save();
+    }
 }
 function save() {
     let answer = {'divisions': divisions.value.filter((division) => typeof division.status !== "undefined" && division.status != 3)};
-    console.log(1, answer);
     axios
         .post('https://' + host + '/divisions', answer)
         .then((response) => {
             console.log(response);
-            //router.go(0);
+            router.go(0);
         })
 }
 </script>

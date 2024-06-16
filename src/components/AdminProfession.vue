@@ -20,17 +20,19 @@ function addProfession() {
 }
 function deleteProfession(index_profession) {
     let result = confirm(`Вы уверены что хотите удалить профессию ${professions.value[index_profession].name}?`);
-    if (result && professions.value[index_profession].status != 2) professions.value[index_profession].status = 0;
-    if (result && professions.value[index_profession].status == 2) professions.value[index_profession].status = 3;
+    if (result) {
+        if (professions.value[index_profession].status != 2) professions.value[index_profession].status = 0;
+        else professions.value[index_profession].status = 3;
+        save();
+    }
 }
 function save() {
-    let answer = professions.value.filter((profession) => typeof profession.status !== "undefined" && profession.status != 3);
-    console.log(1, answer);
+    let answer = {'professions': professions.value.filter((profession) => typeof profession.status !== "undefined" && profession.status != 3)};
     axios
         .post('https://' + host + '/professions', answer)
         .then((response) => {
             console.log(response);
-            //router.go(0);
+            router.go(0);
         })
 }
 </script>
