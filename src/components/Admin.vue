@@ -6,7 +6,11 @@ import AdminDirection from './AdminDirection.vue';
 import AdminProfession from './AdminProfession.vue';
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 const level = localStorage.getItem('skos-role');
-const chapter = ref(1);
+const chapter = ref(localStorage.getItem('skos-menu') ?? 1);
+function changeMenu(index) {
+    chapter.value = index; 
+    localStorage.setItem('skos-menu', index)
+}
 </script>
 
 <template>
@@ -14,10 +18,10 @@ const chapter = ref(1);
         <div class="admin">
             <div class="container_menu">
                 <div class="menu">
-                    <div class="menu_item" :class="chapter == 1 ? 'active':''" @click="chapter = 1">Подразделения</div>
-                    <div class="menu_item" :class="chapter == 2 ? 'active':''" @click="chapter = 2">Направления</div>
-                    <div class="menu_item" :class="chapter == 3 ? 'active':''" @click="chapter = 3">Дирекции</div>
-                    <div class="menu_item" :class="chapter == 4 ? 'active':''" @click="chapter = 4">Профессии</div>
+                    <div class="menu_item" :class="chapter == 1 ? 'active':''" @click="changeMenu(1)">Подразделения</div>
+                    <div class="menu_item" :class="chapter == 2 ? 'active':''" @click="changeMenu(2)">Направления</div>
+                    <div class="menu_item" :class="chapter == 3 ? 'active':''" @click="changeMenu(3)">Дирекции</div>
+                    <div class="menu_item" :class="chapter == 4 ? 'active':''" @click="changeMenu(4)">Профессии</div>
                 </div>
             </div>
             <div class="container_content">

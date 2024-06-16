@@ -4,7 +4,6 @@ import axios from 'axios';
 import router from '../router';
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 const professions = ref();
-const directions = ref();
 getProfession();
 function getProfession() {
     axios
@@ -13,22 +12,22 @@ function getProfession() {
         professions.value = response.data;
     });
 }
-function setStatus(index_direction) {
-    if (directions.value[index_direction].status != 2) directions.value[index_direction].status = 1;
+function setStatus(index_profession) {
+    if (professions.value[index_profession].status != 2) professions.value[index_profession].status = 1;
 }
-function addDirection() {
-    directions.value.push({'id':null, 'name': '', 'status': 2});
+function addProfession() {
+    professions.value.push({'id':null, 'name': '', 'status': 2});
 }
-function deleteDirection(index_direction) {
-    let result = confirm(`Вы уверены что хотите удалить подразделение ${directions.value[index_direction].name}?`);
-    if (result && directions.value[index_direction].status != 2) directions.value[index_direction].status = 0;
-    if (result && directions.value[index_direction].status == 2) directions.value[index_direction].status = 3;
+function deleteProfession(index_profession) {
+    let result = confirm(`Вы уверены что хотите удалить профессию ${professions.value[index_profession].name}?`);
+    if (result && professions.value[index_profession].status != 2) professions.value[index_profession].status = 0;
+    if (result && professions.value[index_profession].status == 2) professions.value[index_profession].status = 3;
 }
 function save() {
-    let answer = directions.value.filter((direction) => typeof direction.status !== "undefined" && direction.status != 3);
+    let answer = professions.value.filter((profession) => typeof profession.status !== "undefined" && profession.status != 3);
     console.log(1, answer);
     axios
-        .post('https://' + host + '/directions', answer)
+        .post('https://' + host + '/professions', answer)
         .then((response) => {
             console.log(response);
             //router.go(0);
@@ -46,19 +45,19 @@ function save() {
             </tr>
         </thead>
         <tbody>
-            <template v-for="(direction, index_direction) in directions" :key="index_direction">
-                <tr v-if="direction.status != 0 && direction.status != 3">
-                    <td>{{ direction.id}}</td>
-                    <td><input type="text" v-model="direction.name" @change="setStatus(index_direction)"/></td>
+            <template v-for="(profession, index_profession) in professions" :key="index_profession">
+                <tr v-if="profession.status != 0 && profession.status != 3">
+                    <td>{{ profession.id}}</td>
+                    <td><input type="text" v-model="profession.name" @change="setStatus(index_profession)"/></td>
                     <td>
-                        <button class="red" @click="deleteDirection(index_direction)">Удалить</button>
+                        <button class="red" @click="deleteProfession(index_profession)">Удалить</button>
                     </td>
                 </tr>
             </template>
         </tbody>
     </table>
     <button class="green" @click="save()">Сохранить</button>
-    <button class="add" @click="addDirection()">Добавить дирекцию</button>
+    <button class="add" @click="addProfession()">Добавить профессию</button>
 </template>
 
 <style scoped>
@@ -89,7 +88,7 @@ td {
 input {
     padding: 5px 10px;
     font-size: 20px;
-    width: 400px;
+    width: 1000px;
 }
 button {
     padding: 5px 10px;
