@@ -13,6 +13,7 @@ function delLocal() {
 
 <template>
     <nav class="nav">
+        <RouterLink to="/admin"><div class="menu_item" :class="index == '0' ? 'active' : ''">Админка</div></RouterLink>
         <RouterLink to="/profile"><div class="menu_item" :class="index == '1' ? 'active' : ''">Профиль</div></RouterLink>
         <RouterLink to="/notification"><div class="menu_item" :class="index == '2' ? 'active' : ''">Уведомления</div></RouterLink>
         <RouterLink to="/training"><div class="menu_item" :class="index == '3' ? 'active' : ''">Обучение</div></RouterLink>

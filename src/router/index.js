@@ -49,6 +49,11 @@ const router = createRouter({
         path: '/statementEdit', //Страница редактирования ведомости
         name: 'statementEdit',
         component: () => import('../views/StatementEditPage.vue')
+    },
+    {
+        path: '/admin', //Страница админки
+        name: 'admin',
+        component: () => import('../views/AdminPage.vue')
     }
   ]
 })
