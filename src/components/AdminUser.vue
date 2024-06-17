@@ -14,7 +14,6 @@ function getUsers() {
         .post('https://' + host + '/user,', request)
         .then((response) => {
             console.log(response);
-            router.go(0);
         })
 }
 function setStatus(index_division) {
