@@ -32,14 +32,24 @@ function deleteUser(index_user) {
     }
 }
 function save() {
-    let answer = {'users': users.value.filter((user) => typeof user.status !== "undefined" && user.status != 3)};
+    let answer = users.value.filter((user) => typeof user.status !== "undefined" && user.status != 3);
     console.log(answer);
-    axios
-        .post('https://' + host + '/accounts', answer)
-        .then((response) => {
-            console.log(response);
-            //router.go(0);
-        })
+    let count = 0;
+    for(let ans of answer) {
+        let request = {
+            type_request: 'user_change',
+            jwt: localStorage.getItem('skos-token'),
+            user: ans,
+        }
+        console.log(request);
+        axios
+            .post('https://' + host + '/accounts', request)
+            .then((response) => {
+                console.log(response);
+                count++;
+                if (count == answer.length) router.go(0);
+            })
+    };
 }
 </script>
 <template>
@@ -53,6 +63,7 @@ function save() {
                 <th>Отчество</th>
                 <th>Телефон</th>
                 <th>Роль</th>
+                <th>Новый пароль</th>
                 <th>Действия</th>
             </tr>
         </thead>
@@ -66,6 +77,7 @@ function save() {
                     <td><input type="text" v-model="user.patronymic" @change="setStatus(index_user)"/></td>
                     <td><input type="text" v-model="user.phone_number" @change="setStatus(index_user)"/></td>
                     <td><input type="text" v-model="user.role" @change="setStatus(index_user)"/></td>
+                    <td><input type="text" v-model="user.password" @change="setStatus(index_user)"/></td>
                     <td>
                         <button class="red" @click="deleteUser(index_user)">Удалить</button>
                     </td>
