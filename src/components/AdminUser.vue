@@ -7,36 +7,38 @@ const users = ref();
 getUsers();
 function getUsers() {
     let request = {
-        'type_request':'users_info',
-        'jwt':localStorage.getItem('skos-token')
+        type_request:'users_info',
+        jwt: localStorage.getItem('skos-token')
     }
     axios
-        .post('https://' + host + '/user,', request)
+        .post('https://' + host + '/accounts', request)
         .then((response) => {
+            users.value = response.data;
             console.log(response);
         })
 }
-function setStatus(index_division) {
-    if (divisions.value[index_division].status != 2) divisions.value[index_division].status = 1;
+function setStatus(index_user) {
+    if (users.value[index_user].status != 2) users.value[index_user].status = 1;
 }
-function addDivision() {
-    divisions.value.push({'id':null, 'name': '', 'status': 2});
+function addUser() {
+    users.value.push({'login': '', 'name': '', 'patronymic' : '', 'phone_number' : '', 'role' : '', 'surname' : '', 'status': 2});
 }
-function deleteDivision(index_division) {
-    let result = confirm(`Вы уверены что хотите удалить подразделение ${divisions.value[index_division].name}?`);
+function deleteUser(index_user) {
+    let result = confirm(`Вы уверены что хотите удалить пользователя ${users.value[index_user].name}?`);
     if (result) {
-        if (divisions.value[index_division].status != 2) divisions.value[index_division].status = 0;
-        else divisions.value[index_division].status = 3;
+        if (users.value[index_user].status != 2) users.value[index_user].status = 0;
+        else users.value[index_user].status = 3;
         save();
     }
 }
 function save() {
-    let answer = {'divisions': divisions.value.filter((division) => typeof division.status !== "undefined" && division.status != 3)};
+    let answer = {'users': users.value.filter((user) => typeof user.status !== "undefined" && user.status != 3)};
+    console.log(answer);
     axios
-        .post('https://' + host + '/divisions', answer)
+        .post('https://' + host + '/accounts', answer)
         .then((response) => {
             console.log(response);
-            router.go(0);
+            //router.go(0);
         })
 }
 </script>
@@ -45,25 +47,34 @@ function save() {
     <table>
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Название</th>
+                <th>Логин</th>
+                <th>Фамилия</th>
+                <th>Имя</th>
+                <th>Отчество</th>
+                <th>Телефон</th>
+                <th>Роль</th>
                 <th>Действия</th>
             </tr>
         </thead>
         <tbody>
-            <template v-for="(division, index_division) in divisions" :key="index_division">
-                <tr v-if="division.status != 0 && division.status != 3">
-                    <td>{{ division.id}}</td>
-                    <td><input type="text" v-model="division.name" @change="setStatus(index_division)"/></td>
+            <template v-for="(user, index_user) in users" :key="index_user">
+                <tr v-if="user.status != 0 && user.status != 3">
+                    <td v-if="user.status == 2"><input type="text" v-model="user.login"/></td>
+                    <td v-else>{{ user.login }}</td>
+                    <td><input type="text" v-model="user.surname" @change="setStatus(index_user)"/></td>
+                    <td><input type="text" v-model="user.name" @change="setStatus(index_user)"/></td>
+                    <td><input type="text" v-model="user.patronymic" @change="setStatus(index_user)"/></td>
+                    <td><input type="text" v-model="user.phone_number" @change="setStatus(index_user)"/></td>
+                    <td><input type="text" v-model="user.role" @change="setStatus(index_user)"/></td>
                     <td>
-                        <button class="red" @click="deleteDivision(index_division)">Удалить</button>
+                        <button class="red" @click="deleteUser(index_user)">Удалить</button>
                     </td>
                 </tr>
             </template>
         </tbody>
     </table>
     <button class="green" @click="save()">Сохранить</button>
-    <button class="add" @click="addDivision()">Добавить подразделение</button>
+    <button class="add" @click="addUser()">Добавить пользователя</button>
 </template>
 
 <style scoped>
@@ -94,7 +105,7 @@ td {
 input {
     padding: 5px 10px;
     font-size: 20px;
-    width: 400px;
+    width: 200px;
 }
 button {
     padding: 5px 10px;
