@@ -4,6 +4,7 @@ import AdminDivision from './AdminDivision.vue';
 import AdminSection from './AdminSection.vue';
 import AdminDirection from './AdminDirection.vue';
 import AdminProfession from './AdminProfession.vue';
+import AdminUser from './AdminUser.vue';
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 const level = localStorage.getItem('skos-role');
 const chapter = ref(localStorage.getItem('skos-menu') ?? 1);
@@ -22,6 +23,7 @@ function changeMenu(index) {
                     <div class="menu_item" :class="chapter == 2 ? 'active':''" @click="changeMenu(2)">Направления</div>
                     <div class="menu_item" :class="chapter == 3 ? 'active':''" @click="changeMenu(3)">Дирекции</div>
                     <div class="menu_item" :class="chapter == 4 ? 'active':''" @click="changeMenu(4)">Профессии</div>
+                    <div class="menu_item" :class="chapter == 5 ? 'active':''" @click="changeMenu(5)">Пользователи</div>
                 </div>
             </div>
             <div class="container_content">
@@ -29,6 +31,7 @@ function changeMenu(index) {
                 <template v-if="chapter == 2"><AdminSection/></template>
                 <template v-if="chapter == 3"><AdminDirection/></template>
                 <template v-if="chapter == 4"><AdminProfession/></template>
+                <template v-if="chapter == 5"><AdminUser/></template>
             </div>
         </div>
     </div>
