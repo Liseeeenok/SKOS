@@ -13,6 +13,7 @@ if (!year) {
     year = date.getFullYear();
 }
 const article = ref({
+    jwt: localStorage.getItem('skos-token'),
     request_type: 'VIEW',
     academic_year: year,
     table_type: 2
@@ -234,6 +235,7 @@ function getDivisionDirections() {
 }
 function SAVE() {
     let answer = {
+        jwt: localStorage.getItem('skos-token'),
         request_type: "SAVE",
         training_list: [],
         academic_year: plan.value.year,

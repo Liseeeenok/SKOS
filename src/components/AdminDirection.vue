@@ -7,10 +7,10 @@ const directions = ref();
 getDirection();
 function getDirection() {
     axios
-    .get('https://'+host+'/directions')
-    .then(response => {
-        directions.value = response.data;
-    });
+        .get('https://'+host+'/directions')
+        .then(response => {
+            directions.value = response.data;
+        });
 }
 function setStatus(index_direction) {
     if (directions.value[index_direction].status != 2) directions.value[index_direction].status = 1;
@@ -27,7 +27,10 @@ function deleteDirection(index_direction) {
     }
 }
 function save() {
-    let answer = {'directions': directions.value.filter((direction) => typeof direction.status !== "undefined" && direction.status != 3)};
+    let answer = {
+        jwt: localStorage.getItem('skos-token'),
+        directions: directions.value.filter((direction) => typeof direction.status !== "undefined" && direction.status != 3)
+    };
     axios
         .post('https://' + host + '/directions', answer)
         .then((response) => {

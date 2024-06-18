@@ -13,6 +13,7 @@ if (!year) {
     year = date.getFullYear();
 }
 const article = ref({
+    jwt: localStorage.getItem('skos-token'),
     request_type: 'VIEW',
     academic_year: year,
     table_type: 2

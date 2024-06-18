@@ -14,6 +14,7 @@ if (!year) {
     year = date.getFullYear();
 }
 const article = ref({
+    jwt: localStorage.getItem('skos-token'),
     request_type: 'VIEW_STATEMENT',
     academic_year: year,
     table_type: 2
@@ -123,6 +124,7 @@ function getCountPeople(index_profession, name_arr, index_direction) {
 }
 function SAVE() {
     let answer = {
+        jwt: localStorage.getItem('skos-token'),
         request_type: "SAVE_STATEMENT",
         training_list: [],
         academic_year: article.value.academic_year,

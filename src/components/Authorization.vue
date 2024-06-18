@@ -10,8 +10,8 @@ const host = 'mypew.ru:7070'; //имя или ip хоста api
 function authorization() {
     //запрос
     let article = {
-        "login": login.value,
-        "password": password.value
+        login: login.value,
+        password: password.value
     }
     console.log(article);
     axios

@@ -27,7 +27,10 @@ function deleteSection(index_section) {
     }
 }
 function save() {
-    let answer = {'sections': sections.value.filter((section) => typeof section.status !== "undefined" && section.status != 3)};
+    let answer = {
+        jwt: localStorage.getItem('skos-token'),
+        sections: sections.value.filter((section) => typeof section.status !== "undefined" && section.status != 3)
+    };
     axios
         .post('https://' + host + '/sections', answer)
         .then((response) => {

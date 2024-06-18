@@ -7,10 +7,10 @@ const divisions = ref();
 getDivision();
 function getDivision() {
     axios
-    .get('https://'+host+'/divisions')
-    .then(response => {
-        divisions.value = response.data;
-    });
+        .get('https://'+host+'/divisions')
+        .then(response => {
+            divisions.value = response.data;
+        });
 }
 function setStatus(index_division) {
     if (divisions.value[index_division].status != 2) divisions.value[index_division].status = 1;
@@ -27,7 +27,10 @@ function deleteDivision(index_division) {
     }
 }
 function save() {
-    let answer = {'divisions': divisions.value.filter((division) => typeof division.status !== "undefined" && division.status != 3)};
+    let answer = {
+        jwt: localStorage.getItem('skos-token'),
+        divisions: divisions.value.filter((division) => typeof division.status !== "undefined" && division.status != 3)
+    };
     axios
         .post('https://' + host + '/divisions', answer)
         .then((response) => {

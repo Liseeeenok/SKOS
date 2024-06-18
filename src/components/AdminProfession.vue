@@ -38,7 +38,10 @@ function deleteProfession(index_profession) {
     }
 }
 function save() {
-    let answer = {'professions': professions.value.filter((profession) => typeof profession.status !== "undefined" && profession.status != 3)};
+    let answer = {
+        jwt: localStorage.getItem('skos-token'),
+        professions: professions.value.filter((profession) => typeof profession.status !== "undefined" && profession.status != 3)
+    };
     let trig = 0;
     axios
         .post('https://' + host + '/professions', answer)
