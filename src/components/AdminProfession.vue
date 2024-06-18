@@ -1,73 +1,38 @@
 <script setup>
-import { ref } from 'vue';
-import axios from 'axios';
-import router from '../router';
-const host = 'mypew.ru:7070'; //имя или ip хоста api
-const professions = ref();
+import { useStore } from '../stores/PlanStore';
+import { getProfession, saveProfession } from '../helpers/API.js';
+//------------------------------------
+const admin = useStore();
 getProfession();
-function getProfession() {
-    axios
-    .get('https://'+host+'/professions?type=full')
-    .then(response => {
-        professions.value = response.data;
-        console.log(response);
-    });
-}
+//------------------------------------
 function setStatus(index_profession) {
-    if (professions.value[index_profession].status != 2) professions.value[index_profession].status = 1;
+    if (admin.professions[index_profession].status != 2) admin.professions[index_profession].status = 1;
 }
 function setStatusGroup(index_profession, index_group) {
-    professions.value[index_profession].groups[index_group].id_profession = professions.value[index_profession].id;
-    if (professions.value[index_profession].groups[index_group].status != 2) {
-        if (professions.value[index_profession].groups[index_group].name == "") professions.value[index_profession].groups[index_group].status = 0;
-        else professions.value[index_profession].groups[index_group].status = 1;
+    admin.professions[index_profession].groups[index_group].id_profession = admin.professions[index_profession].id;
+    if (admin.professions[index_profession].groups[index_group].status != 2) {
+        if (admin.professions[index_profession].groups[index_group].name == "") admin.professions[index_profession].groups[index_group].status = 0;
+        else admin.professions[index_profession].groups[index_group].status = 1;
     }
 }
 function addProfession() {
-    professions.value.push({'id':null, 'name': '', 'status': 2, 'groups': []});
+    admin.professions.push({'id':null, 'name': '', 'status': 2, 'groups': []});
 }
 function addGroup(index_profession) {
-    professions.value[index_profession].groups.push({'id':null, 'name': '', 'status': 2});
+    admin.professions[index_profession].groups.push({'id':null, 'name': '', 'status': 2});
 }
 function deleteProfession(index_profession) {
-    let result = confirm(`Вы уверены что хотите удалить профессию ${professions.value[index_profession].name}?`);
+    let result = confirm(`Вы уверены что хотите удалить профессию ${admin.professions[index_profession].name}?`);
     if (result) {
-        if (professions.value[index_profession].status != 2) professions.value[index_profession].status = 0;
-        else professions.value[index_profession].status = 3;
-        save();
+        if (admin.professions[index_profession].status != 2) admin.professions[index_profession].status = 0;
+        else admin.professions[index_profession].status = 3;
+        saveProfession();
     }
-}
-function save() {
-    let answer = {
-        jwt: localStorage.getItem('skos-token'),
-        professions: professions.value.filter((profession) => typeof profession.status !== "undefined" && profession.status != 3)
-    };
-    let trig = 0;
-    axios
-        .post('https://' + host + '/professions', answer)
-        .then((response) => {
-            console.log(answer);
-            console.log(response);
-            if (trig == 2) //router.go(0);
-            trig = 1;
-        });
-    let profession_groups = [];
-    professions.value.forEach(element => {
-        let groups = element.groups.filter((group) => typeof group.status !== "undefined" && group.status != 3);
-        profession_groups = profession_groups.concat(groups);
-    });
-    axios
-        .post('https://' + host + '/profession_groups', {'profession_groups': profession_groups})
-        .then((response) => {
-            console.log({'profession_groups': profession_groups});
-            console.log(response);
-            if (trig == 1) //router.go(0);
-            trig = 2;
-        });
 }
 function max(a ,b) {
     return a > b ? a : b;
 }
+//------------------------------------
 </script>
 <template>
     <h1>Настройка профессий</h1>
@@ -81,7 +46,7 @@ function max(a ,b) {
             </tr>
         </thead>
         <tbody>
-            <template v-for="(profession, index_profession) in professions" :key="index_profession">
+            <template v-for="(profession, index_profession) in admin.professions" :key="index_profession">
                 <template v-if="profession.status != 0 && profession.status != 3">
                     <tr>
                         <td :rowspan="max(profession.groups.length, 1)">{{ profession.id}}</td>
@@ -103,7 +68,7 @@ function max(a ,b) {
             </template>
         </tbody>
     </table>
-    <button class="green" @click="save()">Сохранить</button>
+    <button class="green" @click="saveProfession()">Сохранить</button>
     <button class="add" @click="addProfession()">Добавить профессию</button>
 </template>
 

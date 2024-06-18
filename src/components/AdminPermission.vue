@@ -1,51 +1,22 @@
 <script setup>
-import { ref } from 'vue';
-import axios from 'axios';
-import router from '../router';
 import { useStore } from '../stores/PlanStore';
-const host = 'mypew.ru:7070'; //имя или ip хоста api
-const roles = ref();
+import { getRole, saveRole } from '../helpers/API.js';
+//------------------------------------
 const admin = useStore();
-if (localStorage.getItem('skos-role-id')) {
-    admin.setRoleId(localStorage.getItem('skos-role-id'));
-}
 getRole();
-function getRole() {
-    let request = {
-        type_request: 'roles_info',
-        jwt: localStorage.getItem('skos-token'),
-    };
-    axios
-        .post('https://'+host+'/roles', request)
-        .then(response => {
-            roles.value = response.data;
-            console.log(response);
-        });
-}
+//------------------------------------
 function setStatus(index_role) {
-    if (roles.value[index_role].status != 2) roles.value[index_role].status = 1;
+    if (admin.roles[index_role].status != 2) admin.roles[index_role].status = 1;
 }
 function updateRole() {
     localStorage.setItem('skos-role-id', admin.roleId);
 }
-function save() {
-    let answer = {
-        type_request: 'roles_change',
-        jwt: localStorage.getItem('skos-token'),
-        roles: roles.value.filter((role) => typeof role.status !== "undefined" && role.status != 3)
-    };
-    axios
-        .post('https://' + host + '/roles', answer)
-        .then((response) => {
-            console.log(answer, response);
-            //router.go(0);
-        })
-}
+//------------------------------------
 </script>
 <template>
     <h1>Настройка прав доступа ролям</h1>
     <select v-model="admin.roleId" @change="updateRole()">
-        <template v-for="(role, index_role) in roles" :key="index_role">
+        <template v-for="(role, index_role) in admin.roles" :key="index_role">
             <option :value="role.id">{{ role.name }}</option>
         </template>
     </select>
@@ -103,7 +74,7 @@ function save() {
             </tr>
         </tbody>
     </table>
-    <button class="green" @click="save()">Сохранить</button>
+    <button class="green" @click="saveRole()">Сохранить</button>
 </template>
 
 <style scoped>

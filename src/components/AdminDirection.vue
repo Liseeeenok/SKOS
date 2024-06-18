@@ -1,44 +1,26 @@
 <script setup>
-import { ref } from 'vue';
-import axios from 'axios';
-import router from '../router';
-const host = 'mypew.ru:7070'; //имя или ip хоста api
-const directions = ref();
+import { useStore } from '../stores/PlanStore';
+import { getDirection, saveDirection } from '../helpers/API.js';
+//------------------------------------
+const admin = useStore();
 getDirection();
-function getDirection() {
-    axios
-        .get('https://'+host+'/directions')
-        .then(response => {
-            directions.value = response.data;
-        });
-}
+//------------------------------------
 function setStatus(index_direction) {
-    if (directions.value[index_direction].status != 2) directions.value[index_direction].status = 1;
+    if (admin.directions[index_direction].status != 2) admin.directions[index_direction].status = 1;
 }
 function addDirection() {
-    directions.value.push({'id':null, 'name': '', 'status': 2});
+    admin.directions.push({'id': null, 'name': '', 'status': 2});
 }
 function deleteDirection(index_direction) {
-    let result = confirm(`Вы уверены что хотите удалить подразделение ${directions.value[index_direction].name}?`);
+    let result = confirm(`Вы уверены что хотите удалить подразделение ${admin.directions[index_direction].name}?`);
     if (result) {
-        if (directions.value[index_direction].status != 2) directions.value[index_direction].status = 0;
-        else directions.value[index_direction].status = 3;
-        save();
+        admin.directions[index_direction].status != 2 ? admin.directions[index_direction].status = 0 : admin.directions[index_direction].status = 3;
+        saveDirection();
     }
 }
-function save() {
-    let answer = {
-        jwt: localStorage.getItem('skos-token'),
-        directions: directions.value.filter((direction) => typeof direction.status !== "undefined" && direction.status != 3)
-    };
-    axios
-        .post('https://' + host + '/directions', answer)
-        .then((response) => {
-            console.log(response);
-            router.go(0);
-        })
-}
+//------------------------------------
 </script>
+
 <template>
     <h1>Настройка дирекций</h1>
     <table>
@@ -50,7 +32,7 @@ function save() {
             </tr>
         </thead>
         <tbody>
-            <template v-for="(direction, index_direction) in directions" :key="index_direction">
+            <template v-for="(direction, index_direction) in admin.directions" :key="index_direction">
                 <tr v-if="direction.status != 0 && direction.status != 3">
                     <td>{{ direction.id}}</td>
                     <td><input type="text" v-model="direction.name" @change="setStatus(index_direction)"/></td>
@@ -61,7 +43,7 @@ function save() {
             </template>
         </tbody>
     </table>
-    <button class="green" @click="save()">Сохранить</button>
+    <button class="green" @click="saveDirection()">Сохранить</button>
     <button class="add" @click="addDirection()">Добавить дирекцию</button>
 </template>
 

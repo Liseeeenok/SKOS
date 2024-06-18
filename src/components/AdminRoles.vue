@@ -1,36 +1,21 @@
 <script setup>
-import { ref } from 'vue';
-import axios from 'axios';
-import router from '../router';
 import { useStore } from '../stores/PlanStore';
-const host = 'mypew.ru:7070'; //имя или ip хоста api
-const roles = ref();
+import { getRole, saveRole } from '../helpers/API.js';
+//------------------------------------
 const admin = useStore();
 getRole();
-function getRole() {
-    let request = {
-        type_request: 'roles_info',
-        jwt: localStorage.getItem('skos-token'),
-    };
-    axios
-        .post('https://'+host+'/roles', request)
-        .then(response => {
-            roles.value = response.data;
-            console.log(response);
-        });
-}
+//------------------------------------
 function setStatus(index_role) {
-    if (roles.value[index_role].status != 2) roles.value[index_role].status = 1;
+    if (admin.roles[index_role].status != 2) admin.roles[index_role].status = 1;
 }
 function addRole() {
-    roles.value.push({'id':null, 'name': '', 'status': 2});
+    admin.roles.push({'id': null, 'name': '', 'status': 2});
 }
 function deleteRole(index_role) {
-    let result = confirm(`Вы уверены что хотите удалить роль ${roles.value[index_role].name}?`);
+    let result = confirm(`Вы уверены что хотите удалить роль ${admin.roles[index_role].name}?`);
     if (result) {
-        if (roles.value[index_role].status != 2) roles.value[index_role].status = 0;
-        else roles.value[index_role].status = 3;
-        save();
+        admin.roles[index_role].status != 2 ? admin.roles[index_role].status = 0 : admin.roles[index_role].status = 3;
+        saveRole();
     }
 }
 function openPermission(roleId) {
@@ -39,22 +24,10 @@ function openPermission(roleId) {
     localStorage.setItem('skos-menu', 7)
     localStorage.setItem('skos-role-id', roleId)
 }
-function save() {
-    let answer = {
-        type_request: 'roles_change',
-        jwt: localStorage.getItem('skos-token'),
-        roles: roles.value.filter((role) => typeof role.status !== "undefined" && role.status != 3)
-    };
-    axios
-        .post('https://' + host + '/roles', answer)
-        .then((response) => {
-            console.log(answer, response);
-            //router.go(0);
-        })
-}
+//------------------------------------
 </script>
 <template>
-    <h1>Настройка направлений</h1>
+    <h1>Настройка ролей</h1>
     <table>
         <thead>
             <tr>
@@ -64,7 +37,7 @@ function save() {
             </tr>
         </thead>
         <tbody>
-            <template v-for="(role, index_role) in roles" :key="index_role">
+            <template v-for="(role, index_role) in admin.roles" :key="index_role">
                 <tr v-if="role.status != 0 && role.status != 3">
                     <td>{{ role.id }}</td>
                     <td><input type="text" v-model="role.name" @change="setStatus(index_role)"/></td>
@@ -78,8 +51,8 @@ function save() {
             </template>
         </tbody>
     </table>
-    <button class="green" @click="save()">Сохранить</button>
-    <button class="add" @click="addRole()">Добавить направление</button>
+    <button class="green" @click="saveRole()">Сохранить</button>
+    <button class="add" @click="addRole()">Добавить роль</button>
 </template>
 
 <style scoped>

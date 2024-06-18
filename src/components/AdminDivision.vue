@@ -1,43 +1,24 @@
 <script setup>
-import { ref } from 'vue';
-import axios from 'axios';
-import router from '../router';
-const host = 'mypew.ru:7070'; //имя или ip хоста api
-const divisions = ref();
+import { useStore } from '../stores/PlanStore';
+import { getDivision, saveDivision } from '../helpers/API.js';
+//------------------------------------
+const admin = useStore();
 getDivision();
-function getDivision() {
-    axios
-        .get('https://'+host+'/divisions')
-        .then(response => {
-            divisions.value = response.data;
-        });
-}
+//------------------------------------
 function setStatus(index_division) {
-    if (divisions.value[index_division].status != 2) divisions.value[index_division].status = 1;
+    if (admin.divisions[index_division].status != 2) admin.divisions[index_division].status = 1;
 }
 function addDivision() {
-    divisions.value.push({'id':null, 'name': '', 'status': 2});
+    admin.divisions.push({'id': null, 'name': '', 'status': 2});
 }
 function deleteDivision(index_division) {
-    let result = confirm(`Вы уверены что хотите удалить подразделение ${divisions.value[index_division].name}?`);
+    let result = confirm(`Вы уверены что хотите удалить подразделение ${admin.divisions[index_division].name}?`);
     if (result) {
-        if (divisions.value[index_division].status != 2) divisions.value[index_division].status = 0;
-        else divisions.value[index_division].status = 3;
-        save();
+        admin.divisions[index_division].status != 2 ? admin.divisions[index_division].status = 0 : admin.divisions[index_division].status = 3;
+        saveDivision();
     }
 }
-function save() {
-    let answer = {
-        jwt: localStorage.getItem('skos-token'),
-        divisions: divisions.value.filter((division) => typeof division.status !== "undefined" && division.status != 3)
-    };
-    axios
-        .post('https://' + host + '/divisions', answer)
-        .then((response) => {
-            console.log(response);
-            router.go(0);
-        })
-}
+//------------------------------------
 </script>
 <template>
     <h1>Настройка подразделений</h1>
@@ -50,7 +31,7 @@ function save() {
             </tr>
         </thead>
         <tbody>
-            <template v-for="(division, index_division) in divisions" :key="index_division">
+            <template v-for="(division, index_division) in admin.divisions" :key="index_division">
                 <tr v-if="division.status != 0 && division.status != 3">
                     <td>{{ division.id}}</td>
                     <td><input type="text" v-model="division.name" @change="setStatus(index_division)"/></td>
@@ -61,7 +42,7 @@ function save() {
             </template>
         </tbody>
     </table>
-    <button class="green" @click="save()">Сохранить</button>
+    <button class="green" @click="saveDivision()">Сохранить</button>
     <button class="add" @click="addDivision()">Добавить подразделение</button>
 </template>
 
