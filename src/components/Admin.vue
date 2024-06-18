@@ -5,11 +5,16 @@ import AdminSection from './AdminSection.vue';
 import AdminDirection from './AdminDirection.vue';
 import AdminProfession from './AdminProfession.vue';
 import AdminUser from './AdminUser.vue';
+import AdminRoles from './AdminRoles.vue';
+import AdminPermission from './AdminPermission.vue';
+import { useStore } from '../stores/PlanStore';
 const host = 'mypew.ru:7070'; //имя или ip хоста api
-const level = localStorage.getItem('skos-role');
-const chapter = ref(localStorage.getItem('skos-menu') ?? 1);
+const admin = useStore();
+if (localStorage.getItem('skos-menu')) {
+    admin.setChapter(localStorage.getItem('skos-menu'));
+}
 function changeMenu(index) {
-    chapter.value = index; 
+    admin.setChapter(index); 
     localStorage.setItem('skos-menu', index)
 }
 </script>
@@ -19,19 +24,23 @@ function changeMenu(index) {
         <div class="admin">
             <div class="container_menu">
                 <div class="menu">
-                    <div class="menu_item" :class="chapter == 1 ? 'active':''" @click="changeMenu(1)">Подразделения</div>
-                    <div class="menu_item" :class="chapter == 2 ? 'active':''" @click="changeMenu(2)">Направления</div>
-                    <div class="menu_item" :class="chapter == 3 ? 'active':''" @click="changeMenu(3)">Дирекции</div>
-                    <div class="menu_item" :class="chapter == 4 ? 'active':''" @click="changeMenu(4)">Профессии</div>
-                    <div class="menu_item" :class="chapter == 5 ? 'active':''" @click="changeMenu(5)">Пользователи</div>
+                    <div class="menu_item" :class="admin.chapter == 1 ? 'active':''" @click="changeMenu(1)">Подразделения</div>
+                    <div class="menu_item" :class="admin.chapter == 2 ? 'active':''" @click="changeMenu(2)">Секции</div>
+                    <div class="menu_item" :class="admin.chapter == 3 ? 'active':''" @click="changeMenu(3)">Дирекции</div>
+                    <div class="menu_item" :class="admin.chapter == 4 ? 'active':''" @click="changeMenu(4)">Профессии</div>
+                    <div class="menu_item" :class="admin.chapter == 5 ? 'active':''" @click="changeMenu(5)">Пользователи</div>
+                    <div class="menu_item" :class="admin.chapter == 6 ? 'active':''" @click="changeMenu(6)">Роли</div>
+                    <div class="menu_item" :class="admin.chapter == 7 ? 'active':''" @click="changeMenu(7)">Права</div>
                 </div>
             </div>
             <div class="container_content">
-                <template v-if="chapter == 1"><AdminDivision/></template>
-                <template v-if="chapter == 2"><AdminSection/></template>
-                <template v-if="chapter == 3"><AdminDirection/></template>
-                <template v-if="chapter == 4"><AdminProfession/></template>
-                <template v-if="chapter == 5"><AdminUser/></template>
+                <template v-if="admin.chapter == 1"><AdminDivision/></template>
+                <template v-if="admin.chapter == 2"><AdminSection/></template>
+                <template v-if="admin.chapter == 3"><AdminDirection/></template>
+                <template v-if="admin.chapter == 4"><AdminProfession/></template>
+                <template v-if="admin.chapter == 5"><AdminUser/></template>
+                <template v-if="admin.chapter == 6"><AdminRoles/></template>
+                <template v-if="admin.chapter == 7"><AdminPermission/></template>
             </div>
         </div>
     </div>

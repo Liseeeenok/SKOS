@@ -3,7 +3,6 @@ import { ref } from 'vue';
 import router from '../router';
 import axios from 'axios';
 //---------------------------API-----------------------------
-import { usePlanStore } from '../stores/PlanStore';
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 const arr_name_division = ref([]);
 const arr_name_direction = ref([]);
@@ -52,23 +51,6 @@ function getNameById(arr, id) {
     });
     return name;
 }
-const planStore = usePlanStore();
-const level = localStorage.getItem('skos-role');
-let arr_notifications_all = [];
-function formNotification() {
-    arr_notifications_all = [];
-    planStore.plans.forEach((plan) => {
-        plan.arr_plan.forEach((division) => [
-            division.arr_chapter.forEach((chapter) => {
-                chapter.arr_profession.forEach((profession) => {
-                    profession.direction.forEach((direction) => {
-                        arr_notifications_all.push({id: arr_notifications_all.length, direction: getNameById(arr_name_direction.value, direction), division: getNameById(arr_name_division.value, division.division), code: getNameById(arr_name_profession.value, profession.name), status: 'Не прочитано', start_o: profession.start_o[0], date_read: '-'});
-                    })
-                })
-            })
-        ])
-    });
-}
 const arr_notifications = ref([]);
 const page = ref(1);
 function getNotification() {
@@ -82,10 +64,6 @@ function getNotification() {
     arr_notifications.value = arr_notifications_all;
 }
 //---------------------------API-----------------------------
-function openNotification(notification) {
-    planStore.setNotification(notification);
-    router.push({name: 'notificationEdit'});
-}
 </script>
 
 <template>

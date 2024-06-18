@@ -16,10 +16,6 @@ function addCompany() {
     arr_company.value.push({telegram:'',name:'',count:0});
 };
 //---------------------------API-----------------------------
-import { usePlanStore } from '../stores/PlanStore';
-const planStore = usePlanStore();
-console.log(planStore.notification);
-const notification = planStore.notification;
 //---------------------------API-----------------------------
 </script>
 

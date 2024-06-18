@@ -4,7 +4,9 @@ import axios from 'axios';
 import router from '../router';
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 const users = ref();
+const roles = ref();
 getUsers();
+getRole();
 function getUsers() {
     let request = {
         type_request:'users_info',
@@ -16,6 +18,18 @@ function getUsers() {
             users.value = response.data;
             console.log(response);
         })
+}
+function getRole() {
+    let request = {
+        type_request: 'roles_info',
+        jwt: localStorage.getItem('skos-token'),
+    };
+    axios
+        .post('https://'+host+'/roles', request)
+        .then(response => {
+            roles.value = response.data;
+            console.log(response);
+        });
 }
 function setStatus(index_user) {
     if (users.value[index_user].status != 2) users.value[index_user].status = 1;
@@ -76,7 +90,13 @@ function save() {
                     <td><input type="text" v-model="user.name" @change="setStatus(index_user)"/></td>
                     <td><input type="text" v-model="user.patronymic" @change="setStatus(index_user)"/></td>
                     <td><input type="text" v-model="user.phone_number" @change="setStatus(index_user)"/></td>
-                    <td><input type="text" v-model="user.role" @change="setStatus(index_user)"/></td>
+                    <td>
+                        <select v-model="user.role" @change="setStatus(index_user)">
+                            <template v-for="(role, index_role) in roles" :key="index_role">
+                                <option :value="role.id">{{ role.name }}</option>
+                            </template>
+                        </select>
+                    </td>
                     <td><input type="text" v-model="user.password" @change="setStatus(index_user)"/></td>
                     <td>
                         <button class="red" @click="deleteUser(index_user)">Удалить</button>
@@ -117,7 +137,12 @@ td {
 input {
     padding: 5px 10px;
     font-size: 20px;
-    width: 200px;
+    width: 150px;
+}
+select {
+    padding: 5px 10px;
+    font-size: 20px;
+    max-width: 370px;
 }
 button {
     padding: 5px 10px;

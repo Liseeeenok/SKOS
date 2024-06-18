@@ -37,7 +37,7 @@ function save() {
 }
 </script>
 <template>
-    <h1>Настройка направлений</h1>
+    <h1>Настройка секций</h1>
     <table>
         <thead>
             <tr>
