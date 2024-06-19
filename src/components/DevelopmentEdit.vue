@@ -1,96 +1,39 @@
 <script setup>
-import { ref } from 'vue';
 import axios from 'axios';
 import router from '../router';
-const plan = ref([]);
-const final = ref({year: '', arr_plan: plan, arr_plan_result: {}, results: false})
 const host = 'mypew.ru:7070'; //имя или ip хоста api
-const level = localStorage.getItem('skos-role');
-//---------------------------API-----------------------------
-let year = localStorage.getItem('skos-year');
-if (!year) {
-    const date = new Date();
-    year = date.getFullYear();
-}
-const article = ref({
-    jwt: localStorage.getItem('skos-token'),
-    request_type: 'VIEW',
-    academic_year: year,
-    table_type: 2
-});
+//------------------------------------
+import { useStore } from '../stores/PlanStore';
+import { getDirection, getDivision, getPlan, getProfession, getSection, savePlan } from '../helpers/API.js';
+//------------------------------------
+const admin = useStore();
 getPlan();
-function getPlan() {
-    localStorage.setItem('skos-year', article.value.academic_year)
-    axios.post('https://'+host+'/table', article.value)
-        .then(response => {
-            console.log(response.data);
-            final.value.year = response.data.year;
-            final.value.arr_plan_result = response.data.arr_plan_result;
-            final.value.results = response.data.results;
-            plan.value = response.data.arr_plan;
-            plan.value.forEach((division) => {
-                division.arr_chapter.forEach((chapter) => {
-                    chapter.arr_profession.forEach((profession) => {
-                        getProfessionGroups(profession.name);
-                    });
-                });
-            });
-        });
-}
-const arr_name_division = ref([]);
-axios
-    .get('https://'+host+'/divisions')
-    .then(response => {
-        arr_name_division.value = response.data;
-    });
-const arr_name_section = ref([]);
-axios
-    .get('https://'+host+'/sections')
-    .then(response => {
-        arr_name_section.value = response.data;
-    });
-const arr_name_direction = ref([]);
-axios
-    .get('https://'+host+'/directions')
-    .then(response => {
-        arr_name_direction.value = response.data;
-    });
-const arr_name_profession = ref([]);
-axios
-    .get('https://'+host+'/professions')
-    .then(response => {
-        arr_name_profession.value = response.data;
-    });
-const arr_name_profession_groups = ref([]);
-function getProfessionGroups(id_profession) {
-    console.log('getProfessionGroups +');
-    axios
-        .get('https://'+host+'/profession_groups?id_profession='+id_profession)
-        .then(response => {
-            arr_name_profession_groups.value[id_profession] = response.data;
-        });
-}
+getDivision();
+getSection();
+getDirection();
+getProfession();
+//---------------------------API-----------------------------
 function addMainDivision() {
     console.log('addMainDivision +');
-    plan.value.push({division:'', arr_chapter:[{title: '', arr_profession: [], arr_profession_results: {}, results: false}], arr_chapter_results: {}, results: false});
+    admin.plan.arr_plan.push({division:'', arr_chapter:[{title: '', arr_profession: [], arr_profession_results: {}, results: false}], arr_chapter_results: {}, results: false});
 }
 function addProfession(index_division, index_chapter) {
     console.log('addProfession +');
-    plan.value[index_division].arr_chapter[index_chapter].arr_profession.push({id:null, status: 2, name:'', status_code: [2], code:[{id:null,name:'',status:2}], to1:0, per: 0, indt:0, tren:0, exam:0, to2:0, po:0, start_o:[], start_po:[], end_po:[], qual_ex:[], count_people:0, status_direction: [], direction:[], count:[]});
+    admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession.push({id:null, status: 2, name:'', status_code: [2], code:[{id:null,name:'',status:2}], to1:0, per: 0, indt:0, tren:0, exam:0, to2:0, po:0, start_o:[], start_po:[], end_po:[], qual_ex:[], count_people:0, status_direction: [], direction:[], count:[]});
 }
 function addChapter(index_division) {
     console.log('addChapter +');
-    plan.value[index_division].arr_chapter.push({title: '', arr_profession: [], arr_profession_results: {}, results: false});
+    admin.plan.arr_plan[index_division].arr_chapter.push({title: '', arr_profession: [], arr_profession_results: {}, results: false});
 }
 function getCountPeople(index_division, index_chapter, index_profession) {
     console.log('getCountPeople +');
-    if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].count) {
+    if (admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].count) {
         let sum = 0;
-        plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].count.forEach(x => {
+        admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].count.forEach(x => {
             if (x != '')
             sum += x;
         });
-        plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].count_people = sum;
+        admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].count_people = sum;
     };
     getProfessionColumnResult(index_division, index_chapter);
     getProfessionDirections(index_division, index_chapter);
@@ -98,32 +41,32 @@ function getCountPeople(index_division, index_chapter, index_profession) {
 function addCode(index_division, index_chapter, index_profession) {
     console.log('addCode +');
     setProfessionStatusChange(index_division, index_chapter, index_profession);
-    plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code.push({id:null,name:'',status:2});
+    admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code.push({id:null,name:'',status:2});
 }
 function addDirection(index_division, index_chapter, index_profession) {
     console.log('addDirection +');
     setProfessionStatusChange(index_division, index_chapter, index_profession);
-    plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction.push({id:null,id_direction:'',status:2});
-    plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].count.push(0);
-    plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].start_o.push('');
-    plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].start_po.push('');
-    plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].end_po.push('');
-    plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].qual_ex.push('');
+    admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction.push({id:null,id_direction:'',status:2});
+    admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].count.push(0);
+    admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].start_o.push('');
+    admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].start_po.push('');
+    admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].end_po.push('');
+    admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].qual_ex.push('');
 }
 function getProfessionResults(index_division, index_chapter) {
     console.log('getProfessionResults +');
     getProfessionColumnResult(index_division, index_chapter);
     getProfessionDirections(index_division, index_chapter);
-    plan.value[index_division].arr_chapter[index_chapter].results = true;
+    admin.plan.arr_plan[index_division].arr_chapter[index_chapter].results = true;
 }
 function getProfessionColumnResult(index_division, index_chapter) {
     console.log('getProfessionColumnResult +');
     let arr_column = ['to1', 'indt', 'tren', 'exam', 'to2', 'po', 'count_people'];
     arr_column.forEach(column => {
-        plan.value[index_division].arr_chapter[index_chapter].arr_profession_results[column] = 0;
-        if (plan.value[index_division].arr_chapter[index_chapter]) {
+        admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession_results[column] = 0;
+        if (admin.plan.arr_plan[index_division].arr_chapter[index_chapter]) {
             let sum = 0;
-            plan.value[index_division].arr_chapter[index_chapter].arr_profession.forEach(x => {
+            admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession.forEach(x => {
                 if (x[column]) {
                     if (x[column] == '')
                         sum += 0;
@@ -131,20 +74,20 @@ function getProfessionColumnResult(index_division, index_chapter) {
                         sum += x[column];
                 }
             });
-            plan.value[index_division].arr_chapter[index_chapter].arr_profession_results[column] = sum;
+            admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession_results[column] = sum;
         }
     });
     getChapterColumnResult(index_division);
 }
 function getProfessionDirections(index_division, index_chapter) {
     console.log('getProfessionDirections +');
-    plan.value[index_division].arr_chapter[index_chapter].arr_profession_results['directions'] = {};
-    plan.value[index_division].arr_chapter[index_chapter].arr_profession.forEach(profession => {
+    admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession_results['directions'] = {};
+    admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession.forEach(profession => {
         profession.direction.forEach((direction, index_direction) => { 
-            if (plan.value[index_division].arr_chapter[index_chapter].arr_profession_results['directions'][direction.id_direction] == undefined) 
-                plan.value[index_division].arr_chapter[index_chapter].arr_profession_results['directions'][direction.id_direction] = 0;
+            if (admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession_results['directions'][direction.id_direction] == undefined) 
+                admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession_results['directions'][direction.id_direction] = 0;
             if (profession.count[index_direction] != '')
-                plan.value[index_division].arr_chapter[index_chapter].arr_profession_results['directions'][direction.id_direction] += profession.count[index_direction];
+                admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession_results['directions'][direction.id_direction] += profession.count[index_direction];
         });
     });
     getChapterDirections(index_division);
@@ -163,16 +106,16 @@ function getChapterResults(index_division) {
     console.log('getChapterResults +');
     getChapterColumnResult(index_division);
     getChapterDirections(index_division);
-    plan.value[index_division].results = true;
+    admin.plan.arr_plan[index_division].results = true;
 }
 function getChapterColumnResult(index_division) {
     console.log('getChapterColumnResult +');
     let arr_column = ['to1', 'indt', 'tren', 'exam', 'to2', 'po', 'count_people'];
     arr_column.forEach(column => {
-        plan.value[index_division].arr_chapter_results[column] = 0;
-        if (plan.value[index_division]) {
+        admin.plan.arr_plan[index_division].arr_chapter_results[column] = 0;
+        if (admin.plan.arr_plan[index_division]) {
             let sum = 0;
-            plan.value[index_division].arr_chapter.forEach(x => {
+            admin.plan.arr_plan[index_division].arr_chapter.forEach(x => {
                 if (x['arr_profession_results'][column]) {
                     if (x['arr_profession_results'][column] == '')
                         sum += 0;
@@ -180,19 +123,19 @@ function getChapterColumnResult(index_division) {
                         sum += x['arr_profession_results'][column];
                 }
             });
-            plan.value[index_division].arr_chapter_results[column] = sum;
+            admin.plan.arr_plan[index_division].arr_chapter_results[column] = sum;
         }
     });
     getDivisionColumnResult();
 }
 function getChapterDirections(index_division) {
     console.log('getChapterDirections +');
-    plan.value[index_division].arr_chapter_results['directions'] = {};
-    plan.value[index_division].arr_chapter.forEach(x => {
+    admin.plan.arr_plan[index_division].arr_chapter_results['directions'] = {};
+    admin.plan.arr_plan[index_division].arr_chapter.forEach(x => {
         for (let index_direction in x.arr_profession_results.directions) {
-            if (plan.value[index_division].arr_chapter_results['directions'][index_direction] == undefined) 
-                plan.value[index_division].arr_chapter_results['directions'][index_direction] = 0;
-            plan.value[index_division].arr_chapter_results['directions'][index_direction] += x.arr_profession_results.directions[index_direction];
+            if (admin.plan.arr_plan[index_division].arr_chapter_results['directions'][index_direction] == undefined) 
+                admin.plan.arr_plan[index_division].arr_chapter_results['directions'][index_direction] = 0;
+            admin.plan.arr_plan[index_division].arr_chapter_results['directions'][index_direction] += x.arr_profession_results.directions[index_direction];
         };
     });
     getDivisionDirections();
@@ -201,16 +144,16 @@ function getDivisionResults() {
     console.log('getDivisionResults +');
     getDivisionColumnResult();
     getDivisionDirections();
-    final.value.results = true;
+    admin.plan.results = true;
 }
 function getDivisionColumnResult() {
     console.log('getDivisionColumnResult +');
     let arr_column = ['to1', 'indt', 'tren', 'exam', 'to2', 'po', 'count_people'];
     arr_column.forEach(column => {
-        final.value.arr_plan_result[column] = 0;
-        if (final.value) {
+        admin.plan.arr_plan_result[column] = 0;
+        if (admin.plan) {
             let sum = 0;
-            final.value.arr_plan.forEach(x => {
+            admin.plan.arr_plan.forEach(x => {
                 if (x['arr_chapter_results'][column]) {
                     if (x['arr_chapter_results'][column] == '')
                         sum += 0;
@@ -218,130 +161,61 @@ function getDivisionColumnResult() {
                         sum += x['arr_chapter_results'][column];
                 }
             });
-            final.value.arr_plan_result[column] = sum;
+            admin.plan.arr_plan_result[column] = sum;
         }
     });
 }
 function getDivisionDirections() {
     console.log('getDivisionDirections +');
-    final.value.arr_plan_result['directions'] = {};
-    final.value.arr_plan.forEach(x => {
+    admin.plan.arr_plan_result['directions'] = {};
+    admin.plan.arr_plan.forEach(x => {
         for (let index_direction in x.arr_chapter_results.directions) {
-            if (final.value.arr_plan_result['directions'][index_direction] == undefined) 
-                final.value.arr_plan_result['directions'][index_direction] = 0;
-            final.value.arr_plan_result['directions'][index_direction] += x.arr_chapter_results.directions[index_direction];
+            if (admin.plan.arr_plan_result['directions'][index_direction] == undefined) 
+                admin.plan.arr_plan_result['directions'][index_direction] = 0;
+            admin.plan.arr_plan_result['directions'][index_direction] += x.arr_chapter_results.directions[index_direction];
         };
     });
 }
-function SAVE() {
-    let answer = {
-        jwt: localStorage.getItem('skos-token'),
-        request_type: "SAVE",
-        training_list: [],
-        academic_year: plan.value.year,
-        table_type: 2
-    }
-    plan.value.forEach((division) => {
-        division.arr_chapter.forEach((chapter) => {
-            chapter.arr_profession.forEach((profession) => {
-                if (profession.status == undefined) return;
-                let profession_groups = [];
-                profession.code.forEach((code, index_code) => {
-                    profession_groups.push({
-                        "id":code.id,
-                        "id_PG":code.name,
-                        "status":code.status,
-                    });
-                });
-                let directions = [];
-                profession.direction.forEach((direction, index_direction) => {
-                    directions.push({
-                        "id":direction.id,
-                        "status":direction.status,
-                        "id_direction":direction.id_direction,
-                        "count_people":profession.count[index_direction],
-                        "date_start_training":profession.start_o[index_direction],
-                        "date_start_industrial_training":profession.start_po[index_direction],
-                        "date_end_industrial_training":profession.end_po[index_direction],
-                        "date_exam":profession.qual_ex[index_direction],
-                    });
-                });
-                answer.training_list.push({
-                    "id":profession.id, 
-                    "status":profession.status,
-                    "academic_year":final.value.year,
-                    "table_type":2,
-                    "id_division":division.division,
-                    "id_section":chapter.title,
-                    "id_profession":profession.name,
-                    "profession_groups": profession_groups,
-                    "directions":directions,
-                    "to1":profession.to1,
-                    "per":profession.per,
-                    "indt":profession.indt,
-                    "tren":profession.tren,
-                    "exam":profession.exam,
-                    "to2":profession.to2,
-                    "po":profession.po
-                });
-            });
-        });
-    });
-    console.log('answer:');
-    console.log((answer));
-    console.log('answer string:');
-    console.log(JSON.stringify(answer));
-    axios
-        .post('https://' + host + '/table', answer)
-        .then((response) => {
-            console.log(response);
-            router.go(0);
-        })
-}
 function setProfessionStatusChange(index_division, index_chapter, index_profession) {
     console.log('setProfessionStatusChange +');
-    if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].name == '') {
-        if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].id == undefined) {
-            plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].status = undefined;
+    if (admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].name == '') {
+        if (admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].id == undefined) {
+            admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].status = undefined;
         } else {
-            plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].status = 0;
+            admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].status = 0;
         }
         return;
     }
-    if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].status == 2) return;
-    else plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].status = 1;
+    if (admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].status == 2) return;
+    else admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].status = 1;
 }
 function setCodeStatusChange(index_division, index_chapter, index_profession) {
     console.log('setCodeStatusChange +');
     setProfessionStatusChange(index_division, index_chapter, index_profession);
-    if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code.name == '') {
-        if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code.id == undefined) {
-            plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code.status = undefined;
+    if (admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code.name == '') {
+        if (admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code.id == undefined) {
+            admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code.status = undefined;
         } else {
-            plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code.status = 0;
+            admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code.status = 0;
         }
         return;
     }
-    if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code.status == 2) return;
-    else plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code.status = 1;
+    if (admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code.status == 2) return;
+    else admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code.status = 1;
 }
 function setDirectionStatusChange(index_division, index_chapter, index_profession, index_direction) {
     console.log('setDirectionStatusChange +');
     setProfessionStatusChange(index_division, index_chapter, index_profession);
-    if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_direction].id_direction == '') {
-        if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_direction].id == undefined) {
-            plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_direction].status = undefined;
+    if (admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_direction].id_direction == '') {
+        if (admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_direction].id == undefined) {
+            admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_direction].status = undefined;
         } else {
-            plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_direction].status = 0;
+            admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_direction].status = 0;
         }
         return;
     }
-    if (plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_direction].status == 2) return;
-    else plan.value[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_direction].status = 1;
-}
-function debug() {
-    console.log(final.value);
-    console.log(JSON.stringify(final.value));
+    if (admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_direction].status == 2) return;
+    else admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_direction].status = 1;
 }
 </script>
 
@@ -352,7 +226,7 @@ function debug() {
             <div class="title">профессианального развития рабочих и служащих в Восточно-Сибирском учебном центре профессиональных квалификаций</div>
             <div class="title">Восточно-Сибирской железной дороги - филиала ОАО "РЖД"</div>
             <div class="title">на 
-                <input type="number" style="width: 60px;" v-model="article.academic_year" @change="getPlan()"/> год
+                <input type="number" style="width: 60px;" v-model="admin.academic_year" @change="getPlan()"/> год
             </div>
         </div>
         <div>
@@ -429,13 +303,15 @@ function debug() {
                         </th>
                     </tr>
                 </thead>
-                <tbody v-for="(division, index_division) in plan" :key="index_division">
+                <tbody v-for="(division, index_division) in admin.plan.arr_plan" :key="index_division">
                     <tr>
                         <td colspan="18">
                             Подразделение
                             <select v-model="division.division" class="input_text input_titles">
                                 <option value="" disabled>Наименование подразделения</option>
-                                <option v-for="name_division in arr_name_division" :key="name_division.id" :value="name_division.id">{{ name_division.name }}</option>
+                                <template v-for="(division, index_division) in admin.divisions" :key="index_division">
+                                    <option :value="division.id">{{ division.name }}</option>
+                                </template>
                             </select>
                         </td>
                     </tr>
@@ -444,7 +320,9 @@ function debug() {
                         <td colspan="18">
                             <select v-model="chapter.title" class="input_text input_titles">
                                 <option value="" disabled>Название раздела</option>
-                                <option v-for="name_section in arr_name_section" :key="name_section.id" :value="name_section.id">{{ name_section.name }}</option>
+                                <template v-for="(section, index_section) in admin.sections" :key="index_section">
+                                    <option :value="section.id">{{ section.name }}</option>
+                                </template>
                             </select>
                         </td>
                     </tr>
@@ -453,18 +331,22 @@ function debug() {
                         <td>{{ index_profession + 1 }}</td>
                         <td>
                             <select v-model="profession.name" class="input_text" 
-                            @change="getProfessionGroups(profession.name);setProfessionStatusChange(index_division, index_chapter, index_profession)">
+                            @change="setProfessionStatusChange(index_division, index_chapter, index_profession)">
                                 <option value=""></option>
-                                <option v-for="name_profession in arr_name_profession" :key="name_profession.id" :value="name_profession.id">{{ name_profession.name }}</option>
+                                <template v-for="(profession, index_profession) in admin.professions" :key="index_profession">
+                                    <option :value="profession.id">{{ profession.name }}</option>
+                                </template>
                             </select>
                         </td>
                         <td class="nested_table">
                             <table class="table_nested">
                                 <tr v-for="(code, index_code) in profession.code" :key="index_code">
                                     <td>
-                                        <select v-model="code.name" class="input_text" @change="setCodeStatusChange(index_division, index_chapter, index_profession, index_code)">
+                                        <select v-if="admin.professions[profession.name]" v-model="code.name" class="input_text" @change="setCodeStatusChange(index_division, index_chapter, index_profession, index_code)">
                                             <option value=""></option>
-                                            <option v-for="name_profession_groups in arr_name_profession_groups[profession.name]" :key="name_profession_groups.id" :value="name_profession_groups.id">{{ name_profession_groups.name }}</option>
+                                            <template v-for="(pg, index_pg) in admin.professions[profession.name].groups" :key="index_pg">
+                                                <option :value="pg.id">{{ pg.name }}</option>
+                                            </template>
                                         </select>
                                     </td>
                                 </tr>
@@ -556,7 +438,9 @@ function debug() {
                                         @change="getCountPeople(index_division, index_chapter, index_profession);
                                         setDirectionStatusChange(index_division, index_chapter, index_profession, index_dir)">
                                             <option value=""></option>
-                                            <option v-for="name_direction in arr_name_direction" :key="name_direction.id" :value="name_direction.id">{{ name_direction.name }}</option>
+                                            <template v-for="(direction, index_direction) in admin.directions" :key="index_direction" >
+                                                <option :value="direction.id">{{ direction.name }}</option>
+                                            </template>
                                         </select>
                                     </td>
                                 </tr>
@@ -590,7 +474,7 @@ function debug() {
                     <template v-if="chapter.results">
                     <tr>
                         <td></td>
-                        <td>Итого по ПР ({{ getNameById(arr_name_section, chapter.title) }}) {{ getNameById(arr_name_division, division.division) }}</td>
+                        <td>Итого по ПР ({{ getNameById(admin.sections, chapter.title) }}) {{ getNameById(admin.divisions, division.division) }}</td>
                         <td></td>
                         <td>{{ chapter.arr_profession_results['to1'] }}</td>
                         <td>{{ chapter.arr_profession_results['indt'] }}</td>
@@ -608,9 +492,9 @@ function debug() {
                         <td></td>
                         <td>{{ chapter.arr_profession_results['count_people'] }}</td>
                     </tr>
-                    <tr v-for="(result, index_result) in chapter.arr_profession_results['directions']" :key="result">
+                    <tr v-for="(result, index_result) in chapter.arr_profession_results['directions']" :key="index_result">
                         <td></td>
-                        <td>{{ getNameById(arr_name_direction, index_result) }}</td>
+                        <td>{{ getNameById(admin.directions, index_result) }}</td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -639,7 +523,7 @@ function debug() {
                     <template v-if="division.results">
                     <tr>
                         <td></td>
-                        <td>Итого по подразделению {{ getNameById(arr_name_division, division.division) }}</td>
+                        <td>Итого по подразделению {{ getNameById(admin.divisions, division.division) }}</td>
                         <td></td>
                         <td>{{ division.arr_chapter_results['to1'] }}</td>
                         <td>{{ division.arr_chapter_results['indt'] }}</td>
@@ -657,9 +541,9 @@ function debug() {
                         <td></td>
                         <td>{{ division.arr_chapter_results['count_people'] }}</td>
                     </tr>
-                    <tr v-for="(result, index_result) in division.arr_chapter_results['directions']" :key="result">
+                    <tr v-for="(result, index_result) in division.arr_chapter_results['directions']" :key="index_result">
                         <td></td>
-                        <td>{{ getNameById(arr_name_direction, index_result) }}</td>
+                        <td>{{ getNameById(admin.directions, index_result) }}</td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -683,34 +567,33 @@ function debug() {
                     <tr>
                         <td colspan="19">
                             <div class="nested_text"><text class="title add_direction" @click="addMainDivision()">Добавить подразделение</text></div>
-                            <div class="nested_text" v-if="!final.results"><text class="title add_direction" @click="getDivisionResults()">Подвести общие итоги</text></div>
-                            <div class="nested_text" v-if="true"><text class="title add_direction" @click="debug()">DEBUG</text></div>
+                            <div class="nested_text" v-if="!admin.plan.results"><text class="title add_direction" @click="getDivisionResults()">Подвести общие итоги</text></div>
                         </td>
                     </tr>
-                    <template v-if="final.results">
+                    <template v-if="admin.plan.results">
                     <tr>
                         <td></td>
                         <td>ВСЕГО ПРОФЕССИОНАЛЬНОМУ РАЗВИТИЮ в УЦПК</td>
                         <td></td>
-                        <td>{{ final.arr_plan_result['to1'] }}</td>
-                        <td>{{ final.arr_plan_result['indt'] }}</td>
-                        <td>{{ final.arr_plan_result['tren'] }}</td>
-                        <td>{{ final.arr_plan_result['exam'] }}</td>
-                        <td>{{ final.arr_plan_result['to1'] + final.arr_plan_result['exam'] }}</td>
-                        <td>{{ final.arr_plan_result['to2'] + final.arr_plan_result['po'] }}</td>
-                        <td>{{ final.arr_plan_result['to2'] }}</td>
-                        <td>{{ final.arr_plan_result['po'] }}</td>
+                        <td>{{ admin.plan.arr_plan_result['to1'] }}</td>
+                        <td>{{ admin.plan.arr_plan_result['indt'] }}</td>
+                        <td>{{ admin.plan.arr_plan_result['tren'] }}</td>
+                        <td>{{ admin.plan.arr_plan_result['exam'] }}</td>
+                        <td>{{ admin.plan.arr_plan_result['to1'] + admin.plan.arr_plan_result['exam'] }}</td>
+                        <td>{{ admin.plan.arr_plan_result['to2'] + admin.plan.arr_plan_result['po'] }}</td>
+                        <td>{{ admin.plan.arr_plan_result['to2'] }}</td>
+                        <td>{{ admin.plan.arr_plan_result['po'] }}</td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>{{ final.arr_plan_result['count_people'] }}</td>
+                        <td>{{ admin.plan.arr_plan_result['count_people'] }}</td>
                         <td></td>
-                        <td>{{ final.arr_plan_result['count_people'] }}</td>
+                        <td>{{ admin.plan.arr_plan_result['count_people'] }}</td>
                     </tr>
-                    <tr v-for="(result, index_result) in final.arr_plan_result['directions']" :key="result">
+                    <tr v-for="(result, index_result) in admin.plan.arr_plan_result['directions']" :key="index_result">
                         <td></td>
-                        <td>{{ getNameById(arr_name_direction, index_result) }}</td>
+                        <td>{{ getNameById(admin.directions, index_result) }}</td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -733,7 +616,7 @@ function debug() {
             </table>
             <div class="div_button">
                 <button class="button_save" @click="router.back()">Назад</button>
-                <button class="button_save" v-if="level == 2" @click="SAVE()">Сохранить</button>
+                <button class="button_save" @click="savePlan()">Сохранить</button>
             </div>
         </div>
     </div>

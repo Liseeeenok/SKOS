@@ -4,29 +4,68 @@ import router from '../router';
 
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 const admin = useStore();
+const date = new Date();
 
 export function max(a ,b) {
     return a > b ? a : b;
 }
 
 export function getDirection() {
-    axios.get('https://'+host+'/directions').then(response => {admin.directions = response.data});
+    let request = {
+        'jwt': localStorage.getItem('skos-token'),
+        'type_request': 'directions_info',
+    };
+    axios
+        .post('https://'+host+'/directions', request)
+        .then(response => {admin.directions = response.data});
 }
 
 export function getDivision() {
-    axios.get('https://'+host+'/divisions').then(response => {admin.divisions = response.data});
+    let request = {
+        'jwt': localStorage.getItem('skos-token'),
+        'type_request': 'divisions_info',
+    };
+    axios
+        .post('https://'+host+'/divisions', request)
+        .then(response => {admin.divisions = response.data});
 }
 
 export function getProfession() {
-    axios.get('https://'+host+'/professions?type=full').then(response => {admin.professions = response.data});
+    let request = {
+        'jwt': localStorage.getItem('skos-token'),
+        'type_request': 'professions_info',
+        'type_info': 'full'
+    };
+    axios
+        .post('https://'+host+'/professions', request)
+        .then(response => {
+            let professions = response.data;
+            professions.forEach((element) => {
+                admin.professions[element.id] = element;
+            });
+            console.log(admin.professions);
+        });
 }
 
 export async function getProfessionAsync() {
-    await axios.get('https://'+host+'/professions?type=full').then(response => {admin.professions = response.data});
+    let request = {
+        'jwt': localStorage.getItem('skos-token'),
+        'type_request': 'professions_info',
+        'type_info': 'full'
+    };
+    await axios
+        .post('https://'+host+'/professions', request)
+        .then(response => {admin.professions = response.data});
 }
 
 export function getSection() {
-    axios.get('https://'+host+'/sections').then(response => {admin.sections = response.data});
+    let request = {
+        'jwt': localStorage.getItem('skos-token'),
+        'type_request': 'sections_info',
+    };
+    axios
+        .post('https://'+host+'/sections', request)
+        .then(response => {admin.sections = response.data});
 }
 
 export function getRole() {
@@ -38,6 +77,30 @@ export function getRole() {
         admin.roles = response.data;
         admin.role = admin.roles.find(x => x.id == admin.roleId);
     });
+}
+
+export function getUser() {
+    let request = {
+        'jwt': localStorage.getItem('skos-token'),
+        'type_request':'user_info',
+    }
+    axios
+        .post('https://' + host + '/accounts', request)
+        .then((response) => {
+            admin.user = response.data;
+        })
+}
+
+export function getUsers() {
+    let request = {
+        'jwt': localStorage.getItem('skos-token'),
+        'type_request':'users_info',
+    }
+    axios
+        .post('https://' + host + '/accounts', request)
+        .then((response) => {
+            admin.users = response.data;
+        })
 }
 
 export function saveDirection() {
@@ -122,7 +185,107 @@ export function saveSection() {
     axios
         .post('https://' + host + '/sections', request)
         .then((response) => {
-            console.log(response);
             getSection();
+        })
+}
+
+export function saveUsers() {
+    let answer = users.value.filter((user) => typeof user.status !== "undefined" && user.status != 3);
+    let count = 0;
+    for(let ans of answer) {
+        let request = {
+            'jwt': localStorage.getItem('skos-token'),
+            'type_request': 'user_change',
+            'user': ans,
+        }
+        axios
+            .post('https://' + host + '/accounts', request)
+            .then((response) => {
+                count++;
+                if (count == answer.length) router.go(0);
+            })
+    };
+}
+
+export function getPlan() {
+    localStorage.setItem('skos-year', admin.academic_year)
+    let request = {
+        'jwt': localStorage.getItem('skos-token'),
+        'request_type': 'VIEW',
+        'academic_year': admin.academic_year,
+        'table_type': 2,
+    };
+    axios
+        .post('https://'+host+'/table', request)
+        .then(response => {
+            admin.plan = response.data;
+            console.log(response.data);
+        });
+}
+
+export function savePlan() {
+    let request = {
+        'jwt': localStorage.getItem('skos-token'),
+        'request_type': "SAVE",
+        'training_list': [],
+        'academic_year': admin.plan.arr_plan.year,
+        'table_type': 2
+    }
+    admin.plan.arr_plan.forEach((division) => {
+        division.arr_chapter.forEach((chapter) => {
+            chapter.arr_profession.forEach((profession) => {
+                if (profession.status == undefined) return;
+                let profession_groups = [];
+                profession.code.forEach((code, index_code) => {
+                    profession_groups.push({
+                        "id":code.id,
+                        "id_PG":code.name,
+                        "status":code.status,
+                    });
+                });
+                let directions = [];
+                profession.direction.forEach((direction, index_direction) => {
+                    directions.push({
+                        "id":direction.id,
+                        "status":direction.status,
+                        "id_direction":direction.id_direction,
+                        "count_people":profession.count[index_direction],
+                        "date_start_training":profession.start_o[index_direction],
+                        "date_start_industrial_training":profession.start_po[index_direction],
+                        "date_end_industrial_training":profession.end_po[index_direction],
+                        "date_exam":profession.qual_ex[index_direction],
+                    });
+                });
+                request.training_list.push({
+                    "id":profession.id, 
+                    "status":profession.status,
+                    "academic_year":admin.plan.year,
+                    "table_type":2,
+                    "id_division":division.division,
+                    "id_section":chapter.title,
+                    "id_profession":profession.name,
+                    "profession_groups": profession_groups,
+                    "directions":directions,
+                    "to1":profession.to1,
+                    "per":profession.per,
+                    "indt":profession.indt,
+                    "tren":profession.tren,
+                    "exam":profession.exam,
+                    "to2":profession.to2,
+                    "po":profession.po
+                });
+            });
+        });
+    });
+    console.log('answer:');
+    console.log((request));
+    console.log('answer string:');
+    console.log(JSON.stringify(request));
+    axios
+        .post('https://' + host + '/table', request)
+        .then((response) => {
+            getPlan();
+            if (response.data == 'OK') alert('Успешно сохранено!');
+            else console.log(response);
         })
 }

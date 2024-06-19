@@ -24,11 +24,7 @@ function authorization() {
                 auth_err.value = false;
                 localStorage.setItem('skos-token', response_jwt.data.jwt);
                 localStorage.setItem('skos-role', response.role);
-                if (response.role == 4) {
-                    localStorage.setItem('skos-dir', 'ДПМВ');
-                }
                 router.push('/notification');
-                
             } else {
                 auth_err.value = true;
             }

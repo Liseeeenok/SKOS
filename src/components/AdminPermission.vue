@@ -151,7 +151,7 @@ function updateRole() {
                     <select v-model="admin.role.perm_plan_schedule.access" @change="setStatus()">
                         <option value="-">Закрыт</option>
                         <option value="limited">Просмотр</option>
-                        <option value="*">Все</option>
+                        <option value="*">Редактирование</option>
                     </select>
                 </td>
             </tr>
@@ -161,7 +161,7 @@ function updateRole() {
                     <select v-model="admin.role.perm_statement.access" @change="setStatus()">
                         <option value="-">Закрыт</option>
                         <option value="limited">Просмотр</option>
-                        <option value="*">Все</option>
+                        <option value="*">Редактирование</option>
                     </select>
                 </td>
             </tr>

@@ -6,6 +6,12 @@ const plan = ref([]);
 const final = ref({year: '', arr_plan: plan, arr_plan_result: {}, results: false})
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 const level = localStorage.getItem('skos-role');
+//------------------------------------
+import { useStore } from '../stores/PlanStore';
+import { getPlan } from '../helpers/API.js';
+//------------------------------------
+const admin = useStore();
+getPlan();
 //---------------------------API-----------------------------
 let year = localStorage.getItem('skos-year');
 if (!year) {
@@ -18,8 +24,8 @@ const article = ref({
     academic_year: year,
     table_type: 2
 });
-getPlan();
-function getPlan() {
+getPlan2();
+function getPlan2() {
     localStorage.setItem('skos-year', article.value.academic_year)
     axios.post('https://'+host+'/table', article.value)
         .then(response => {
@@ -393,7 +399,7 @@ function openEditor() {
             </table>
             <div class="div_button">
                 <button class="button_save" @click="router.back()">Назад</button>
-                <button class="button_save" v-if="level == 2" @click="openEditor()">Редактировать</button>
+                <button class="button_save" @click="openEditor()">Редактировать</button>
             </div>
         </div>
     </div>

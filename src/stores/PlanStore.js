@@ -8,8 +8,9 @@ export const useStore = defineStore('admin', {
             directions: null,
             divisions: null,
             roles: null,
-            professions: null,
+            professions: {},
             sections: null,
+            users: null,
             role: {
                 'perm_admin_panel': {'access': '-'},
                 'perm_directions': {'access': '-'},
@@ -22,6 +23,16 @@ export const useStore = defineStore('admin', {
                 'perm_notifications': {'access': '-'},
                 'perm_plan_schedule': {'access': '-'},
                 'perm_statement': {'access': '-'},
+            },
+            user: {
+                'surname': '',
+                'name': '',
+                'patronymic': '',
+                'phone_number': '',
+            },
+            academic_year: localStorage.getItem('skos-year') ?? date.getFullYear(),
+            plan: {
+                'arr_plan': [],
             },
          }
     },
@@ -47,6 +58,12 @@ export const useStore = defineStore('admin', {
         },
         setSections(sections) {
             this.sections = sections
+        },
+        setUser(user) {
+            this.user = user
+        },
+        setUsers(users) {
+            this.users = users
         },
     },
 });

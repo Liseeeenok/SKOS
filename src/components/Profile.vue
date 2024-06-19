@@ -1,21 +1,10 @@
 <script setup>
-import { ref } from 'vue';
-import axios from 'axios';
-const host = 'mypew.ru:7070'; //имя или ip хоста api
-const user = ref();
+import { useStore } from '../stores/PlanStore';
+import { getUser } from '../helpers/API.js';
+//------------------------------------
+const admin = useStore();
 getUser();
-function getUser() {
-    let request = {
-        type_request:'user_info',
-        jwt: localStorage.getItem('skos-token')
-    }
-    axios
-        .post('https://' + host + '/accounts', request)
-        .then((response) => {
-            user.value = response.data;
-            console.log(user.value);
-        })
-}
+//------------------------------------
 </script>
 
 <template>
@@ -25,23 +14,23 @@ function getUser() {
                 <table>
                     <tr>
                         <td class="title_table">Фамилия:</td>
-                        <td class="item_table">{{ user.surname }}</td>
+                        <td class="item_table">{{ admin.user.surname }}</td>
                     </tr>
                     <tr>
                         <td class="title_table">Имя:</td>
-                        <td class="item_table">{{ user.name }}</td>
+                        <td class="item_table">{{ admin.user.name }}</td>
                     </tr>
                     <tr>
                         <td class="title_table">Отчество:</td>
-                        <td class="item_table">{{ user.patronymic }}</td>
+                        <td class="item_table">{{ admin.user.patronymic }}</td>
                     </tr>
                     <tr>
                         <td class="title_table">Номер телефона:</td>
-                        <td class="item_table">{{ user.phone_number }}</td>
+                        <td class="item_table">{{ admin.user.phone_number }}</td>
                     </tr>
                     <tr>
                         <td class="title_table">Должность:</td>
-                        <td class="item_table">{{ user.role_name }}</td>
+                        <td class="item_table">{{ admin.user.role_name }}</td>
                     </tr>
                 </table>
             </div>
