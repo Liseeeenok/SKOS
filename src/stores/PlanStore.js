@@ -5,7 +5,7 @@ export const useStore = defineStore('admin', {
     state: () => {
         return { 
             chapter: 1,
-            menu: localStorage.getItem('skos-menu') ?? 3,
+            menu: localStorage.getItem('skos-main-menu') ?? 3,
             menuStatus: localStorage.getItem('skos-menu-status') ?? 'main',
             roleId: localStorage.getItem('skos-role-id') ?? 1,
             directions: null,

@@ -245,7 +245,7 @@ export function saveSection() {
 }
 
 export function saveUsers() {
-    let answer = users.value.filter((user) => typeof user.status !== "undefined" && user.status != 3);
+    let answer = admin.users.filter((user) => typeof user.status !== "undefined" && user.status != 3);
     let count = 0;
     for(let ans of answer) {
         let request = {
@@ -257,7 +257,7 @@ export function saveUsers() {
             .post('https://' + host + '/accounts', request)
             .then((response) => {
                 count++;
-                if (count == answer.length) router.go(0);
+                if (count == answer.length) getUsers();
             })
     };
 }
