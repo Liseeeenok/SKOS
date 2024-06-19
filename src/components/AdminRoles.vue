@@ -43,7 +43,7 @@ function openPermission(roleId) {
                     <td><input type="text" v-model="role.name" @change="setStatus(index_role)"/></td>
                     <td>
                         <div class="buttons">
-                            <button @click="openPermission(role.id)">Редактировать права</button>
+                            <button v-if="role.status != 2" @click="openPermission(role.id)">Редактировать права</button>
                             <button class="red" @click="deleteRole(index_role)">Удалить</button>
                         </div>
                     </td>

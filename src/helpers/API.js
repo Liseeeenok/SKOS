@@ -154,6 +154,19 @@ export function getStatement() {
         });
 }
 
+export function getNotify() {
+    let request = {
+        'jwt': localStorage.getItem('skos-token'),
+        'request_type': 'notifications_info',
+    };
+    console.log(request);
+    axios
+        .post('https://'+host+'/notifications', request)
+        .then(response => {
+            admin.notify = response.data;
+            console.log(response.data);
+        });
+}
 //---------------------------------------------------------------------------------------------------
 //--------------------------------------------------SAVE---------------------------------------------
 //---------------------------------------------------------------------------------------------------
@@ -167,6 +180,8 @@ export function saveDirection() {
         .post('https://' + host + '/directions', request)
         .then((response) => {
             getDirection();
+            if (response.data == 'OK') alert('Успешно сохранено!');
+            else console.log(request, response);
         })
 }
 
@@ -179,6 +194,8 @@ export function saveDivision() {
         .post('https://' + host + '/divisions', request)
         .then((response) => {
             getDivision();
+            if (response.data == 'OK') alert('Успешно сохранено!');
+            else console.log(request, response);
         })
 }
 
@@ -192,6 +209,8 @@ export function saveRole() {
         .post('https://' + host + '/roles', request)
         .then((response) => {
             getRole();
+            if (response.data == 'OK') alert('Успешно сохранено!');
+            else console.log(response);
         })
 }
 
@@ -229,6 +248,8 @@ export async function saveProfessionGroup() {
         .post('https://' + host + '/profession_groups', request)
         .then((response) => {
             getProfession();
+            if (response.data == 'OK') alert('Успешно сохранено!');
+            else console.log(response);
         });
 }
 
@@ -241,6 +262,8 @@ export function saveSection() {
         .post('https://' + host + '/sections', request)
         .then((response) => {
             getSection();
+            if (response.data == 'OK') alert('Успешно сохранено!');
+            else console.log(response);
         })
 }
 
@@ -257,7 +280,11 @@ export function saveUsers() {
             .post('https://' + host + '/accounts', request)
             .then((response) => {
                 count++;
-                if (count == answer.length) getUsers();
+                if (count == answer.length)  {
+                    getUsers();
+                    if (response.data == 'OK') alert('Успешно сохранено!');
+                    else console.log(response);
+                }
             })
     };
 }

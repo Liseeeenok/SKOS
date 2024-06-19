@@ -38,6 +38,7 @@ export const useStore = defineStore('admin', {
                 'arr_plan': [],
             },
             statement: null,
+            notify: null
          }
     },
     actions: {

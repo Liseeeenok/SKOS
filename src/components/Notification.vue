@@ -2,67 +2,18 @@
 import { ref } from 'vue';
 import router from '../router';
 import axios from 'axios';
+import { useStore } from '../stores/PlanStore';
+import { getNotify } from '../helpers/API.js';
+//------------------------------------
+const admin = useStore();
+getNotify();
 //---------------------------API-----------------------------
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 const arr_name_division = ref([]);
 const arr_name_direction = ref([]);
 const arr_name_profession = ref([]);
+const level = ref(1);
 let counter = 0;
-axios
-    .get('https://'+host+'/divisions')
-    .then(response => {
-        arr_name_division.value = response.data;
-        counter++;
-        if (counter == 3) {
-            formNotification();
-            getNotification();
-        }
-    });
-axios
-    .get('https://'+host+'/directions')
-    .then(response => {
-        arr_name_direction.value = response.data;
-        counter++;
-        if (counter == 3) {
-            formNotification();
-            getNotification();
-        }
-    });
-axios
-    .get('https://'+host+'/professions')
-    .then(response => {
-        arr_name_profession.value = response.data;
-        counter++;
-        if (counter == 3) {
-            formNotification();
-            getNotification();
-        }
-    });
-    
-    
-function getNameById(arr, id) {
-    let name = '';
-    //while (arr.length == 0)
-    arr.forEach(item => {
-        if (item.id == id) {
-            name = item.name;
-            return;
-        }
-    });
-    return name;
-}
-const arr_notifications = ref([]);
-const page = ref(1);
-function getNotification() {
-    if (level == 4) {
-        let dir = localStorage.getItem('skos-dir');
-        arr_notifications.value = arr_notifications_all.filter((el) => {
-            return el.direction == dir;
-        })
-        return arr_notifications.value;
-    }
-    arr_notifications.value = arr_notifications_all;
-}
 //---------------------------API-----------------------------
 </script>
 
@@ -76,18 +27,16 @@ function getNotification() {
                         <th>Номер</th>
                         <th>Дирекция</th>
                         <th>Подразд. УЦПК</th>
-                        <th>Шифр группы</th>
                         <th>Статус</th>
                         <th>Начало обучения</th>
                         <th>Дата прочтения</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(notification, index) in arr_notifications.slice(0 + 12 * (page - 1), 12 + 12 * (page - 1))" :key="index" @click="openNotification(notification)" class="tr_notification">
+                    <tr v-for="(notification, index) in admin.notify" :key="index" @click="openNotification(notification)" class="tr_notification">
                         <td>{{ index + 1 + 12 * (page - 1)}}</td>
                         <td>{{ notification.direction }}</td>
                         <td>{{ notification.division }}</td>
-                        <td>{{ notification.code }}</td>
                         <td :class="notification.status == 'Не прочитано' ? 'red' : ''">{{ notification.status }}</td>
                         <td>{{ notification.start_o }}</td>
                         <td>{{ notification.date_read }}</td>
@@ -95,7 +44,7 @@ function getNotification() {
                 </tbody>
             </table>
         </div>
-        <div class="nav">
+        <div class="nav"  v-if="false">
             <button class="decrement but" v-if="page > 1" @click="page -= 1">>></button>
             <button class="but" @click="page += 1" v-if="arr_notifications.length > page*12">>></button>
         </div>
