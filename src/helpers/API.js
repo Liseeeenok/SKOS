@@ -17,6 +17,10 @@ export function getProfession() {
     axios.get('https://'+host+'/professions?type=full').then(response => {admin.professions = response.data});
 }
 
+export async function getProfessionAsync() {
+    await axios.get('https://'+host+'/professions?type=full').then(response => {admin.professions = response.data});
+}
+
 export function getRole() {
     let request = {
         jwt: localStorage.getItem('skos-token'),
@@ -63,31 +67,38 @@ export function saveRole() {
 }
 
 export function saveProfession() {
-    let request1 = {
+    let request = {
         jwt: localStorage.getItem('skos-token'),
         professions: admin.professions.filter((profession) => typeof profession.status !== "undefined" && profession.status != 3),
     };
-    let trig = 0;
     axios
-        .post('https://' + host + '/professions', request1)
+        .post('https://' + host + '/professions', request)
         .then((response) => {
-            console.log(request1, response);
-            trig == 2 ? getProfession() : trig = 1;
+            saveProfessionGroup();
         });
     
+}
+
+export async function saveProfessionGroup() {
     let profession_groups = [];
     admin.professions.forEach(element => {
-        let groups = element.groups.filter((group) => typeof group.status !== "undefined" && group.status != 3);
+        let groups = element.groups.filter((group) => {
+            group.name_prof = element.name;
+            return typeof group.status !== "undefined" && group.status != 3;
+        });
         profession_groups = profession_groups.concat(groups);
     });
-    let request2 = {
+    await getProfessionAsync();
+    let idName = {};
+    admin.professions.forEach((element) => {idName[element.name] = element.id});
+    profession_groups.forEach((element) => {element.id_profession = idName[element.name_prof]});
+    let request = {
         jwt: localStorage.getItem('skos-token'),
         profession_groups: profession_groups,
     };
     axios
-        .post('https://' + host + '/profession_groups', request2)
+        .post('https://' + host + '/profession_groups', request)
         .then((response) => {
-            console.log(request2, response);
-            trig == 1 ? getProfession() : trig = 2;
+            getProfession();
         });
 }
