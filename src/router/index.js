@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import AuthorizationPage from '../views/AuthorizationPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -7,7 +6,7 @@ const router = createRouter({
     {
       path: '/', //Страница авторизации
       name: 'home',
-      component: AuthorizationPage
+      component: () => import('../views/AuthorizationPage.vue')
     },
     {
       path: '/profile', //Страница профиля
@@ -54,6 +53,11 @@ const router = createRouter({
         path: '/admin', //Страница админки
         name: 'admin',
         component: () => import('../views/AdminPage.vue')
+    },
+    {
+        path: '/main', //Главная страница
+        name: 'main',
+        component: () => import('../views/MainPage.vue')
     }
   ]
 })

@@ -3,19 +3,20 @@ import { ref } from 'vue';
 import router from '../router';
 import axios from 'axios';
 import { jwtDecode } from "jwt-decode";
+import { preLoad } from '../helpers/API.js';
 const auth_err = ref(false);
 const login =  ref('');
 const password =  ref('');
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 function authorization() {
     //запрос
-    let article = {
+    let request = {
         login: login.value,
         password: password.value
     }
-    console.log(article);
+    console.log(request);
     axios
-        .post('https://' + host + '/login', article)
+        .post('https://' + host + '/login', request)
         .then((response_jwt) => {
             console.log(response_jwt);
             if (response_jwt.data.jwt) {
@@ -24,7 +25,8 @@ function authorization() {
                 auth_err.value = false;
                 localStorage.setItem('skos-token', response_jwt.data.jwt);
                 localStorage.setItem('skos-role', response.role);
-                router.push('/notification');
+                preLoad();
+                router.push('/main');
             } else {
                 auth_err.value = true;
             }

@@ -1,5 +1,4 @@
 <script setup>
-import router from '../router';
 //------------------------------------
 import { useStore } from '../stores/PlanStore';
 import { getDirection, getDivision, getPlan, getProfession, getSection, savePlan } from '../helpers/API.js';
@@ -10,7 +9,7 @@ getDivision();
 getSection();
 getDirection();
 getProfession();
-//---------------------------API-----------------------------
+//------------------------------------
 function addMainDivision() {
     console.log('addMainDivision +');
     admin.plan.arr_plan.push({division:'', arr_chapter:[{title: '', arr_profession: [], arr_profession_results: {}, results: false}], arr_chapter_results: {}, results: false});
@@ -215,6 +214,11 @@ function setDirectionStatusChange(index_division, index_chapter, index_professio
     if (admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_direction].status == 2) return;
     else admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction[index_direction].status = 1;
 }
+function changeMenuStatus(index) {
+    admin.menuStatus = index;
+    localStorage.setItem('skos-menu-status', index);
+}
+//------------------------------------
 </script>
 
 <template>
@@ -613,7 +617,7 @@ function setDirectionStatusChange(index_division, index_chapter, index_professio
                 </tbody>
             </table>
             <div class="div_button">
-                <button class="button_save" @click="router.back()">Назад</button>
+                <button class="button_save" @click="changeMenuStatus('developmentView')">Назад</button>
                 <button class="button_save" @click="savePlan()">Сохранить</button>
             </div>
         </div>

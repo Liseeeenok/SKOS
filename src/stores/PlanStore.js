@@ -1,10 +1,12 @@
 import { defineStore } from "pinia";
-import Statement from "../components/Statement.vue";
+const date = new Date();
 
 export const useStore = defineStore('admin', {
     state: () => {
         return { 
             chapter: 1,
+            menu: localStorage.getItem('skos-menu') ?? 3,
+            menuStatus: localStorage.getItem('skos-menu-status') ?? 'main',
             roleId: localStorage.getItem('skos-role-id') ?? 1,
             directions: null,
             divisions: null,

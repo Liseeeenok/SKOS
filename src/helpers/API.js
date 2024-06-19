@@ -4,7 +4,18 @@ import router from '../router';
 
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 const admin = useStore();
-const date = new Date();
+
+export function preLoad() {
+    getDirection();
+    getDivision();
+    getProfession();
+    getSection();
+    getRole();
+    getUser();
+    getUsers();
+    getPlan();
+    getStatement();
+}
 
 export function getDirection() {
     let request = {

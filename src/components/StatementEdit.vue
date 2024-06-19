@@ -1,7 +1,5 @@
 <script setup>
-import router from '../router';
 import { ref } from 'vue';
-//------------------------------------
 import { useStore } from '../stores/PlanStore';
 import { getDirection, getDivision, getProfession, getStatement, saveStatement } from '../helpers/API.js';
 //------------------------------------
@@ -50,6 +48,10 @@ function setStatus(index_profession, index_direction) {
     admin.statement[index_profession].directions[index_direction].status = 1;
     admin.statement[index_profession].status = 1;
     filterStatement();
+}
+function changeMenuStatus(index) {
+    admin.menuStatus = index;
+    localStorage.setItem('skos-menu-status', index);
 }
 //------------------------------------
 </script>
@@ -168,7 +170,7 @@ function setStatus(index_profession, index_direction) {
             </tbody>
         </table>
         <div class="div_button">
-            <button class="button_save" @click="router.back()">Назад</button>
+            <button class="button_save" @click="changeMenuStatus('statementView')">Назад</button>
             <button class="button_save" @click="saveStatement()">Сохранить</button>
         </div>
     </div>

@@ -1,5 +1,4 @@
 <script setup>
-import router from '../router';
 //------------------------------------
 import { useStore } from '../stores/PlanStore';
 import { getDirection, getDivision, getPlan, getProfession, getSection } from '../helpers/API.js';
@@ -10,7 +9,7 @@ getDivision();
 getSection();
 getDirection();
 getProfession();
-//---------------------------API-----------------------------
+//------------------------------------
 function getNameById(arr, id) {
     let name = '';
     if (arr != undefined)
@@ -22,9 +21,11 @@ function getNameById(arr, id) {
         });
     return name;
 }
-function openEditor() {
-    router.push({name: 'developmentEdit'});
+function changeMenuStatus(index) {
+    admin.menuStatus = index;
+    localStorage.setItem('skos-menu-status', index);
 }
+//------------------------------------
 </script>
 
 <template>
@@ -333,8 +334,8 @@ function openEditor() {
                 </tbody>
             </table>
             <div class="div_button">
-                <button class="button_save" @click="router.back()">Назад</button>
-                <button class="button_save" @click="openEditor()">Редактировать</button>
+                <button class="button_save" @click="changeMenuStatus('main')">Назад</button>
+                <button class="button_save" @click="changeMenuStatus('developmentEdit')">Редактировать</button>
             </div>
         </div>
     </div>
