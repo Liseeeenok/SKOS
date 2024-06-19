@@ -12,6 +12,7 @@ function updateRole() {
     localStorage.setItem('skos-role-id', admin.roleId);
 }
 //------------------------------------
+console.log(admin.roles);
 </script>
 <template>
     <h1>Настройка прав доступа ролям</h1>
@@ -30,7 +31,13 @@ function updateRole() {
         <tbody>
             <tr>
                 <td>Панель администратора</td>
-                <td></td>
+                <td>
+                    <select v-model="admin.roles[admin.roleId].perm_admin_panel.access">
+                        <option value="-">-</option>
+                        <option value="limited">limited</option>
+                        <option value="*">*</option>
+                    </select>
+                </td>
             </tr>
             <tr>
                 <td>Подразделения</td>

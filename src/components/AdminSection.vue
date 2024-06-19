@@ -4,14 +4,12 @@ import axios from 'axios';
 import router from '../router';
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 const sections = ref();
+import { useStore } from '../stores/PlanStore';
+import { getSection, saveProfession } from '../helpers/API.js';
+//------------------------------------
+const admin = useStore();
 getSection();
-function getSection() {
-    axios
-    .get('https://'+host+'/sections')
-    .then(response => {
-        sections.value = response.data;
-    });
-}
+//------------------------------------
 function setStatus(index_section) {
     if (sections.value[index_section].status != 2) sections.value[index_section].status = 1;
 }
@@ -23,21 +21,10 @@ function deleteSection(index_section) {
     if (result) {
         if (sections.value[index_section].status != 2) sections.value[index_section].status = 0;
         else sections.value[index_section].status = 3;
-        save();
+        saveSection();
     }
 }
-function save() {
-    let answer = {
-        jwt: localStorage.getItem('skos-token'),
-        sections: sections.value.filter((section) => typeof section.status !== "undefined" && section.status != 3)
-    };
-    axios
-        .post('https://' + host + '/sections', answer)
-        .then((response) => {
-            console.log(response);
-            router.go(0);
-        })
-}
+
 </script>
 <template>
     <h1>Настройка секций</h1>
@@ -61,7 +48,7 @@ function save() {
             </template>
         </tbody>
     </table>
-    <button class="green" @click="save()">Сохранить</button>
+    <button class="green" @click="saveSection()">Сохранить</button>
     <button class="add" @click="addSection()">Добавить направление</button>
 </template>
 

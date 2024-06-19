@@ -9,6 +9,7 @@ export const useStore = defineStore('admin', {
             divisions: null,
             roles: null,
             professions: null,
+            sections: null,
          }
     },
     actions: {
@@ -29,6 +30,9 @@ export const useStore = defineStore('admin', {
         },
         setProfessions(professions) {
             this.professions = professions
+        },
+        setSections(sections) {
+            this.sections = sections
         },
     },
 });

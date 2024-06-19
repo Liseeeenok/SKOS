@@ -1,6 +1,6 @@
 <script setup>
 import { useStore } from '../stores/PlanStore';
-import { getProfession, saveProfession } from '../helpers/API.js';
+import { getProfession, saveProfession, max } from '../helpers/API.js';
 //------------------------------------
 const admin = useStore();
 getProfession();
@@ -28,9 +28,6 @@ function deleteProfession(index_profession) {
         else admin.professions[index_profession].status = 3;
         saveProfession();
     }
-}
-function max(a ,b) {
-    return a > b ? a : b;
 }
 //------------------------------------
 </script>
