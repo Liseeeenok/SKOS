@@ -1,7 +1,5 @@
 <script setup>
-import axios from 'axios';
 import router from '../router';
-const host = 'mypew.ru:7070'; //имя или ip хоста api
 //------------------------------------
 import { useStore } from '../stores/PlanStore';
 import { getDirection, getDivision, getPlan, getProfession, getSection, savePlan } from '../helpers/API.js';
@@ -189,19 +187,19 @@ function setProfessionStatusChange(index_division, index_chapter, index_professi
     if (admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].status == 2) return;
     else admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].status = 1;
 }
-function setCodeStatusChange(index_division, index_chapter, index_profession) {
+function setCodeStatusChange(index_division, index_chapter, index_profession, index_code) {
     console.log('setCodeStatusChange +');
     setProfessionStatusChange(index_division, index_chapter, index_profession);
-    if (admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code.name == '') {
-        if (admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code.id == undefined) {
-            admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code.status = undefined;
+    if (admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code[index_code].name == '') {
+        if (admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code[index_code].id == undefined) {
+            admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code[index_code].status = undefined;
         } else {
-            admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code.status = 0;
+            admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code[index_code].status = 0;
         }
         return;
     }
-    if (admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code.status == 2) return;
-    else admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code.status = 1;
+    if (admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code[index_code].status == 2) return;
+    else admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].code[index_code].status = 1;
 }
 function setDirectionStatusChange(index_division, index_chapter, index_profession, index_direction) {
     console.log('setDirectionStatusChange +');

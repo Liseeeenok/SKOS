@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import Statement from "../components/Statement.vue";
 
 export const useStore = defineStore('admin', {
     state: () => {
@@ -34,6 +35,7 @@ export const useStore = defineStore('admin', {
             plan: {
                 'arr_plan': [],
             },
+            statement: null,
          }
     },
     actions: {

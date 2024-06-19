@@ -1,81 +1,16 @@
 <script setup>
-import { ref } from 'vue';
-import axios from 'axios';
 import router from '../router';
-const plan = ref([]);
-const final = ref({year: '', arr_plan: plan, arr_plan_result: {}, results: false})
-const host = 'mypew.ru:7070'; //имя или ip хоста api
-const level = localStorage.getItem('skos-role');
 //------------------------------------
 import { useStore } from '../stores/PlanStore';
-import { getPlan } from '../helpers/API.js';
+import { getDirection, getDivision, getPlan, getProfession, getSection } from '../helpers/API.js';
 //------------------------------------
 const admin = useStore();
 getPlan();
+getDivision();
+getSection();
+getDirection();
+getProfession();
 //---------------------------API-----------------------------
-let year = localStorage.getItem('skos-year');
-if (!year) {
-    const date = new Date();
-    year = date.getFullYear();
-}
-const article = ref({
-    jwt: localStorage.getItem('skos-token'),
-    request_type: 'VIEW',
-    academic_year: year,
-    table_type: 2
-});
-getPlan2();
-function getPlan2() {
-    localStorage.setItem('skos-year', article.value.academic_year)
-    axios.post('https://'+host+'/table', article.value)
-        .then(response => {
-            console.log(response.data);
-            final.value.year = response.data.year;
-            final.value.arr_plan_result = response.data.arr_plan_result;
-            final.value.results = response.data.results;
-            plan.value = response.data.arr_plan;
-            plan.value.forEach((division) => {
-                division.arr_chapter.forEach((chapter) => {
-                    chapter.arr_profession.forEach((profession) => {
-                        getProfessionGroups(profession.name);
-                    });
-                });
-            });
-        });
-}
-const arr_name_division = ref([]);
-axios
-    .get('https://'+host+'/divisions')
-    .then(response => {
-        arr_name_division.value = response.data;
-    });
-const arr_name_section = ref([]);
-axios
-    .get('https://'+host+'/sections')
-    .then(response => {
-        arr_name_section.value = response.data;
-    });
-const arr_name_direction = ref([]);
-axios
-    .get('https://'+host+'/directions')
-    .then(response => {
-        arr_name_direction.value = response.data;
-    });
-const arr_name_profession = ref([]);
-axios
-    .get('https://'+host+'/professions')
-    .then(response => {
-        arr_name_profession.value = response.data;
-    });
-const arr_name_profession_groups = ref([]);
-function getProfessionGroups(id_profession) {
-    console.log('getProfessionGroups');
-    axios
-        .get('https://'+host+'/profession_groups?id_profession='+id_profession)
-        .then(response => {
-            arr_name_profession_groups.value[id_profession] = response.data;
-        });
-}
 function getNameById(arr, id) {
     let name = '';
     if (arr != undefined)
@@ -98,7 +33,7 @@ function openEditor() {
             <div class="title">План-график</div>
             <div class="title">профессианального развития рабочих и служащих в Восточно-Сибирском учебном центре профессиональных квалификаций</div>
             <div class="title">Восточно-Сибирской железной дороги - филиала ОАО "РЖД"</div>
-            <div class="title">на <input type="number" style="width: 60px;" v-model="article.academic_year" @change="getPlan()"/> год</div>
+            <div class="title">на <input type="number" style="width: 60px;" v-model="admin.academic_year" @change="getPlan()"/> год</div>
         </div>
         <div>
             <table class="table">
@@ -174,29 +109,29 @@ function openEditor() {
                         </th>
                     </tr>
                 </thead>
-                <tbody v-for="(division, index_division) in plan" :key="index_division">
+                <tbody v-for="(division, index_division) in admin.plan.arr_plan" :key="index_division">
                     <tr>
                         <td colspan="18">
-                            Подразделение {{ getNameById(arr_name_division, division.division) }}
+                            Подразделение {{ getNameById(admin.divisions, division.division) }}
                         </td>
                     </tr>
                     <template v-for="(chapter, index_chapter) in division.arr_chapter" :key="index_chapter">
                     <tr>
                         <td colspan="18">
-                            {{ getNameById(arr_name_section, chapter.title) }}
+                            {{ getNameById(admin.sections, chapter.title) }}
                         </td>
                     </tr>
                     <template v-for="(profession, index_profession) in chapter.arr_profession" :key="index_profession">
-                    <tr>
+                    <tr v-if="admin.professions[profession.name]">
                         <td>{{ index_profession + 1 }}</td>
                         <td>
-                            {{ getNameById(arr_name_profession, profession.name) }}
+                            {{ admin.professions[profession.name].name }}
                         </td>
                         <td class="nested_table">
                             <table class="table_nested">
                                 <tr v-for="(code, index_code) in profession.code" :key="index_code">
                                     <td class="nested_input">
-                                        {{ getNameById(arr_name_profession_groups[profession.name], code.name) }}
+                                        {{ getNameById(admin.professions[profession.name].groups, code.name) }}
                                     </td>
                                 </tr>
                             </table>
@@ -250,7 +185,7 @@ function openEditor() {
                             <table class="table_nested">
                                 <tr v-for="(dir, index_dir) in profession.direction" :key="index_dir">
                                     <td class="nested_input">
-                                        {{ getNameById(arr_name_direction, dir.id_direction) }}
+                                        {{ getNameById(admin.directions, dir.id_direction) }}
                                     </td>
                                 </tr>
                             </table>
@@ -269,7 +204,7 @@ function openEditor() {
                     <template v-if="chapter.results">
                     <tr>
                         <td></td>
-                        <td>Итого по ПР ({{ getNameById(arr_name_section, chapter.title) }}) {{ getNameById(arr_name_division, division.division) }}</td>
+                        <td>Итого по ПР ({{ getNameById(admin.sections, chapter.title) }}) {{ getNameById(admin.divisions, division.division) }}</td>
                         <td></td>
                         <td>{{ chapter.arr_profession_results['to1'] }}</td>
                         <td>{{ chapter.arr_profession_results['indt'] }}</td>
@@ -289,7 +224,7 @@ function openEditor() {
                     </tr>
                     <tr v-for="(result, index_result) in chapter.arr_profession_results['directions']" :key="result">
                         <td></td>
-                        <td>{{ getNameById(arr_name_direction, index_result) }}</td>
+                        <td>{{ getNameById(admin.directions, index_result) }}</td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -312,7 +247,7 @@ function openEditor() {
                     <template v-if="division.results">
                     <tr>
                         <td></td>
-                        <td>Итого по подразделению {{ getNameById(arr_name_division, division.division) }}</td>
+                        <td>Итого по подразделению {{ getNameById(admin.divisions, division.division) }}</td>
                         <td></td>
                         <td>{{ division.arr_chapter_results['to1'] }}</td>
                         <td>{{ division.arr_chapter_results['indt'] }}</td>
@@ -332,7 +267,7 @@ function openEditor() {
                     </tr>
                     <tr v-for="(result, index_result) in division.arr_chapter_results['directions']" :key="result">
                         <td></td>
-                        <td>{{ getNameById(arr_name_direction, index_result) }}</td>
+                        <td>{{ getNameById(admin.directions, index_result) }}</td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -353,30 +288,30 @@ function openEditor() {
                     </template> 
                 </tbody>
                 <tbody>
-                    <template v-if="final.results">
+                    <template v-if="admin.plan.results">
                     <tr>
                         <td></td>
                         <td>ВСЕГО ПРОФЕССИОНАЛЬНОМУ РАЗВИТИЮ в УЦПК</td>
                         <td></td>
-                        <td>{{ final.arr_plan_result['to1'] }}</td>
-                        <td>{{ final.arr_plan_result['indt'] }}</td>
-                        <td>{{ final.arr_plan_result['tren'] }}</td>
-                        <td>{{ final.arr_plan_result['exam'] }}</td>
-                        <td>{{ final.arr_plan_result['to1'] + final.arr_plan_result['exam'] }}</td>
-                        <td>{{ final.arr_plan_result['to2'] + final.arr_plan_result['po'] }}</td>
-                        <td>{{ final.arr_plan_result['to2'] }}</td>
-                        <td>{{ final.arr_plan_result['po'] }}</td>
+                        <td>{{ admin.plan.arr_plan_result['to1'] }}</td>
+                        <td>{{ admin.plan.arr_plan_result['indt'] }}</td>
+                        <td>{{ admin.plan.arr_plan_result['tren'] }}</td>
+                        <td>{{ admin.plan.arr_plan_result['exam'] }}</td>
+                        <td>{{ admin.plan.arr_plan_result['to1'] + admin.plan.arr_plan_result['exam'] }}</td>
+                        <td>{{ admin.plan.arr_plan_result['to2'] + admin.plan.arr_plan_result['po'] }}</td>
+                        <td>{{ admin.plan.arr_plan_result['to2'] }}</td>
+                        <td>{{ admin.plan.arr_plan_result['po'] }}</td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>{{ final.arr_plan_result['count_people'] }}</td>
+                        <td>{{ admin.plan.arr_plan_result['count_people'] }}</td>
                         <td></td>
-                        <td>{{ final.arr_plan_result['count_people'] }}</td>
+                        <td>{{ admin.plan.arr_plan_result['count_people'] }}</td>
                     </tr>
-                    <tr v-for="(result, index_result) in final.arr_plan_result['directions']" :key="result">
+                    <tr v-for="(result, index_result) in admin.plan.arr_plan_result['directions']" :key="result">
                         <td></td>
-                        <td>{{ getNameById(arr_name_direction, index_result) }}</td>
+                        <td>{{ getNameById(admin.directions, index_result) }}</td>
                         <td></td>
                         <td></td>
                         <td></td>

@@ -6,10 +6,6 @@ const host = 'mypew.ru:7070'; //имя или ip хоста api
 const admin = useStore();
 const date = new Date();
 
-export function max(a ,b) {
-    return a > b ? a : b;
-}
-
 export function getDirection() {
     let request = {
         'jwt': localStorage.getItem('skos-token'),
@@ -102,6 +98,54 @@ export function getUsers() {
             admin.users = response.data;
         })
 }
+
+export function getPlan() {
+    localStorage.setItem('skos-year', admin.academic_year)
+    let request = {
+        'jwt': localStorage.getItem('skos-token'),
+        'request_type': 'VIEW',
+        'academic_year': admin.academic_year,
+        'table_type': 2,
+    };
+    axios
+        .post('https://'+host+'/table', request)
+        .then(response => {
+            admin.plan = response.data;
+            console.log(response.data);
+        });
+}
+
+export function getStatement() {
+    localStorage.setItem('skos-year', admin.academic_year)
+    let request = {
+        'jwt': localStorage.getItem('skos-token'),
+        'request_type': 'VIEW_STATEMENT',
+        'academic_year': admin.academic_year,
+        'table_type': 2,
+    };
+    axios.post('https://'+host+'/table', request)
+        .then(response => {
+            let statement = response.data;
+            statement.forEach(profession => {
+                profession.count_directions = 0;
+                profession.count_people = 0;
+                profession.count_people_fact = 0;
+                profession.count_people_trained = 0;
+                profession.directions.forEach((direction, index_direction) => {
+                    profession.count_people += direction.count_people;
+                    profession.count_people_fact += direction.count_people_fact;
+                    profession.count_people_trained += direction.count_people_trained;
+                    profession.count_directions++;
+                });
+            });
+            admin.statement = statement;
+            console.log(admin.statement);
+        });
+}
+
+//---------------------------------------------------------------------------------------------------
+//--------------------------------------------------SAVE---------------------------------------------
+//---------------------------------------------------------------------------------------------------
 
 export function saveDirection() {
     let request = {
@@ -207,28 +251,12 @@ export function saveUsers() {
     };
 }
 
-export function getPlan() {
-    localStorage.setItem('skos-year', admin.academic_year)
-    let request = {
-        'jwt': localStorage.getItem('skos-token'),
-        'request_type': 'VIEW',
-        'academic_year': admin.academic_year,
-        'table_type': 2,
-    };
-    axios
-        .post('https://'+host+'/table', request)
-        .then(response => {
-            admin.plan = response.data;
-            console.log(response.data);
-        });
-}
-
 export function savePlan() {
     let request = {
         'jwt': localStorage.getItem('skos-token'),
         'request_type': "SAVE",
         'training_list': [],
-        'academic_year': admin.plan.arr_plan.year,
+        'academic_year': admin.academic_year,
         'table_type': 2
     }
     admin.plan.arr_plan.forEach((division) => {
@@ -285,6 +313,25 @@ export function savePlan() {
         .post('https://' + host + '/table', request)
         .then((response) => {
             getPlan();
+            if (response.data == 'OK') alert('Успешно сохранено!');
+            else console.log(response);
+        })
+}
+
+export function saveStatement() {
+    let request = {
+        'jwt': localStorage.getItem('skos-token'),
+        'request_type': "SAVE_STATEMENT",
+        'training_list': admin.statement,
+        'academic_year': admin.academic_year,
+        'table_type': 2
+    }
+    console.log((request));
+    console.log(JSON.stringify(request));
+    axios
+        .post('https://' + host + '/table', request)
+        .then((response) => {
+            getStatement();
             if (response.data == 'OK') alert('Успешно сохранено!');
             else console.log(response);
         })

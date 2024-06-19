@@ -1,6 +1,6 @@
 <script setup>
 import { useStore } from '../stores/PlanStore';
-import { getProfession, saveProfession, max } from '../helpers/API.js';
+import { getProfession, saveProfession } from '../helpers/API.js';
 //------------------------------------
 const admin = useStore();
 getProfession();
@@ -46,10 +46,10 @@ function deleteProfession(index_profession) {
             <template v-for="(profession, index_profession) in admin.professions" :key="index_profession">
                 <template v-if="profession.status != 0 && profession.status != 3">
                     <tr>
-                        <td :rowspan="max(profession.groups.length, 1)">{{ profession.id}}</td>
-                        <td :rowspan="max(profession.groups.length, 1)"><input type="text" v-model="profession.name" @change="setStatus(index_profession)"/></td>
+                        <td :rowspan="Math.max(profession.groups.length, 1)">{{ profession.id}}</td>
+                        <td :rowspan="Math.max(profession.groups.length, 1)"><input type="text" v-model="profession.name" @change="setStatus(index_profession)"/></td>
                         <td><input v-if="profession.groups[0]" class="groups" type="text" v-model="profession.groups[0].name" @change="setStatusGroup(index_profession, 0)"/></td>
-                        <td :rowspan="max(profession.groups.length, 1)">
+                        <td :rowspan="Math.max(profession.groups.length, 1)">
                             <div class="buttons">
                                 <button @click="addGroup(index_profession)">Добавить группу</button>
                                 <button class="red" @click="deleteProfession(index_profession)">Удалить</button>
