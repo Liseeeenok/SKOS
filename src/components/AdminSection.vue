@@ -1,30 +1,25 @@
 <script setup>
-import { ref } from 'vue';
-import axios from 'axios';
-import router from '../router';
-const host = 'mypew.ru:7070'; //имя или ip хоста api
-const sections = ref();
 import { useStore } from '../stores/PlanStore';
-import { getSection, saveProfession } from '../helpers/API.js';
+import { getSection, saveSection } from '../helpers/API.js';
 //------------------------------------
 const admin = useStore();
 getSection();
 //------------------------------------
 function setStatus(index_section) {
-    if (sections.value[index_section].status != 2) sections.value[index_section].status = 1;
+    if (admin.sections[index_section].status != 2) admin.sections[index_section].status = 1;
 }
 function addSection() {
-    sections.value.push({'id':null, 'name': '', 'status': 2});
+    admin.sections.push({'id':null, 'name': '', 'status': 2});
 }
 function deleteSection(index_section) {
-    let result = confirm(`Вы уверены что хотите удалить направление ${sections.value[index_section].name}?`);
+    let result = confirm(`Вы уверены что хотите удалить направление ${admin.sections[index_section].name}?`);
     if (result) {
-        if (sections.value[index_section].status != 2) sections.value[index_section].status = 0;
-        else sections.value[index_section].status = 3;
+        if (admin.sections[index_section].status != 2) admin.sections[index_section].status = 0;
+        else admin.sections[index_section].status = 3;
         saveSection();
     }
 }
-
+//------------------------------------
 </script>
 <template>
     <h1>Настройка секций</h1>
@@ -37,7 +32,7 @@ function deleteSection(index_section) {
             </tr>
         </thead>
         <tbody>
-            <template v-for="(section, index_section) in sections" :key="index_section">
+            <template v-for="(section, index_section) in admin.sections" :key="index_section">
                 <tr v-if="section.status != 0 && section.status != 3">
                     <td>{{ section.id}}</td>
                     <td><input type="text" v-model="section.name" @change="setStatus(index_section)"/></td>

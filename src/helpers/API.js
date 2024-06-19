@@ -25,8 +25,8 @@ export async function getProfessionAsync() {
     await axios.get('https://'+host+'/professions?type=full').then(response => {admin.professions = response.data});
 }
 
-function getSection() {
-    axios.get('https://'+host+'/sections').then(response => {sections.value = response.data;});
+export function getSection() {
+    axios.get('https://'+host+'/sections').then(response => {admin.sections = response.data});
 }
 
 export function getRole() {
@@ -34,7 +34,10 @@ export function getRole() {
         'jwt': localStorage.getItem('skos-token'),
         'type_request': 'roles_info',
     };
-    axios.post('https://'+host+'/roles', request).then(response => {admin.roles = response.data});
+    axios.post('https://'+host+'/roles', request).then(response => {
+        admin.roles = response.data;
+        admin.role = admin.roles.find(x => x.id == admin.roleId);
+    });
 }
 
 export function saveDirection() {
@@ -111,14 +114,15 @@ export async function saveProfessionGroup() {
         });
 }
 
-function saveSection() {
+export function saveSection() {
     let request = {
         'jwt': localStorage.getItem('skos-token'),
-        'sections': sections.value.filter((section) => typeof section.status !== "undefined" && section.status != 3),
+        'sections': admin.sections.filter((section) => typeof section.status !== "undefined" && section.status != 3),
     };
     axios
         .post('https://' + host + '/sections', request)
         .then((response) => {
+            console.log(response);
             getSection();
         })
 }
