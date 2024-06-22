@@ -1,11 +1,24 @@
 <script setup>
 import { useStore } from '../stores/PlanStore';
-import { getNotify } from '../helpers/API.js';
+import { getDirection, getNotify } from '../helpers/API.js';
 import { ref } from 'vue';
 //------------------------------------
 const admin = useStore();
 getNotify();
+getDirection();
 const page = ref(1);
+//-----------------------------------
+function getNameById(arr, id) {
+    let name = '';
+    if (arr != undefined)
+        arr.forEach(item => {
+            if (item.id == id) {
+                name = item.name;
+                return;
+            }
+        });
+    return name;
+}
 //-----------------------------------
 </script>
 
@@ -27,7 +40,7 @@ const page = ref(1);
                 <tbody>
                     <tr v-for="(notification, index_notification) in admin.notify" :key="index_notification" class="tr_notification">
                         <td>{{ index_notification + 1 + 12 * (page - 1)}}</td>
-                        <td>{{ notification.id_direction }}</td>
+                        <td>{{ getNameById(admin.directions, notification.id_direction) }}</td>
                         <td>{{ notification.id_PG }}</td>
                         <td :class="notification.status == 1 ? 'red' : ''">{{ notification.status == 1 ? 'Не прочитано' : 'Прочитано' }}</td>
                         <td>{{ notification.date_start_training }}</td>

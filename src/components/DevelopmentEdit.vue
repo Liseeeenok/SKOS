@@ -43,7 +43,9 @@ function addCode(index_division, index_chapter, index_profession) {
 function addDirection(index_division, index_chapter, index_profession) {
     console.log('addDirection +');
     setProfessionStatusChange(index_division, index_chapter, index_profession);
-    admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction.push({id:null,id_direction:'',status:2});
+    admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction.push(
+        {id: null, id_direction: admin.directions[0].id, status: 2}
+    );
     admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].count.push(0);
     admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].start_o.push('');
     admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].start_po.push('');
