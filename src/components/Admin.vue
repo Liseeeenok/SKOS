@@ -11,10 +11,10 @@ import { useStore } from '../stores/PlanStore';
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 const admin = useStore();
 if (localStorage.getItem('skos-menu')) {
-    admin.setChapter(localStorage.getItem('skos-menu'));
+    admin.chapter = localStorage.getItem('skos-menu');
 }
 function changeMenu(index) {
-    admin.setChapter(index); 
+    admin.chapter = index; 
     localStorage.setItem('skos-menu', index)
 }
 </script>

@@ -19,10 +19,10 @@ function deleteRole(index_role) {
     }
 }
 function openPermission(roleId) {
-    admin.setChapter(7); 
-    admin.setRoleId(roleId);
-    localStorage.setItem('skos-menu', 7)
-    localStorage.setItem('skos-role-id', roleId)
+    admin.chapter = 7; 
+    admin.roleId = roleId;
+    localStorage.setItem('skos-menu', 7);
+    localStorage.setItem('skos-role-id', roleId);
 }
 //------------------------------------
 </script>

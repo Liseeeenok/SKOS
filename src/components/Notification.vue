@@ -1,20 +1,12 @@
 <script setup>
-import { ref } from 'vue';
-import router from '../router';
-import axios from 'axios';
 import { useStore } from '../stores/PlanStore';
 import { getNotify } from '../helpers/API.js';
+import { ref } from 'vue';
 //------------------------------------
 const admin = useStore();
 getNotify();
-//---------------------------API-----------------------------
-const host = 'mypew.ru:7070'; //имя или ip хоста api
-const arr_name_division = ref([]);
-const arr_name_direction = ref([]);
-const arr_name_profession = ref([]);
-const level = ref(1);
-let counter = 0;
-//---------------------------API-----------------------------
+const page = ref(1);
+//-----------------------------------
 </script>
 
 <template>
@@ -33,13 +25,13 @@ let counter = 0;
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(notification, index) in admin.notify" :key="index" @click="openNotification(notification)" class="tr_notification">
-                        <td>{{ index + 1 + 12 * (page - 1)}}</td>
-                        <td>{{ notification.direction }}</td>
-                        <td>{{ notification.division }}</td>
-                        <td :class="notification.status == 'Не прочитано' ? 'red' : ''">{{ notification.status }}</td>
-                        <td>{{ notification.start_o }}</td>
-                        <td>{{ notification.date_read }}</td>
+                    <tr v-for="(notification, index_notification) in admin.notify" :key="index_notification" class="tr_notification">
+                        <td>{{ index_notification + 1 + 12 * (page - 1)}}</td>
+                        <td>{{ notification.id_direction }}</td>
+                        <td>{{ notification.id_PG }}</td>
+                        <td :class="notification.status == 1 ? 'red' : ''">{{ notification.status == 1 ? 'Не прочитано' : 'Прочитано' }}</td>
+                        <td>{{ notification.date_start_training }}</td>
+                        <td>{{ notification.date_reading }}</td>
                     </tr>
                 </tbody>
             </table>

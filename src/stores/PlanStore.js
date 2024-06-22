@@ -41,34 +41,5 @@ export const useStore = defineStore('admin', {
             notify: null
          }
     },
-    actions: {
-        setChapter(chapter) {
-            this.chapter = chapter
-        },
-        setRoleId(roleId) {
-            this.roleId = roleId;
-            admin.role = admin.roles.find(x => x.id == admin.roleId);
-        },
-        setDirections(directions) {
-            this.directions = directions
-        },
-        setDivisions(divisions) {
-            this.divisions = divisions
-        },
-        setRoles(roles) {
-            this.roles = roles
-        },
-        setProfessions(professions) {
-            this.professions = professions
-        },
-        setSections(sections) {
-            this.sections = sections
-        },
-        setUser(user) {
-            this.user = user
-        },
-        setUsers(users) {
-            this.users = users
-        },
-    },
+    actions: {},
 });

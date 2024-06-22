@@ -50,7 +50,6 @@ export function getProfession() {
             professions.forEach((element) => {
                 admin.professions[element.id] = element;
             });
-            console.log(admin.professions);
         });
 }
 
@@ -62,7 +61,12 @@ export async function getProfessionAsync() {
     };
     await axios
         .post('https://'+host+'/professions', request)
-        .then(response => {admin.professions = response.data});
+        .then(response => {
+            let professions = response.data;
+            professions.forEach((element) => {
+                admin.professions[element.id] = element;
+            });
+        });
 }
 
 export function getSection() {
@@ -114,7 +118,7 @@ export function getPlan() {
     localStorage.setItem('skos-year', admin.academic_year)
     let request = {
         'jwt': localStorage.getItem('skos-token'),
-        'request_type': 'VIEW',
+        'type_request': 'VIEW',
         'academic_year': admin.academic_year,
         'table_type': 2,
     };
@@ -122,7 +126,6 @@ export function getPlan() {
         .post('https://'+host+'/table', request)
         .then(response => {
             admin.plan = response.data;
-            console.log(response.data);
         });
 }
 
@@ -130,7 +133,7 @@ export function getStatement() {
     localStorage.setItem('skos-year', admin.academic_year)
     let request = {
         'jwt': localStorage.getItem('skos-token'),
-        'request_type': 'VIEW_STATEMENT',
+        'type_request': 'VIEW_STATEMENT',
         'academic_year': admin.academic_year,
         'table_type': 2,
     };
@@ -150,14 +153,13 @@ export function getStatement() {
                 });
             });
             admin.statement = statement;
-            console.log(admin.statement);
         });
 }
 
 export function getNotify() {
     let request = {
         'jwt': localStorage.getItem('skos-token'),
-        'request_type': 'notifications_info',
+        'type_request': 'notifications_info',
     };
     console.log(request);
     axios
@@ -175,6 +177,7 @@ export function saveDirection() {
     let request = {
         'jwt': localStorage.getItem('skos-token'),
         'directions': admin.directions.filter((direction) => typeof direction.status !== "undefined" && direction.status != 3),
+        'request_type': 'directions_change',
     };
     axios
         .post('https://' + host + '/directions', request)
@@ -189,6 +192,7 @@ export function saveDivision() {
     let request = {
         'jwt': localStorage.getItem('skos-token'),
         'divisions': admin.divisions.filter((division) => typeof division.status !== "undefined" && division.status != 3),
+        'request_type': 'divisions_change',
     };
     axios
         .post('https://' + host + '/divisions', request)
@@ -202,8 +206,8 @@ export function saveDivision() {
 export function saveRole() {
     let request = {
         'jwt': localStorage.getItem('skos-token'),
-        'type_request': 'roles_change',
         'roles': admin.roles.filter((role) => typeof role.status !== "undefined" && role.status != 3),
+        'type_request': 'roles_change',
     };
     axios
         .post('https://' + host + '/roles', request)
@@ -215,9 +219,14 @@ export function saveRole() {
 }
 
 export function saveProfession() {
+    let professions = [];
+    for (let id in admin.professions) {
+        if (typeof admin.professions[id].status !== "undefined" && admin.professions[id].status != 3) professions.push(admin.professions[id]);
+    }
     let request = {
         'jwt': localStorage.getItem('skos-token'),
-        'professions': admin.professions.filter((profession) => typeof profession.status !== "undefined" && profession.status != 3),
+        'professions': professions,
+        'type_request': 'professions_change',
     };
     axios
         .post('https://' + host + '/professions', request)
@@ -229,20 +238,24 @@ export function saveProfession() {
 
 export async function saveProfessionGroup() {
     let profession_groups = [];
-    admin.professions.forEach(element => {
-        let groups = element.groups.filter((group) => {
-            group.name_prof = element.name;
+    for (let id in admin.professions) { 
+        let groups = admin.professions[id].groups.filter((group) => {
+            group.name_prof = admin.professions[id].name;
             return typeof group.status !== "undefined" && group.status != 3;
         });
         profession_groups = profession_groups.concat(groups);
-    });
+        if (admin.professions[id].id == null) delete(admin.professions[id]);
+    }
     await getProfessionAsync();
     let idName = {};
-    admin.professions.forEach((element) => {idName[element.name] = element.id});
+    for (let id in admin.professions) { 
+        idName[admin.professions[id].name] = id;
+    }
     profession_groups.forEach((element) => {element.id_profession = idName[element.name_prof]});
     let request = {
         'jwt': localStorage.getItem('skos-token'),
         'profession_groups': profession_groups,
+        'type_request': 'profession_groups_change',
     };
     axios
         .post('https://' + host + '/profession_groups', request)
@@ -257,6 +270,7 @@ export function saveSection() {
     let request = {
         'jwt': localStorage.getItem('skos-token'),
         'sections': admin.sections.filter((section) => typeof section.status !== "undefined" && section.status != 3),
+        'type_request': 'sections_change',
     };
     axios
         .post('https://' + host + '/sections', request)
@@ -273,8 +287,8 @@ export function saveUsers() {
     for(let ans of answer) {
         let request = {
             'jwt': localStorage.getItem('skos-token'),
-            'type_request': 'user_change',
             'user': ans,
+            'type_request': 'user_change',
         }
         axios
             .post('https://' + host + '/accounts', request)
@@ -292,7 +306,7 @@ export function saveUsers() {
 export function savePlan() {
     let request = {
         'jwt': localStorage.getItem('skos-token'),
-        'request_type': "SAVE",
+        'type_request': "SAVE",
         'training_list': [],
         'academic_year': admin.academic_year,
         'table_type': 2
@@ -343,10 +357,7 @@ export function savePlan() {
             });
         });
     });
-    console.log('answer:');
-    console.log((request));
-    console.log('answer string:');
-    console.log(JSON.stringify(request));
+    console.log(request);
     axios
         .post('https://' + host + '/table', request)
         .then((response) => {
@@ -359,13 +370,11 @@ export function savePlan() {
 export function saveStatement() {
     let request = {
         'jwt': localStorage.getItem('skos-token'),
-        'request_type': "SAVE_STATEMENT",
+        'type_request': "SAVE_STATEMENT",
         'training_list': admin.statement,
         'academic_year': admin.academic_year,
         'table_type': 2
     }
-    console.log((request));
-    console.log(JSON.stringify(request));
     axios
         .post('https://' + host + '/table', request)
         .then((response) => {

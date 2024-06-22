@@ -1,9 +1,11 @@
 <script setup>
 import { useStore } from '../stores/PlanStore';
 import { getProfession, saveProfession } from '../helpers/API.js';
+import { ref } from 'vue';
 //------------------------------------
 const admin = useStore();
 getProfession();
+const newId = ref(0);
 //------------------------------------
 function setStatus(index_profession) {
     if (admin.professions[index_profession].status != 2) admin.professions[index_profession].status = 1;
@@ -16,10 +18,16 @@ function setStatusGroup(index_profession, index_group) {
     }
 }
 function addProfession() {
-    admin.professions.push({'id':null, 'name': '', 'status': 2, 'groups': []});
+    if (newId.value == 0) {
+        let count = Object.keys(admin.professions).length;
+        newId.value = 1000000 + count;
+    } else {
+        newId.value++;
+    }
+    admin.professions[newId.value] = {'id': null, 'name': '', 'status': 2, 'groups': []};
 }
 function addGroup(index_profession) {
-    admin.professions[index_profession].groups.push({'id':null, 'name': '', 'status': 2});
+    admin.professions[index_profession].groups.push({'id': null, 'name': '', 'status': 2});
 }
 function deleteProfession(index_profession) {
     let result = confirm(`Вы уверены что хотите удалить профессию ${admin.professions[index_profession].name}?`);
