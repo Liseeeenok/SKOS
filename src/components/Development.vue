@@ -149,7 +149,7 @@ function changeMenuStatus(index) {
                             <table class="table_nested">
                                 <tr v-for="(start_o, index_start_o) in profession.start_o" :key="index_start_o">
                                     <td class="nested_input" style="min-width: 80px;min-height: 17px;">
-                                        <div style="min-width: 80px;min-height: 17px;">{{ start_o }}</div>
+                                        <div style="min-width: 80px;min-height: 17px;">{{ start_o ? start_o.split('-').reverse().join('.') : '' }}</div>
                                     </td>
                                 </tr>
                             </table>
@@ -158,7 +158,7 @@ function changeMenuStatus(index) {
                             <table class="table_nested">
                                 <tr v-for="(start_po, index_start_po) in profession.start_po" :key="index_start_po">
                                     <td class="nested_input" style="min-width: 80px;min-height: 17px;">
-                                        <div style="min-width: 80px;min-height: 17px;">{{ start_po }}</div>
+                                        <div style="min-width: 80px;min-height: 17px;">{{ start_po ? start_po.split('-').reverse().join('.') : '' }}</div>
                                     </td>
                                 </tr>
                             </table>
@@ -167,7 +167,7 @@ function changeMenuStatus(index) {
                             <table class="table_nested">
                                 <tr v-for="(end_po, index_end_po) in profession.end_po" :key="index_end_po">
                                     <td class="nested_input" style="min-width: 80px;min-height: 17px;">
-                                        <div style="min-width: 80px;min-height: 17px;">{{ end_po }}</div>
+                                        <div style="min-width: 80px;min-height: 17px;">{{ end_po ? end_po.split('-').reverse().join('.') : '' }}</div>
                                     </td>
                                 </tr>
                             </table>
@@ -176,7 +176,7 @@ function changeMenuStatus(index) {
                             <table class="table_nested">
                                 <tr v-for="(qual_ex, index_qual_ex) in profession.qual_ex" :key="index_qual_ex">
                                     <td class="nested_input">
-                                        <div style="min-width: 80px;min-height: 17px;">{{ qual_ex }}</div>
+                                        <div style="min-width: 80px;min-height: 17px;">{{ qual_ex ? qual_ex.split('-').reverse().join('.') : '' }}</div>
                                     </td>
                                 </tr>
                             </table>
