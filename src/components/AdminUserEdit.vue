@@ -1,6 +1,6 @@
 <script setup>
 import { useStore } from '../stores/PlanStore';
-import { getUsers, getRole, saveUsers, getDivision, getDirection, getProfession, getCompany } from '../helpers/API.js';
+import { getUsers, getRole, saveUsers, getDivision, getDirection, getProfession, getCompany, getPosition } from '../helpers/API.js';
 //------------------------------------
 const admin = useStore();
 if (localStorage.getItem('skos-chapter-status') == 'edit') getUsers();
@@ -9,6 +9,7 @@ getDivision();
 getDirection();
 getProfession();
 getCompany();
+getPosition();
 //------------------------------------
 function deleteUser() {
     let result = confirm(`Вы уверены что хотите удалить пользователя ${admin.users[admin.userIdx].name}?`);
@@ -53,6 +54,16 @@ function openUser() {
             <tr>
                 <td>Телефон</td>
                 <td><input v-model="admin.users[admin.userIdx].phone_number" @change="setStatus()"/></td>
+            </tr>
+            <tr>
+                <td>Должность</td>
+                <td>
+                    <select v-model="admin.users[admin.userIdx].id_position" @change="setStatus()">
+                        <template v-for="(position, index_position) in admin.positions" :key="index_position">
+                            <option :value="position.id">{{ position.name }}</option>
+                        </template>
+                    </select>
+                </td>
             </tr>
             <tr>
                 <td>Роль</td>

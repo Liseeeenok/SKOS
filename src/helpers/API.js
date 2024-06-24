@@ -183,6 +183,19 @@ export function getCompany() {
             console.log(response.data);
         });
 }
+
+export function getPosition() {
+    let request = {
+        'jwt': localStorage.getItem('skos-token'),
+        'type_request': 'position_info',
+    };
+    axios
+        .post('https://'+host+'/positions', request)
+        .then(response => {
+            admin.positions = response.data;
+            console.log(response.data);
+        });
+}
 //---------------------------------------------------------------------------------------------------
 //--------------------------------------------------SAVE---------------------------------------------
 //---------------------------------------------------------------------------------------------------
@@ -399,6 +412,21 @@ export function saveCompany() {
     }
     axios
         .post('https://' + host + '/companies', request)
+        .then((response) => {
+            getUsers();
+            if (response.data == 'OK') alert('Успешно сохранено!');
+            else console.log(request, response);
+        })
+}
+
+export function savePosition() {
+    let request = {
+        'jwt': localStorage.getItem('skos-token'),
+        'positions': admin.positions.filter((position) => typeof position.status !== "undefined" && position.status != 3),
+        'type_request': 'positions_change',
+    }
+    axios
+        .post('https://' + host + '/positions', request)
         .then((response) => {
             getUsers();
             if (response.data == 'OK') alert('Успешно сохранено!');

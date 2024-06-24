@@ -10,6 +10,7 @@ import AdminPermission from './AdminPermission.vue';
 import { useStore } from '../stores/PlanStore';
 import AdminUserEdit from './AdminUserEdit.vue';
 import AdminCompany from './AdminCompany.vue';
+import AdminPosition from './AdminPosition.vue';
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 const admin = useStore();
 function changeMenu(index) {
@@ -33,6 +34,7 @@ function changeMenu(index) {
                     <div class="menu_item" :class="admin.chapter == 5 ? 'active':''" @click="changeMenu(5)">Пользователи</div>
                     <div class="menu_item" :class="admin.chapter == 6 ? 'active':''" @click="changeMenu(6)">Роли</div>
                     <div class="menu_item" :class="admin.chapter == 7 ? 'active':''" @click="changeMenu(7)">Права</div>
+                    <div class="menu_item" :class="admin.chapter == 9 ? 'active':''" @click="changeMenu(9)">Должности</div>
                 </div>
             </div>
             <div class="container_content">
@@ -45,6 +47,7 @@ function changeMenu(index) {
                 <template v-if="admin.chapter == 6"><AdminRoles/></template>
                 <template v-if="admin.chapter == 7"><AdminPermission/></template>
                 <template v-if="admin.chapter == 8"><AdminCompany/></template>
+                <template v-if="admin.chapter == 9"><AdminPosition/></template>
             </div>
         </div>
     </div>
