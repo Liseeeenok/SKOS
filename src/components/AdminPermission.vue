@@ -13,6 +13,7 @@ function setStatus() {
     if (admin.roles.find(x => x.id == admin.roleId).status != 2) admin.roles.find(x => x.id == admin.roleId).status = 1;
 }
 function updateRole() {
+    if (admin.role.status == 1 || admin.role.status == 2) saveRole();
     localStorage.setItem('skos-role-id', admin.roleId);
     admin.role = admin.roles.find(x => x.id == admin.roleId);
 }
@@ -77,6 +78,21 @@ function updateRole() {
                 <td>Дирекции</td>
                 <td>
                     <select v-model="admin.role.perm_directions.access" @change="setStatus()">
+                        <option value="-">Закрыт</option>
+                        <option value="limited">Ограничен</option>
+                        <option value="*">Все</option>
+                    </select>
+                    <select class="selected_two" v-if="admin.role.perm_directions.access == 'limited'" v-model="admin.role.perm_directions.id_direction" @change="setStatus()">
+                        <template v-for="(direction, index_direction) in admin.directions" :key="index_direction">
+                            <option :value="direction.id">{{ direction.name }}</option>
+                        </template>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Предприятия</td>
+                <td>
+                    <select v-model="admin.role.perm_companies.access" @change="setStatus()">
                         <option value="-">Закрыт</option>
                         <option value="limited">Ограничен</option>
                         <option value="*">Все</option>

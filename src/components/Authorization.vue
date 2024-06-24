@@ -4,17 +4,17 @@ import router from '../router';
 import axios from 'axios';
 import { jwtDecode } from "jwt-decode";
 import { preLoad } from '../helpers/API.js';
+import { useStore } from '../stores/PlanStore';
+const admin = useStore();
 const auth_err = ref(false);
 const login =  ref('');
 const password =  ref('');
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 function authorization() {
-    //запрос
     let request = {
         login: login.value,
         password: password.value
     }
-    console.log(request);
     axios
         .post('https://' + host + '/login', request)
         .then((response_jwt) => {
@@ -24,7 +24,14 @@ function authorization() {
                 console.log(response);
                 auth_err.value = false;
                 localStorage.setItem('skos-token', response_jwt.data.jwt);
-                localStorage.setItem('skos-role', response.role);
+                admin.chapter = 1;
+                localStorage.setItem('skos-chapter', 1);
+                admin.chapterStatus = 'main';
+                localStorage.setItem('skos-chapter-status', 'main');
+                admin.menu = 3;
+                localStorage.setItem('skos-menu', 3);
+                admin.menuStatus = 'main';
+                localStorage.setItem('skos-menu-status', 'main');
                 preLoad();
                 router.push('/main');
             } else {

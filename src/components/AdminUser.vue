@@ -1,23 +1,21 @@
 <script setup>
 import { useStore } from '../stores/PlanStore';
-import { getUsers, getRole, saveUsers } from '../helpers/API.js';
+import { getUsers, getRole } from '../helpers/API.js';
 //------------------------------------
 const admin = useStore();
 getUsers();
 getRole();
 //------------------------------------
-function setStatus(index_user) {
-    if (admin.users[index_user].status != 2) admin.users[index_user].status = 1;
-}
 function addUser() {
-    admin.users.push({'login': '', 'name': '', 'patronymic' : '', 'phone_number' : '', 'role' : '', 'surname' : '', 'status': 2});
+    admin.users.push({ "login": "", "surname": "", "name": "", "patronymic": "", "phone_number": "", "role": null, "id_direction": null, "id_division": null, "id_profession": null, "id_company": null, "status": 2 });
+    admin.userIdx = admin.users.length - 1;
+    admin.chapterStatus = 'edit';
 }
-function deleteUser(index_user) {
-    let result = confirm(`Вы уверены что хотите удалить пользователя ${admin.users[index_user].name}?`);
-    if (result) {
-        admin.users[index_user].status != 2 ? admin.users[index_user].status = 0 : admin.users[index_user].status = 3;
-        saveUsers();
-    }
+function openUserEdit(userIdx) {
+    admin.userIdx = userIdx;
+    admin.chapterStatus = 'edit';
+    localStorage.setItem('skos-user-idx', userIdx);
+    localStorage.setItem('skos-chapter-status', 'edit');
 }
 //------------------------------------
 </script>
@@ -31,42 +29,29 @@ function deleteUser(index_user) {
                 <th>Имя</th>
                 <th>Отчество</th>
                 <th>Телефон</th>
-                <th>Роль</th>
-                <th>Новый пароль</th>
-                <th>Действия</th>
             </tr>
         </thead>
         <tbody>
             <template v-for="(user, index_user) in admin.users" :key="index_user">
-                <tr v-if="user.status != 0 && user.status != 3">
-                    <td v-if="user.status == 2"><input type="text" v-model="user.login"/></td>
-                    <td v-else>{{ user.login }}</td>
-                    <td><input type="text" v-model="user.surname" @change="setStatus(index_user)"/></td>
-                    <td><input type="text" v-model="user.name" @change="setStatus(index_user)"/></td>
-                    <td><input type="text" v-model="user.patronymic" @change="setStatus(index_user)"/></td>
-                    <td><input type="text" v-model="user.phone_number" @change="setStatus(index_user)"/></td>
-                    <td>
-                        <select v-model="user.role" @change="setStatus(index_user)">
-                            <template v-for="(role, index_role) in admin.roles" :key="index_role">
-                                <option :value="role.id">{{ role.name }}</option>
-                            </template>
-                        </select>
-                    </td>
-                    <td><input type="text" v-model="user.password" @change="setStatus(index_user)"/></td>
-                    <td>
-                        <button class="red" @click="deleteUser(index_user)">Удалить</button>
-                    </td>
+                <tr v-if="user.status != 0 && user.status != 3" @click="openUserEdit(index_user)">
+                    <td>{{ user.login }}</td>
+                    <td>{{ user.surname }}</td>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.patronymic }}</td>
+                    <td>{{ user.phone_number }}</td>
                 </tr>
             </template>
         </tbody>
     </table>
-    <button class="green" @click="saveUsers()">Сохранить</button>
     <button class="add" @click="addUser()">Добавить пользователя</button>
 </template>
 
 <style scoped>
 table {
     border-collapse: collapse;
+}
+tr td {
+    cursor: pointer;
 }
 th {
     text-align: center;
@@ -79,7 +64,7 @@ th {
     border: 1px solid #000;
 }
 td {
-    padding: 5px 10px;
+    padding: 15px 20px;
     text-align: center;
     color: #000;
     font-family: Arial;

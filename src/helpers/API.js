@@ -87,6 +87,7 @@ export function getRole() {
     axios.post('https://'+host+'/roles', request).then(response => {
         admin.roles = response.data;
         admin.role = admin.roles.find(x => x.id == admin.roleId);
+        console.log(admin.role);
     });
 }
 
@@ -166,6 +167,19 @@ export function getNotify() {
         .post('https://'+host+'/notifications', request)
         .then(response => {
             admin.notify = response.data;
+            console.log(response.data);
+        });
+}
+
+export function getCompany() {
+    let request = {
+        'jwt': localStorage.getItem('skos-token'),
+        'type_request': 'companies_info',
+    };
+    axios
+        .post('https://'+host+'/companies', request)
+        .then(response => {
+            admin.companies = response.data;
             console.log(response.data);
         });
 }
@@ -281,26 +295,19 @@ export function saveSection() {
         })
 }
 
-export function saveUsers() {
-    let answer = admin.users.filter((user) => typeof user.status !== "undefined" && user.status != 3);
-    let count = 0;
-    for(let ans of answer) {
-        let request = {
-            'jwt': localStorage.getItem('skos-token'),
-            'user': ans,
-            'type_request': 'user_change',
-        }
-        axios
-            .post('https://' + host + '/accounts', request)
-            .then((response) => {
-                count++;
-                if (count == answer.length)  {
-                    getUsers();
-                    if (response.data == 'OK') alert('Успешно сохранено!');
-                    else console.log(response);
-                }
-            })
-    };
+export function saveUsers(idx) {
+    let request = {
+        'jwt': localStorage.getItem('skos-token'),
+        'user': admin.users[idx],
+        'type_request': 'user_change',
+    }
+    axios
+        .post('https://' + host + '/accounts', request)
+        .then((response) => {
+            getUsers();
+            if (response.data == 'OK') alert('Успешно сохранено!');
+            else console.log(request, response);
+        })
 }
 
 export function savePlan() {

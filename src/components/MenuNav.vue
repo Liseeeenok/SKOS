@@ -11,7 +11,7 @@ function delLocal() {
 function changeMenu(index) {
     admin.menu = index;
     admin.menuStatus = 'main';
-    localStorage.setItem('skos-main-menu', index);
+    localStorage.setItem('skos-menu', index);
     localStorage.setItem('skos-menu-status', 'main');
 }
 </script>

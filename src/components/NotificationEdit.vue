@@ -1,7 +1,6 @@
 <script setup>
 import { ref } from 'vue';
 import router from '../router';
-const level = localStorage.getItem('skos-role');
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 const arr_company_name = ref([{id:1, name:'Предприятие 1'},{id:2, name:'Предприятие 2'},{id:3, name:'Предприятие 3'}]);
 /*
@@ -45,7 +44,7 @@ function addCompany() {
                     </tr>
                 </tbody>
             </table>
-            <template v-if="level == 4">
+            <template>
             <table class="answer_table">
                 <thead>
                     <tr>
@@ -87,7 +86,7 @@ function addCompany() {
                 <button class="button_notice">Отметить прочитанным</button>
             </div>
             </template>
-            <template v-if="level == 2">
+            <template>
             <table class="answer_table">
                 <thead>
                     <tr>

@@ -8,14 +8,14 @@ import AdminUser from './AdminUser.vue';
 import AdminRoles from './AdminRoles.vue';
 import AdminPermission from './AdminPermission.vue';
 import { useStore } from '../stores/PlanStore';
+import AdminUserEdit from './AdminUserEdit.vue';
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 const admin = useStore();
-if (localStorage.getItem('skos-menu')) {
-    admin.chapter = localStorage.getItem('skos-menu');
-}
 function changeMenu(index) {
     admin.chapter = index; 
-    localStorage.setItem('skos-menu', index)
+    admin.chapterStatus = 'main';
+    localStorage.setItem('skos-chapter', index)
+    localStorage.setItem('skos-chapter-status', 'main')
 }
 </script>
 
@@ -38,7 +38,8 @@ function changeMenu(index) {
                 <template v-if="admin.chapter == 2"><AdminSection/></template>
                 <template v-if="admin.chapter == 3"><AdminDirection/></template>
                 <template v-if="admin.chapter == 4"><AdminProfession/></template>
-                <template v-if="admin.chapter == 5"><AdminUser/></template>
+                <template v-if="admin.chapter == 5 && admin.chapterStatus == 'main'"><AdminUser/></template>
+                <template v-if="admin.chapter == 5 && admin.chapterStatus == 'edit'"><AdminUserEdit/></template>
                 <template v-if="admin.chapter == 6"><AdminRoles/></template>
                 <template v-if="admin.chapter == 7"><AdminPermission/></template>
             </div>

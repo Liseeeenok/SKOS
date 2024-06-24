@@ -4,8 +4,10 @@ const date = new Date();
 export const useStore = defineStore('admin', {
     state: () => {
         return { 
-            chapter: 1,
-            menu: localStorage.getItem('skos-main-menu') ?? 3,
+            chapter: localStorage.getItem('skos-chapter') ?? 1,
+            chapterStatus: localStorage.getItem('skos-chapter-status') ?? 'main',
+            userIdx: localStorage.getItem('skos-user-idx') ?? 0,
+            menu: localStorage.getItem('skos-menu') ?? 3,
             menuStatus: localStorage.getItem('skos-menu-status') ?? 'main',
             roleId: localStorage.getItem('skos-role-id') ?? 1,
             directions: null,
@@ -26,6 +28,7 @@ export const useStore = defineStore('admin', {
                 'perm_notifications': {'access': '-'},
                 'perm_plan_schedule': {'access': '-'},
                 'perm_statement': {'access': '-'},
+                'perm_companies': {'access': '-'},
             },
             user: {
                 'surname': '',
@@ -38,7 +41,8 @@ export const useStore = defineStore('admin', {
                 'arr_plan': [],
             },
             statement: null,
-            notify: null
+            notify: null,
+            companies: null,
          }
     },
     actions: {},
