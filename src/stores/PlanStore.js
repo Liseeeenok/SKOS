@@ -30,6 +30,7 @@ export const useStore = defineStore('admin', {
                 'perm_plan_schedule': {'access': '-'},
                 'perm_statement': {'access': '-'},
                 'perm_companies': {'access': '-'},
+                'perm_positions': {'access': '-'}
             },
             user: {
                 'surname': '',

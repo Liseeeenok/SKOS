@@ -143,6 +143,14 @@ function updateRole() {
                     </select>
                 </td>
             </tr>
+            <td>Должности</td>
+                <td>
+                    <select v-model="admin.role.perm_positions.access" @change="setStatus()">
+                        <option value="-">Закрыт</option>
+                        <option value="limited">Ограничен</option>
+                        <option value="*">Все</option>
+                    </select>
+                </td>
             <tr>
                 <td>Пользователи</td>
                 <td>
@@ -231,7 +239,7 @@ button:hover {
 select {
     font-size: 20px;
     margin: 15px 10px;
-    max-width: 300px;
+    width: 180px;
 }
 .selected_two {
     width: 300px;

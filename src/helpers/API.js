@@ -24,7 +24,9 @@ export function getDirection() {
     };
     axios
         .post('https://'+host+'/directions', request)
-        .then(response => {admin.directions = response.data});
+        .then(response => {
+            admin.directions = response.data; 
+        });
 }
 
 export function getDivision() {
@@ -34,7 +36,9 @@ export function getDivision() {
     };
     axios
         .post('https://'+host+'/divisions', request)
-        .then(response => {admin.divisions = response.data});
+        .then(response => {
+            admin.divisions = response.data;
+        });
 }
 
 export function getProfession() {
@@ -187,7 +191,7 @@ export function getCompany() {
 export function getPosition() {
     let request = {
         'jwt': localStorage.getItem('skos-token'),
-        'type_request': 'position_info',
+        'type_request': 'positions_info',
     };
     axios
         .post('https://'+host+'/positions', request)
@@ -428,7 +432,7 @@ export function savePosition() {
     axios
         .post('https://' + host + '/positions', request)
         .then((response) => {
-            getUsers();
+            getPosition();
             if (response.data == 'OK') alert('Успешно сохранено!');
             else console.log(request, response);
         })

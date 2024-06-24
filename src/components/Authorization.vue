@@ -32,7 +32,7 @@ function authorization() {
                 localStorage.setItem('skos-menu', 3);
                 admin.menuStatus = 'main';
                 localStorage.setItem('skos-menu-status', 'main');
-                preLoad();
+                //preLoad();
                 router.push('/main');
             } else {
                 auth_err.value = true;

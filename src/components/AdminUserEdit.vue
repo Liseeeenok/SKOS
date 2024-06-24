@@ -33,7 +33,7 @@ function openUser() {
 <template>
     <h1>Настройка пользователя</h1>
     <table>
-        <tbody v-if="admin.users">
+        <tbody v-if="admin.users[admin.userIdx]">
             <tr>
                 <td>Логин</td>
                 <td v-if="admin.users[admin.userIdx].status == 2"><input v-model="admin.users[admin.userIdx].login" @change="setStatus()"/></td>

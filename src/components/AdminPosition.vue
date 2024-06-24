@@ -1,6 +1,6 @@
 <script setup>
 import { useStore } from '../stores/PlanStore';
-import { getPosition } from '../helpers/API.js';
+import { getPosition, savePosition } from '../helpers/API.js';
 //------------------------------------
 const admin = useStore();
 getPosition();
