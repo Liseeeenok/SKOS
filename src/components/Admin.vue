@@ -9,6 +9,7 @@ import AdminRoles from './AdminRoles.vue';
 import AdminPermission from './AdminPermission.vue';
 import { useStore } from '../stores/PlanStore';
 import AdminUserEdit from './AdminUserEdit.vue';
+import AdminCompany from './AdminCompany.vue';
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 const admin = useStore();
 function changeMenu(index) {
@@ -27,6 +28,7 @@ function changeMenu(index) {
                     <div class="menu_item" :class="admin.chapter == 1 ? 'active':''" @click="changeMenu(1)">Подразделения</div>
                     <div class="menu_item" :class="admin.chapter == 2 ? 'active':''" @click="changeMenu(2)">Секции</div>
                     <div class="menu_item" :class="admin.chapter == 3 ? 'active':''" @click="changeMenu(3)">Дирекции</div>
+                    <div class="menu_item" :class="admin.chapter == 8 ? 'active':''" @click="changeMenu(8)">Предприятия</div>
                     <div class="menu_item" :class="admin.chapter == 4 ? 'active':''" @click="changeMenu(4)">Профессии</div>
                     <div class="menu_item" :class="admin.chapter == 5 ? 'active':''" @click="changeMenu(5)">Пользователи</div>
                     <div class="menu_item" :class="admin.chapter == 6 ? 'active':''" @click="changeMenu(6)">Роли</div>
@@ -42,6 +44,7 @@ function changeMenu(index) {
                 <template v-if="admin.chapter == 5 && admin.chapterStatus == 'edit'"><AdminUserEdit/></template>
                 <template v-if="admin.chapter == 6"><AdminRoles/></template>
                 <template v-if="admin.chapter == 7"><AdminPermission/></template>
+                <template v-if="admin.chapter == 8"><AdminCompany/></template>
             </div>
         </div>
     </div>

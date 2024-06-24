@@ -390,3 +390,18 @@ export function saveStatement() {
             else console.log(response);
         })
 }
+
+export function saveCompany() {
+    let request = {
+        'jwt': localStorage.getItem('skos-token'),
+        'companies': admin.companies.filter((company) => typeof company.status !== "undefined" && company.status != 3),
+        'type_request': 'companies_change',
+    }
+    axios
+        .post('https://' + host + '/companies', request)
+        .then((response) => {
+            getUsers();
+            if (response.data == 'OK') alert('Успешно сохранено!');
+            else console.log(request, response);
+        })
+}
