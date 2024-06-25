@@ -208,7 +208,7 @@ export function saveDirection() {
     let request = {
         'jwt': localStorage.getItem('skos-token'),
         'directions': admin.directions.filter((direction) => typeof direction.status !== "undefined" && direction.status != 3),
-        'request_type': 'directions_change',
+        'type_request': 'directions_change',
     };
     axios
         .post('https://' + host + '/directions', request)
@@ -223,7 +223,7 @@ export function saveDivision() {
     let request = {
         'jwt': localStorage.getItem('skos-token'),
         'divisions': admin.divisions.filter((division) => typeof division.status !== "undefined" && division.status != 3),
-        'request_type': 'divisions_change',
+        'type_request': 'divisions_change',
     };
     axios
         .post('https://' + host + '/divisions', request)
