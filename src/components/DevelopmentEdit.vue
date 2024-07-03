@@ -389,7 +389,7 @@ function changeMenuStatus(index) {
                             <table class="table_nested">
                                 <tr v-for="(start_o, index_start_o) in profession.start_o" :key="index_start_o">
                                     <td class="nested_input">
-                                        <input type="date" class="input_text" v-model="profession.start_o[index_start_o]" @change="setProfessionStatusChange(index_division, index_chapter, index_profession)">
+                                        <input type="date" class="input_text" v-model="profession.start_o[index_start_o]" @change="setDirectionStatusChange(index_division, index_chapter, index_profession, index_start_o)">
                                     </td>
                                 </tr>
                                 <tr>
@@ -401,7 +401,7 @@ function changeMenuStatus(index) {
                             <table class="table_nested">
                                 <tr v-for="(start_po, index_start_po) in profession.start_po" :key="index_start_po">
                                     <td class="nested_input">
-                                        <input type="date" class="input_text" v-model="profession.start_po[index_start_po]" @change="setProfessionStatusChange(index_division, index_chapter, index_profession)">
+                                        <input type="date" class="input_text" v-model="profession.start_po[index_start_po]" @change="setDirectionStatusChange(index_division, index_chapter, index_profession, index_start_po)">
                                     </td>
                                 </tr>
                                 <tr>
@@ -413,7 +413,7 @@ function changeMenuStatus(index) {
                             <table class="table_nested">
                                 <tr v-for="(end_po, index_end_po) in profession.end_po" :key="index_end_po">
                                     <td class="nested_input">
-                                        <input type="date" class="input_text" v-model="profession.end_po[index_end_po]" @change="setProfessionStatusChange(index_division, index_chapter, index_profession)">
+                                        <input type="date" class="input_text" v-model="profession.end_po[index_end_po]" @change="setDirectionStatusChange(index_division, index_chapter, index_profession, index_end_po)">
                                     </td>
                                 </tr>
                                 <tr>
@@ -425,7 +425,7 @@ function changeMenuStatus(index) {
                             <table class="table_nested">
                                 <tr v-for="(qual_ex, index_qual_ex) in profession.qual_ex" :key="index_qual_ex">
                                     <td class="nested_input">
-                                        <input type="date" class="input_text" v-model="profession.qual_ex[index_qual_ex]" @change="setProfessionStatusChange(index_division, index_chapter, index_profession)">
+                                        <input type="date" class="input_text" v-model="profession.qual_ex[index_qual_ex]" @change="setDirectionStatusChange(index_division, index_chapter, index_profession, index_qual_ex)">
                                     </td>
                                 </tr>
                                 <tr>
