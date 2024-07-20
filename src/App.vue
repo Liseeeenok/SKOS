@@ -1,28 +1,34 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
-    <header>
-        <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-    </header>
+    <div class="background"></div>
     <main>
         <RouterView />
     </main>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+main {
+    position: relative; 
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
-.logo {
-  display: block;
-  position: absolute;
-  top: 68px;
-  left: 7.3%;
-  width: 193.538px;
-  height: 132.746px;
+.background {
+    height: 100vh;
+    width: 100%;
+    background-image: url("assets/1647619030_47-amiel-club-p-poezd-kartinki-krasivie-53.jpg");
+    background-size: cover;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    opacity: 0.2;
 }
+
 </style>
