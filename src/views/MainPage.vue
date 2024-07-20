@@ -8,6 +8,7 @@ import Development from '../components/Development.vue';
 import DevelopmentEdit from '../components/DevelopmentEdit.vue';
 import Statement from '../components/Statement.vue';
 import StatementEdit from '../components/StatementEdit.vue';
+import NotificationEdit from '../components/NotificationEdit.vue';
 import { useStore } from '../stores/PlanStore';
 //------------------------------------
 const admin = useStore();
@@ -18,7 +19,8 @@ const admin = useStore();
         <MenuNav/>
         <template v-if="admin.menu == 1"><Admin/></template>
         <template v-if="admin.menu == 2"><Profile/></template>
-        <template v-if="admin.menu == 3"><Notification/></template>
+        <template v-if="admin.menu == 3 && admin.menuStatus == 'main'"><Notification/></template>
+        <template v-if="admin.menu == 3 && admin.menuStatus == 'notifyEdit'"><NotificationEdit/></template>
         <template v-if="admin.menu == 4 && admin.menuStatus == 'main'"><Training/></template>
         <template v-if="admin.menu == 4 && admin.menuStatus == 'developmentView'"><Development/></template>
         <template v-if="admin.menu == 4 && admin.menuStatus == 'developmentEdit'"><DevelopmentEdit/></template>

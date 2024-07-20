@@ -1,33 +1,57 @@
 <script setup>
+import { useStore } from '../stores/PlanStore';
+import { getCompany, saveNotification } from '../helpers/API.js';
 import { ref } from 'vue';
-import router from '../router';
-const host = 'mypew.ru:7070'; //имя или ip хоста api
-const arr_company_name = ref([{id:1, name:'Предприятие 1'},{id:2, name:'Предприятие 2'},{id:3, name:'Предприятие 3'}]);
-/*
-axios
-    .get('https://'+host+'/divisions')
-    .then(response => {
-        arr_name_division.value = response.data;
-    });
-    */
+//------------------------------------
+const admin = useStore();
+getCompany();
+const notifyIndex = ref(0);
+//-----------------------------------
 const arr_company = ref([]);
 function addCompany() {
     arr_company.value.push({telegram:'',name:'',count:0});
 };
-//---------------------------API-----------------------------
-//---------------------------API-----------------------------
+if (admin.notify) {
+    getNotify(admin.notifyId);
+} else {
+    changeMenuStatus('main');
+}
+function getNotify(id) {
+    notifyIndex.value = admin.notify.findIndex((el) => el.id == id);
+}
+function changeMenuStatus(index) {
+    admin.menuStatus = index;
+    localStorage.setItem('skos-menu-status', index);
+}
+function getNameById(arr, id) {
+    let name = '';
+    if (arr != undefined)
+        arr.forEach(item => {
+            if (item.id == id) {
+                name = item.name;
+                return;
+            }
+        });
+    return name;
+}
+function changeNotifyStatus(status) {
+    admin.notify[notifyIndex.value].status = 1;
+    admin.notify[notifyIndex.value].status_notification = status;
+    admin.notify[notifyIndex.value].date_reading = status ? (new Date()).toISOString().substring(0, 10) : "";
+}
 </script>
 
 <template>
     <div>
         <div class="title">Уведомление</div>
-        <div>
+        <div v-if="admin.notifyId">
             <table>
                 <thead>
                     <tr>
                         <th>Дирекция</th>
                         <th>Подразд. УЦПК</th>
-                        <th>Шифр группы</th>
+                        <th>Направление</th>
+                        <th>Количество человек</th>
                         <th>Статус</th>
                         <th>Начало обучения</th>
                         <th>Дата прочтения</th>
@@ -35,89 +59,91 @@ function addCompany() {
                 </thead>
                 <tbody>
                     <tr>
-                        <td>{{ notification.direction }}</td>
-                        <td>{{ notification.division }}</td>
-                        <td>{{ notification.code }}</td>
-                        <td :class="notification.status == 'Не прочитано' ? 'red' : ''">{{ notification.status }}</td>
-                        <td>{{ notification.start_o }}</td>
-                        <td>{{ notification.date_read }}</td>
+                        <td>{{ getNameById(admin.directions, admin.notify[notifyIndex].id_direction) }}</td>
+                        <td>{{ getNameById(admin.divisions, admin.notify[notifyIndex].id_division) }}</td>
+                        <td>{{ getNameById(admin.sections, admin.notify[notifyIndex].id_section) }}</td>
+                        <td>{{  admin.notify[notifyIndex].count_people }}</td>
+                        <td :class="admin.notify[notifyIndex].status_notification ? '' : 'red' ">{{ admin.notify[notifyIndex].status_notification ? 'Прочитано' : 'Не прочитано' }}</td>
+                        <td>{{ admin.notify[notifyIndex].date_start_training }}</td>
+                        <td>{{ admin.notify[notifyIndex].date_reading }}</td>
                     </tr>
                 </tbody>
             </table>
-            <template>
-            <table class="answer_table">
-                <thead>
-                    <tr>
-                        <th>
-                            Номер телеграммы
-                        </th>
-                        <th>
-                            Предприятие
-                        </th>
-                        <th>
-                            Количество человек
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(company, index_company) in arr_company" :key="index_company">
-                        <td>
-                            <input type="text" v-model="company.telegram">
-                        </td>
-                        <td>
-                            <select v-model="company.name">
-                                <option v-for="company_name in arr_company_name" :key="company_name.id" :value="company_name.id">{{ company_name.name }}</option>
-                            </select>
-                        </td>
-                        <td>
-                            <input type="number" v-model="company.count">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="3">
-                            <button @click="addCompany()" class="addCompany">Добавить предприятие</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="div_button">
-                <button class="button_save" @click="router.back()">Назад</button>
-                <button class="button_save">Сохранить</button>
-                <button class="button_notice">Отметить прочитанным</button>
+            <div>
+                <table class="answer_table">
+                    <thead>
+                        <tr>
+                            <th>
+                                Номер телеграммы
+                            </th>
+                            <th>
+                                Предприятие
+                            </th>
+                            <th>
+                                Количество человек
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(company, index_company) in arr_company" :key="index_company">
+                            <td>
+                                <input type="text" v-model="company.telegram">
+                            </td>
+                            <td>
+                                <select v-model="company.id">
+                                    <option v-for="company_name in admin.companies" :key="company_name.id" :value="company_name.id">{{ company_name.name }}</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="number" v-model="company.count">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3">
+                                <button @click="addCompany()" class="addCompany">Добавить предприятие</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="div_button">
+                    <button class="button_save" @click="changeMenuStatus('main')">Назад</button>
+                    <button class="button_save" @click="saveNotification()">Сохранить</button>
+                    <button v-if="admin.notify[notifyIndex].status_notification" class="button_notice" @click="changeNotifyStatus(0)">Отметить не прочитанным</button>
+                    <button v-else class="button_notice" @click="changeNotifyStatus(1)">Отметить прочитанным</button>
+                </div>
             </div>
-            </template>
-            <template>
-            <table class="answer_table">
-                <thead>
-                    <tr>
-                        <th>
-                            Номер телеграммы
-                        </th>
-                        <th>
-                            Предприятие
-                        </th>
-                        <th>
-                            Количество человек
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(company, index_company) in arr_company" :key="index_company">
-                        <td>
-                            {{ company.telegram }}
-                        </td>
-                        <td>
-                            {{ company.name }}
-                        </td>
-                        <td>
-                            {{ company.count }}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            </template>
-            <div class="div_button">
-                <button class="button_save" @click="router.back()">Назад</button>
+            <div style="display: none;">
+                <table class="answer_table">
+                    <thead>
+                        <tr>
+                            <th>
+                                Номер телеграммы
+                            </th>
+                            <th>
+                                Предприятие
+                            </th>
+                            <th>
+                                Количество человек
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(company, index_company) in arr_company" :key="index_company">
+                            <td>
+                                {{ company.telegram }}
+                            </td>
+                            <td>
+                                {{ company.name }}
+                            </td>
+                            <td>
+                                {{ company.count }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="div_button">
+                    <button class="button_save" @click="changeMenuStatus('main')">Назад</button>
+                </div>
             </div>
         </div>
     </div>

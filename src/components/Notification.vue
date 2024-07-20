@@ -1,11 +1,13 @@
 <script setup>
 import { useStore } from '../stores/PlanStore';
-import { getDirection, getNotify } from '../helpers/API.js';
+import { getDirection, getDivision, getNotify, getSection } from '../helpers/API.js';
 import { ref } from 'vue';
 //------------------------------------
 const admin = useStore();
 getNotify();
 getDirection();
+getDivision();
+getSection();
 const page = ref(1);
 //-----------------------------------
 function getNameById(arr, id) {
@@ -18,6 +20,12 @@ function getNameById(arr, id) {
             }
         });
     return name;
+}
+function changeMenuStatus(index, notifyId) {
+    admin.menuStatus = index;
+    admin.notifyId = notifyId;
+    localStorage.setItem('skos-menu-status', index);
+    localStorage.setItem('skos-notify-id', notifyId);
 }
 //-----------------------------------
 </script>
@@ -32,17 +40,21 @@ function getNameById(arr, id) {
                         <th>Номер</th>
                         <th>Дирекция</th>
                         <th>Подразд. УЦПК</th>
+                        <th>Направление</th>
+                        <th>Количество человек</th>
                         <th>Статус</th>
                         <th>Начало обучения</th>
                         <th>Дата прочтения</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(notification, index_notification) in admin.notify" :key="index_notification" class="tr_notification">
+                    <tr v-for="(notification, index_notification) in admin.notify" :key="index_notification" class="tr_notification" @click="changeMenuStatus('notifyEdit', notification.id)">
                         <td>{{ index_notification + 1 + 12 * (page - 1)}}</td>
                         <td>{{ getNameById(admin.directions, notification.id_direction) }}</td>
-                        <td>{{ notification.id_PG }}</td>
-                        <td :class="notification.status == 1 ? 'red' : ''">{{ notification.status == 1 ? 'Не прочитано' : 'Прочитано' }}</td>
+                        <td>{{ getNameById(admin.divisions, notification.id_division) }}</td>
+                        <td>{{ getNameById(admin.sections, notification.id_section) }}</td>
+                        <td>{{  notification.count_people }}</td>
+                        <td :class="notification.status_notification ? '' : 'red'">{{ notification.status_notification ? 'Прочитано' : 'Не прочитано' }}</td>
                         <td>{{ notification.date_start_training }}</td>
                         <td>{{ notification.date_reading }}</td>
                     </tr>

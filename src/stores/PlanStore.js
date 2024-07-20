@@ -44,6 +44,7 @@ export const useStore = defineStore('admin', {
             },
             statement: null,
             notify: null,
+            notifyId: null,
             companies: null,
          }
     },

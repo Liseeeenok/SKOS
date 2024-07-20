@@ -437,3 +437,18 @@ export function savePosition() {
             else console.log(request, response);
         })
 }
+
+export function saveNotification() {
+    let request = {
+        'jwt': localStorage.getItem('skos-token'),
+        'notifications': admin.notify.filter((notify) => typeof notify.status !== "undefined" && notify.status != 3),
+        'type_request': 'notifications_change',
+    }
+    axios
+        .post('https://' + host + '/notifications', request)
+        .then((response) => {
+            getPosition();
+            if (response.data == 'OK') alert('Успешно сохранено!');
+            else console.log(request, response);
+        })
+}
