@@ -239,6 +239,7 @@ select, input {
         line-height: normal;
         background: none;
         border: 0px;
+        cursor: pointer;
     }
 }
 .addCompany:hover {

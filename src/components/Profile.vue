@@ -9,8 +9,12 @@ getUser();
 
 <template>
     <div class="wrapper_profile">
-        <div class="profile">
+        <div class="card">
+            <img class="card-image" src="../assets/0c17a445397e137ca3dcc70f7cbd396b.jpg"/>
             <div class="inform">
+                <div class="profile">
+                    <h3>Профиль</h3>
+                </div>
                 <table>
                     <tr>
                         <td class="title_table">Фамилия:</td>
@@ -29,7 +33,7 @@ getUser();
                         <td class="item_table">{{ admin.user.phone_number }}</td>
                     </tr>
                     <tr>
-                        <td class="title_table">Должность:</td>
+                        <td class="title_table">Роль:</td>
                         <td class="item_table">{{ admin.user.role_name }}</td>
                     </tr>
                 </table>
@@ -40,47 +44,50 @@ getUser();
 
 <style>
 .wrapper_profile {
-    margin: 10vw 0 0 0;
+    height: 100%;
+    display:flex;
+	justify-content:space-around;
+    align-items: center;
 }
-.profile {
-    display: flex;
-    justify-content: space-between;
-    max-width: 1000px;
-    margin: auto;
-}
-.photo {
-    width: 270px;
-    height: 267px;
-    border-radius: 20px;
-    background: rgba(220, 218, 221, 0.50);
-    text-align: center;
-    color: #000;
-    font-family: Arial;
-    font-size: 37px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-}
-.inform {
-    background-color: rgba(220, 218, 221, 0.50);
-    padding: 20px;
-    border-radius: 20px;
-}
-.title_table {
-    color: #000;
-    font-family: Arial;
-    font-size: 37px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    padding-right: 20px;
-}
-.item_table {
-    color: #000;
-    font-family: Arial;
-    font-size: 37px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
+.card {
+    width:600px;
+	max-width:100%;
+	min-height:320px;
+	border-radius:8px;
+	box-shadow:0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+	background-color:white;
+	position:relative;	
+	display: -webkit-box; 
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex; 
+	display: flex;
+
+    .card-image{
+		background-color:rgba(0,0,0,.2);		
+		background-position:center;
+		background-size:cover;	
+		width: 50%;
+        border-radius:8px;
+	}
+
+    .inform {
+        width: 100%;
+
+        table {
+            margin: 10px;
+            width: calc(100%-20px);
+
+            .item_table {
+                padding-left: 10px;
+            }
+        }
+
+        .profile {
+            width: 100%;
+            text-align: center;
+            font-size: 32px;
+        }
+    }
 }
 </style>

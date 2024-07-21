@@ -23,7 +23,10 @@ localStorage.setItem('skos-menu', 'notification');
     margin: 30px auto 0px;
     max-width: 1660px;
     height: calc(100vh - 120px);
-    background-color: #fafafa;
     overflow: auto;
+    border-radius: 8px;
+}
+.test {
+    background-color: #fafafa;
 }
 </style>
