@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useStore } from '../stores/PlanStore';
 import { jwtDecode } from "jwt-decode";
+import router from '../router';
 
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 const admin = useStore();
@@ -8,7 +9,6 @@ const admin = useStore();
 //---------------------------------------------------------------------------------------------------
 //--------------------------------------------------AUTH---------------------------------------------
 //---------------------------------------------------------------------------------------------------
-
 export async function authorization(login, password) {
     let response = '';
     let request = {
@@ -25,14 +25,6 @@ export async function authorization(login, password) {
                 console.log(responseJwt);
                 //-----------------
                 localStorage.setItem('skos-token', response_jwt.data.jwt);
-                admin.chapter = 1;
-                localStorage.setItem('skos-chapter', 1);
-                admin.chapterStatus = 'main';
-                localStorage.setItem('skos-chapter-status', 'main');
-                admin.menu = 3;
-                localStorage.setItem('skos-menu', 3);
-                admin.menuStatus = 'main';
-                localStorage.setItem('skos-menu-status', 'main');
 
                 response = 'successfully';
             } else {
@@ -42,6 +34,18 @@ export async function authorization(login, password) {
     return response;
 }
 
+export function verify() {
+    admin.isAuth = false;
+    let request = {
+        'jwt': localStorage.getItem('skos-token'),
+    }
+    axios
+        .post('https://' + host + '/token_verify', request)
+        .then((response) => {
+            if (response.data.token_verify) admin.isAuth = true;
+            else router.push('/');
+        })
+}
 //---------------------------------------------------------------------------------------------------
 //--------------------------------------------------GET----------------------------------------------
 //---------------------------------------------------------------------------------------------------
@@ -68,7 +72,10 @@ export function getDirection() {
     axios
         .post('https://'+host+'/directions', request)
         .then(response => {
+            console.log('T');
+            console.log(response.data);
             admin.directions = response.data; 
+            console.log('E');
         });
 }
 

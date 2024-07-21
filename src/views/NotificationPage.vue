@@ -10,7 +10,7 @@ const admin = useStore();
 <template>
     <div class="wrapper">
         <MenuNav/>
-        <div v-if="admin.menu == 3 && admin.menuStatus == 'main'" class="main"><Notification/></div>
+        <div v-if="admin.menu == 'notification' && admin.menuStatus == 'main'" class="main"><Notification/></div>
         <div v-else><Error/></div>
     </div>
 </template>

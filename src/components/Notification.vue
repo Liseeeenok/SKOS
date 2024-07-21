@@ -1,7 +1,9 @@
 <script setup>
 import { useStore } from '../stores/PlanStore';
-import { getDirection, getDivision, getNotify, getSection } from '../helpers/API.js';
+import { verify, getDirection, getDivision, getNotify, getSection } from '../helpers/API.js';
 import { ref } from 'vue';
+//-------------AUTH-------------------
+verify();
 //------------------------------------
 const admin = useStore();
 getNotify();
@@ -32,7 +34,7 @@ function changeMenuStatus(index, notifyId) {
 </script>
 
 <template>
-    <div>   
+    <div v-if="admin.isAuth">   
         <div>
             <table>
                 <thead>

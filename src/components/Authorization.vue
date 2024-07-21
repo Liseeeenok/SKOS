@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import { authorization, preLoad } from '../helpers/API.js';
-import router from '../router';
+import { changeMenu } from '../helpers/navigation.js';
 
 const auth_err = ref(false);
 const login =  ref('');
@@ -13,7 +13,7 @@ async function logIn() {
 
     if (response === 'successfully') {
         preLoad();
-        router.push('/notification');
+        changeMenu('notification');
     }
     else {
         auth_err.value = true;
