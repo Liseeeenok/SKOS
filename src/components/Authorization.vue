@@ -13,7 +13,7 @@ async function logIn() {
 
     if (response === 'successfully') {
         preLoad();
-        router.push('/main');
+        router.push('/notification');
     }
     else {
         auth_err.value = true;
@@ -40,8 +40,6 @@ async function logIn() {
 </template>
 
 <style scoped>
-
-
 .background{
     position: absolute;
     transform: translate(-50%,-50%);

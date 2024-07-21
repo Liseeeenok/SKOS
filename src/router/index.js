@@ -54,11 +54,6 @@ const router = createRouter({
         name: 'admin',
         component: () => import('../views/AdminPage.vue')
     },
-    {
-        path: '/main', //Главная страница
-        name: 'main',
-        component: () => import('../views/MainPage.vue')
-    }
   ]
 })
 

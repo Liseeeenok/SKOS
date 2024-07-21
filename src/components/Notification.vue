@@ -9,6 +9,7 @@ getDirection();
 getDivision();
 getSection();
 const page = ref(1);
+const bc = ref({0: 'bc_red'});
 //-----------------------------------
 function getNameById(arr, id) {
     let name = '';
@@ -31,8 +32,7 @@ function changeMenuStatus(index, notifyId) {
 </script>
 
 <template>
-    <div>
-        <div class="title">Уведомления</div>
+    <div>   
         <div>
             <table>
                 <thead>
@@ -48,13 +48,13 @@ function changeMenuStatus(index, notifyId) {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(notification, index_notification) in admin.notify" :key="index_notification" class="tr_notification" @click="changeMenuStatus('notifyEdit', notification.id)">
+                    <tr v-for="(notification, index_notification) in admin.notify" :key="index_notification" :class="bc[notification.status_notification]" @click="changeMenuStatus('notifyEdit', notification.id)">
                         <td>{{ index_notification + 1 + 12 * (page - 1)}}</td>
                         <td>{{ getNameById(admin.directions, notification.id_direction) }}</td>
                         <td>{{ getNameById(admin.divisions, notification.id_division) }}</td>
                         <td>{{ getNameById(admin.sections, notification.id_section) }}</td>
                         <td>{{  notification.count_people }}</td>
-                        <td :class="notification.status_notification ? '' : 'red'">{{ notification.status_notification ? 'Прочитано' : 'Не прочитано' }}</td>
+                        <td>{{ notification.status_notification ? 'Прочитано' : 'Не прочитано' }}</td>
                         <td>{{ notification.date_start_training }}</td>
                         <td>{{ notification.date_reading }}</td>
                     </tr>
@@ -69,66 +69,70 @@ function changeMenuStatus(index, notifyId) {
 </template>
 
 <style scoped>
-.title {
-    text-align: center;
-    margin-top: 41px;
-    color: #000;
-    font-family: Arial;
-    font-size: 30px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-}
 table {
-    width: 80%;
-    margin: auto;
-    text-align: center;
-}
-th {
-    color: #000;
-    font-family: Arial;
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-}
-td {
-    color: #000;
-    font-family: Arial;
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-    padding: 10px;
-}
-.red {
-    color: #F00;
-}
-.nav {
-    margin: 10px 0 0 140px;
-    width: 80%;
-    display: flex;
-    justify-content: end;
-}
-.but {
-    width: 54px;
-    height: 52px;
-    border: 0;
-    border-radius: 10px;
-    background-color: rgba(103, 96, 106, 0.50);
-    color: #000;
-    font-family: Arial;
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    margin: 0 10px;
-    cursor: pointer;
-}
-.decrement {
-    transform: rotate(179.195deg);
-}
-.tr_notification {
-    cursor: pointer;
+    margin: 10px auto;
+    padding-top: 20px;
+    background-color: #ffffff;
+    font-size: 16px;
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 1660px;
+    tr {
+        th, td {
+            text-align: center;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+        th {
+            color: #ffffff;
+            font-weight: normal;
+            background-color: #8f8f8f;
+            border-bottom: solid 2px #8f8f8f;
+            position: sticky;
+            top: 0;
+        }
+        td {
+            border: solid 1px #d8d8d8;
+            border-left: 0;
+            border-right: 1px solid #d8d8d8;
+            cursor: pointer;
+        }
+    }
+    tbody tr {
+        transition: background-color 150ms ease-out;
+
+        &:nth-child(2n+1) {
+            background-color: rgb(255 255 255);
+
+            &.bc_red {
+                background-color: rgb(255 202 202);
+
+                td {
+                    border: solid 1px rgb(205 152 152);
+                    border-right: 1px solid rgb(205 152 152);
+                }
+            }
+        }
+
+        &:nth-child(2n) {
+            background-color: rgb(245 245 245);
+
+            &.bc_red {
+                background-color: rgb(245 192 192);
+
+                td {
+                    border: solid 1px rgb(205 152 152);
+                    border-right: 1px solid rgb(205 152 152);
+                }
+            }
+        }
+        &:hover {
+            background-color: #d8d8d8;
+
+            &.bc_red {
+                background-color: rgb(205 152 152);
+            }
+        }
+    }
 }
 </style>

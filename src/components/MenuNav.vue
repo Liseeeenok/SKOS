@@ -18,6 +18,7 @@ function changeMenu(index) {
 
 <template>
     <nav class="nav">
+        <img alt="СКОС" class="shape" src="@/assets/logo.svg" width="66" height="66" draggable="false"/>
         <div class="menu_item" :class="admin.menu == 1 ? 'active' : ''" @click="changeMenu(1)">
             <div style="min-width: 264px;">
                 <div style="display: inline-block;vertical-align:middle;margin-right:5px;"><img src="./icons/5909015.png" width="30" height="30"/></div>
@@ -53,7 +54,8 @@ function changeMenu(index) {
 
 <style scoped>
 .nav {
-    padding: 99px 14.4% 0 20.7%;
+    margin: 10px auto 0px;
+    max-width: 1200px;
     display: flex;
     justify-content: space-between;
 }
@@ -70,9 +72,12 @@ function changeMenu(index) {
     transition: 0.2s;
 }
 .active {
-    background: rgba(103, 96, 106, 0.50);
+    background: rgb(255 255 255 / 50%);
 }
 .menu_item:hover {
     background: rgba(182, 168, 189, 0.50);
+}
+.shape {
+    cursor: pointer;
 }
 </style>
