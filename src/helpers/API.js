@@ -1,11 +1,53 @@
 import axios from 'axios';
 import { useStore } from '../stores/PlanStore';
-import router from '../router';
+import { jwtDecode } from "jwt-decode";
 
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 const admin = useStore();
 
+//---------------------------------------------------------------------------------------------------
+//--------------------------------------------------AUTH---------------------------------------------
+//---------------------------------------------------------------------------------------------------
+
+export async function authorization(login, password) {
+    let response = '';
+    let request = {
+        login: login,
+        password: password
+    }
+    await axios
+        .post('https://' + host + '/login', request)
+        .then((response_jwt) => {
+            console.log(response_jwt);
+            if (response_jwt.data.jwt) {
+                //-----------------
+                let responseJwt = jwtDecode(response_jwt.data.jwt);
+                console.log(responseJwt);
+                //-----------------
+                localStorage.setItem('skos-token', response_jwt.data.jwt);
+                admin.chapter = 1;
+                localStorage.setItem('skos-chapter', 1);
+                admin.chapterStatus = 'main';
+                localStorage.setItem('skos-chapter-status', 'main');
+                admin.menu = 3;
+                localStorage.setItem('skos-menu', 3);
+                admin.menuStatus = 'main';
+                localStorage.setItem('skos-menu-status', 'main');
+
+                response = 'successfully';
+            } else {
+                response = response_jwt.data.error;
+            }
+        })
+    return response;
+}
+
+//---------------------------------------------------------------------------------------------------
+//--------------------------------------------------GET----------------------------------------------
+//---------------------------------------------------------------------------------------------------
+
 export function preLoad() {
+    if (admin.isPreLoad) return;
     getDirection();
     getDivision();
     getProfession();
@@ -15,6 +57,7 @@ export function preLoad() {
     getUsers();
     getPlan();
     getStatement();
+    admin.isPreLoad = true;
 }
 
 export function getDirection() {
@@ -200,6 +243,7 @@ export function getPosition() {
             console.log(response.data);
         });
 }
+
 //---------------------------------------------------------------------------------------------------
 //--------------------------------------------------SAVE---------------------------------------------
 //---------------------------------------------------------------------------------------------------

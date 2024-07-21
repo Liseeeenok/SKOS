@@ -1,44 +1,25 @@
 <script setup>
 import { ref } from 'vue';
+import { authorization, preLoad } from '../helpers/API.js';
 import router from '../router';
-import axios from 'axios';
-import { jwtDecode } from "jwt-decode";
-import { preLoad } from '../helpers/API.js';
-import { useStore } from '../stores/PlanStore';
-const admin = useStore();
+
 const auth_err = ref(false);
 const login =  ref('');
 const password =  ref('');
-const host = 'mypew.ru:7070'; //имя или ip хоста api
-function authorization() {
-    let request = {
-        login: login.value,
-        password: password.value
+
+async function logIn() {
+    auth_err.value = false;
+    let response = await authorization(login.value, password.value);
+
+    if (response === 'successfully') {
+        preLoad();
+        router.push('/main');
     }
-    axios
-        .post('https://' + host + '/login', request)
-        .then((response_jwt) => {
-            console.log(response_jwt);
-            if (response_jwt.data.jwt) {
-                let response = jwtDecode(response_jwt.data.jwt);
-                console.log(response);
-                auth_err.value = false;
-                localStorage.setItem('skos-token', response_jwt.data.jwt);
-                admin.chapter = 1;
-                localStorage.setItem('skos-chapter', 1);
-                admin.chapterStatus = 'main';
-                localStorage.setItem('skos-chapter-status', 'main');
-                admin.menu = 3;
-                localStorage.setItem('skos-menu', 3);
-                admin.menuStatus = 'main';
-                localStorage.setItem('skos-menu-status', 'main');
-                //preLoad();
-                router.push('/main');
-            } else {
-                auth_err.value = true;
-            }
-        })
+    else {
+        auth_err.value = true;
+    }
 }
+
 </script>
 
 <template>
@@ -50,7 +31,7 @@ function authorization() {
             <label for="password" class="noselect">Пароль</label>
             <input v-model="password" type="password" placeholder="Пароль" id="password">
             <div v-if="auth_err" class="auth_err noselect">Неверный логин или пароль</div>
-            <button type="button" @click="authorization()" class="noselect">ВОЙТИ</button>
+            <button type="button" @click="logIn()" class="noselect">ВОЙТИ</button>
         </form>
         <div class="background noselect">
             <img alt="СКОС" class="shape" src="@/assets/logo.svg" width="125" height="125" draggable="false"/>
