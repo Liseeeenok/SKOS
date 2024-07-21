@@ -61,6 +61,9 @@ export function preLoad() {
     getUsers();
     getPlan();
     getStatement();
+    getCompany();
+    getNotify();
+    getPosition();
     admin.isPreLoad = true;
 }
 
@@ -72,10 +75,9 @@ export function getDirection() {
     axios
         .post('https://'+host+'/directions', request)
         .then(response => {
-            console.log('T');
-            console.log(response.data);
-            admin.directions = response.data; 
-            console.log('E');
+            response.data.forEach((direction) => {
+                admin.directions[direction.id] = direction;
+            })
         });
 }
 
@@ -87,7 +89,9 @@ export function getDivision() {
     axios
         .post('https://'+host+'/divisions', request)
         .then(response => {
-            admin.divisions = response.data;
+            response.data.forEach((division) => {
+                admin.divisions[division.id] = division;
+            })
         });
 }
 
@@ -100,9 +104,8 @@ export function getProfession() {
     axios
         .post('https://'+host+'/professions', request)
         .then(response => {
-            let professions = response.data;
-            professions.forEach((element) => {
-                admin.professions[element.id] = element;
+            response.data.forEach((profession) => {
+                admin.professions[profession.id] = profession;
             });
         });
 }
@@ -130,7 +133,11 @@ export function getSection() {
     };
     axios
         .post('https://'+host+'/sections', request)
-        .then(response => {admin.sections = response.data});
+        .then(response => {
+            response.data.forEach((section) => {
+                admin.sections[section.id] = section;
+            })
+        });
 }
 
 export function getRole() {
@@ -216,12 +223,13 @@ export function getNotify() {
         'jwt': localStorage.getItem('skos-token'),
         'type_request': 'notifications_info',
     };
-    console.log(request);
     axios
         .post('https://'+host+'/notifications', request)
         .then(response => {
-            admin.notify = response.data;
-            console.log(response.data);
+            response.data.forEach((notif) => {
+                admin.notify[notif.id] = notif;
+            })
+            console.log(admin.notify);
         });
 }
 
@@ -490,9 +498,13 @@ export function savePosition() {
 }
 
 export function saveNotification() {
+    let notifications = [];
+    for (var key of Object.keys(admin.notify)) {
+        if (typeof admin.notify[key].status !== "undefined" && admin.notify[key].status != 3) notifications.push(admin.notify[key])
+    }
     let request = {
         'jwt': localStorage.getItem('skos-token'),
-        'notifications': admin.notify.filter((notify) => typeof notify.status !== "undefined" && notify.status != 3),
+        'notifications': notifications,
         'type_request': 'notifications_change',
     }
     axios

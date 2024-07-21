@@ -1,56 +1,39 @@
 <script setup>
 import { useStore } from '../stores/PlanStore';
-import { getCompany, saveNotification } from '../helpers/API.js';
+import { getCompany, getDirection, getDivision, getNotify, getProfession, getSection, saveNotification } from '../helpers/API.js';
 import { ref } from 'vue';
 //------------------------------------
 const admin = useStore();
+getDivision();
+getDirection();
+getSection();
 getCompany();
-const notifyIndex = ref(0);
+getNotify();
+getProfession();
+const bc = ref({0: 'bc_red'});
 //-----------------------------------
 const arr_company = ref([]);
 function addCompany() {
     arr_company.value.push({telegram:'',name:'',count:0});
 };
-if (admin.notify) {
-    getNotify(admin.notifyId);
-} else {
-    changeMenuStatus('main');
-}
-function getNotify(id) {
-    notifyIndex.value = admin.notify.findIndex((el) => el.id == id);
-}
-function changeMenuStatus(index) {
-    admin.menuStatus = index;
-    localStorage.setItem('skos-menu-status', index);
-}
-function getNameById(arr, id) {
-    let name = '';
-    if (arr != undefined)
-        arr.forEach(item => {
-            if (item.id == id) {
-                name = item.name;
-                return;
-            }
-        });
-    return name;
-}
 function changeNotifyStatus(status) {
-    admin.notify[notifyIndex.value].status = 1;
-    admin.notify[notifyIndex.value].status_notification = status;
-    admin.notify[notifyIndex.value].date_reading = status ? (new Date()).toISOString().substring(0, 10) : "";
+    admin.notify[admin.menuId].status = 1;
+    admin.notify[admin.menuId].status_notification = status;
+    admin.notify[admin.menuId].date_reading = status ? (new Date()).toISOString().substring(0, 10) : "";
+    saveNotification();
 }
 </script>
 
 <template>
     <div>
-        <div class="title">Уведомление</div>
-        <div v-if="admin.notifyId">
+        <div v-if="admin.menuId && admin.notify[admin.menuId]">
             <table>
                 <thead>
                     <tr>
                         <th>Дирекция</th>
                         <th>Подразд. УЦПК</th>
                         <th>Направление</th>
+                        <th>Профессия</th>
                         <th>Количество человек</th>
                         <th>Статус</th>
                         <th>Начало обучения</th>
@@ -58,14 +41,17 @@ function changeNotifyStatus(status) {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>{{ getNameById(admin.directions, admin.notify[notifyIndex].id_direction) }}</td>
-                        <td>{{ getNameById(admin.divisions, admin.notify[notifyIndex].id_division) }}</td>
-                        <td>{{ getNameById(admin.sections, admin.notify[notifyIndex].id_section) }}</td>
-                        <td>{{  admin.notify[notifyIndex].count_people }}</td>
-                        <td :class="admin.notify[notifyIndex].status_notification ? '' : 'red' ">{{ admin.notify[notifyIndex].status_notification ? 'Прочитано' : 'Не прочитано' }}</td>
-                        <td>{{ admin.notify[notifyIndex].date_start_training }}</td>
-                        <td>{{ admin.notify[notifyIndex].date_reading }}</td>
+                    <tr :class="bc[admin.notify[admin.menuId].status_notification]">
+                        <td>{{ admin.directions[admin.notify[admin.menuId].id_direction] ? admin.directions[admin.notify[admin.menuId].id_direction].name : '' }}</td>
+                        <td>{{ admin.divisions[admin.notify[admin.menuId].id_division] ? admin.divisions[admin.notify[admin.menuId].id_division].name : '' }}</td>
+                        <td>{{ admin.sections[admin.notify[admin.menuId].id_section] ? admin.sections[admin.notify[admin.menuId].id_section].name : '' }}</td>
+                        <td>
+                            {{ admin.professions[admin.notify[admin.menuId].id_profession] ? admin.professions[admin.notify[admin.menuId].id_profession].name : '' }}
+                        </td>
+                        <td>{{ admin.notify[admin.menuId].count_people }}</td>
+                        <td>{{ admin.notify[admin.menuId].status_notification ? 'Прочитано' : 'Не прочитано' }}</td>
+                        <td>{{ admin.notify[admin.menuId].date_start_training }}</td>
+                        <td>{{ admin.notify[admin.menuId].date_reading }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -98,51 +84,19 @@ function changeNotifyStatus(status) {
                                 <input type="number" v-model="company.count">
                             </td>
                         </tr>
-                        <tr>
+                        <tr @click="addCompany()" class="addCompany">
                             <td colspan="3">
-                                <button @click="addCompany()" class="addCompany">Добавить предприятие</button>
+                                <button>Добавить предприятие</button>
                             </td>
                         </tr>
                     </tbody>
                 </table>
                 <div class="div_button">
-                    <button class="button_save" @click="changeMenuStatus('main')">Назад</button>
-                    <button class="button_save" @click="saveNotification()">Сохранить</button>
-                    <button v-if="admin.notify[notifyIndex].status_notification" class="button_notice" @click="changeNotifyStatus(0)">Отметить не прочитанным</button>
-                    <button v-else class="button_notice" @click="changeNotifyStatus(1)">Отметить прочитанным</button>
-                </div>
-            </div>
-            <div style="display: none;">
-                <table class="answer_table">
-                    <thead>
-                        <tr>
-                            <th>
-                                Номер телеграммы
-                            </th>
-                            <th>
-                                Предприятие
-                            </th>
-                            <th>
-                                Количество человек
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(company, index_company) in arr_company" :key="index_company">
-                            <td>
-                                {{ company.telegram }}
-                            </td>
-                            <td>
-                                {{ company.name }}
-                            </td>
-                            <td>
-                                {{ company.count }}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="div_button">
-                    <button class="button_save" @click="changeMenuStatus('main')">Назад</button>
+                    <a class="button_save" @click="saveNotification()">Сохранить</a>
+                    <a v-if="admin.notify[admin.menuId].status_notification" class="button_status_0" @click="changeNotifyStatus(0)">
+                        Отметить не прочитанным
+                    </a>
+                    <a v-else class="button_status_1" @click="changeNotifyStatus(1)">Отметить прочитанным</a>
                 </div>
             </div>
         </div>
@@ -150,42 +104,60 @@ function changeNotifyStatus(status) {
 </template>
 
 <style scoped>
-.title {
-    text-align: center;
-    margin-top: 41px;
-    color: #000;
-    font-family: Arial;
-    font-size: 30px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-}
 table {
-    width: 80%;
-    margin: auto;
-    text-align: center;
-}
-th {
-    color: #000;
-    font-family: Arial;
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-}
-td {
-    color: #000;
-    font-family: Arial;
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-    padding: 10px;
-}
-.red {
-    color: #F00;
+    background-color: #ffffff;
+    font-size: 16px;
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 1660px;
+    tr {
+        th, td {
+            text-align: center;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+        th {
+            color: #ffffff;
+            font-weight: normal;
+            background-color: #8f8f8f;
+            border: solid 1px #8f8f8f;
+            position: sticky;
+            top: 0;
+        }
+        td {
+            border: solid 1px #d8d8d8;
+        }
+    }
+    tbody tr {
+        transition: background-color 150ms ease-out;
+
+        &:nth-child(2n+1) {
+            background-color: rgb(255 255 255);
+
+            &.bc_red {
+                background-color: rgb(255 202 202);
+
+                td {
+                    border: solid 1px rgb(205 152 152);
+                }
+            }
+        }
+
+        &:nth-child(2n) {
+            background-color: rgb(245 245 245);
+
+            &.bc_red {
+                background-color: rgb(245 192 192);
+
+                td {
+                    border: solid 1px rgb(205 152 152);
+                }
+            }
+        }
+    }
 }
 .answer_table {
+    margin: 30px auto;
     max-width: 800px;
 }
 select, input {
@@ -199,27 +171,79 @@ select, input {
 }
 .button_save {
     font-size: 20px;
-    padding: 10px;
+    padding: 16px 42px;
     cursor: pointer;
+    border-radius: 3px;
+    box-shadow: 0px 0px 12px -2px rgba(0,0,0,0.5);
+    line-height: 1.25;
+    background: rgb(151 127 255);
+    text-decoration: none;
+    user-select: none;
+    color: white;
+    letter-spacing: .08em;
+    position: relative;
+    transition: background-color .6s ease;
+
+    &:hover {
+        background: rgb(150 98 220);
+    }
 }
-.button_notice {
+.button_status_0 {
     font-size: 20px;
-    padding: 10px;
+    padding: 16px 42px;
     cursor: pointer;
+    border-radius: 3px;
+    box-shadow: 0px 0px 12px -2px rgba(0,0,0,0.5);
+    line-height: 1.25;
+    background: rgb(252 110 81);
+    text-decoration: none;
+    user-select: none;
+    color: white;
+    letter-spacing: .08em;
+    position: relative;
+    transition: background-color .6s ease;
+
+    &:hover {
+        background: rgb(251 81 46);
+    }
+}
+.button_status_1 {
+    font-size: 20px;
+    padding: 16px 42px;
+    cursor: pointer;
+    border-radius: 3px;
+    box-shadow: 0px 0px 12px -2px rgba(0,0,0,0.5);
+    line-height: 1.25;
+    background: rgb(18 154 57);
+    text-decoration: none;
+    user-select: none;
+    color: white;
+    letter-spacing: .08em;
+    position: relative;
+    transition: background-color .6s ease;
+
+    &:hover {
+        background: rgb(17 125 22);
+    }
 }
 .addCompany {
     cursor: pointer;
-    transition: 0.2s;
-    color: #000;
-    font-family: Arial;
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-    background: #e9ebf0;
-    border: 0px;
+
+    button {
+        transition: 0.2s;
+        color: #000;
+        font-family: Arial;
+        font-size: 24px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+        background: none;
+        border: 0px;
+    }
 }
 .addCompany:hover {
-    transform: scale(1.1);
+    button {
+        transform: scale(1.1);
+    }
 }
 </style>

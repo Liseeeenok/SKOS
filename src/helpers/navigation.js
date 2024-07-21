@@ -3,11 +3,13 @@ import router from '../router';
 
 const admin = useStore();
 
-export function changeMenu(chapter) {
+export function changeMenu(chapter, menuId = -1) {
     admin.menu = chapter;
     localStorage.setItem('skos-menu', chapter);
-    admin.menuStatus = 'main';
-    localStorage.setItem('skos-menu-status', 'main');
+    if (menuId !== -1) {
+        admin.menuId = menuId;
+        localStorage.setItem('skos-menu-id', menuId);
+    }
     router.push(`/${chapter}`);
 }
 

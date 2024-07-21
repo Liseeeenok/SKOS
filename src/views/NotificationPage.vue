@@ -1,17 +1,17 @@
 <script setup>
 import MenuNav from '../components/MenuNav.vue';
 import Notification from '../components/Notification.vue';
-import Error from '../components/Error.vue';
 import { useStore } from '../stores/PlanStore';
 //------------------------------------
 const admin = useStore();
+admin.menu = 'notification';
+localStorage.setItem('skos-menu', 'notification');
 </script>
 
 <template>
     <div class="wrapper">
         <MenuNav/>
-        <div v-if="admin.menu == 'notification' && admin.menuStatus == 'main'" class="main"><Notification/></div>
-        <div v-else><Error/></div>
+        <div class="main"><Notification/></div>
     </div>
 </template>
 
@@ -20,9 +20,10 @@ const admin = useStore();
     width: 100vw;
 }
 .main {
-    margin: auto;
+    margin: 30px auto 0px;
     max-width: 1660px;
-    height: calc(100vh - 86px);
+    height: calc(100vh - 120px);
     background-color: #fafafa;
+    overflow: auto;
 }
 </style>

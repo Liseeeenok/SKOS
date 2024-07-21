@@ -2,6 +2,7 @@
 import { useStore } from '../stores/PlanStore';
 import { verify, getDirection, getDivision, getNotify, getSection } from '../helpers/API.js';
 import { ref } from 'vue';
+import { changeMenu } from '../helpers/navigation.js';
 //-------------AUTH-------------------
 verify();
 //------------------------------------
@@ -12,24 +13,6 @@ getDivision();
 getSection();
 const page = ref(1);
 const bc = ref({0: 'bc_red'});
-//-----------------------------------
-function getNameById(arr, id) {
-    let name = '';
-    if (arr != undefined)
-        arr.forEach(item => {
-            if (item.id == id) {
-                name = item.name;
-                return;
-            }
-        });
-    return name;
-}
-function changeMenuStatus(index, notifyId) {
-    admin.menuStatus = index;
-    admin.notifyId = notifyId;
-    localStorage.setItem('skos-menu-status', index);
-    localStorage.setItem('skos-notify-id', notifyId);
-}
 //-----------------------------------
 </script>
 
@@ -50,12 +33,12 @@ function changeMenuStatus(index, notifyId) {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(notification, index_notification) in admin.notify" :key="index_notification" :class="bc[notification.status_notification]" @click="changeMenuStatus('notifyEdit', notification.id)">
+                    <tr v-for="(notification, key, index_notification) in admin.notify" :key="index_notification" :class="bc[notification.status_notification]" @click="changeMenu('notificationEdit', notification.id)">
                         <td>{{ index_notification + 1 + 12 * (page - 1)}}</td>
-                        <td>{{ getNameById(admin.directions, notification.id_direction) }}</td>
-                        <td>{{ getNameById(admin.divisions, notification.id_division) }}</td>
-                        <td>{{ getNameById(admin.sections, notification.id_section) }}</td>
-                        <td>{{  notification.count_people }}</td>
+                        <td>{{ admin.directions[notification.id_direction] ? admin.directions[notification.id_direction].name : '' }}</td>
+                        <td>{{ admin.divisions[notification.id_division] ? admin.divisions[notification.id_division].name : '' }}</td>
+                        <td>{{ admin.sections[notification.id_section] ? admin.sections[notification.id_section].name : '' }}</td>
+                        <td>{{ notification.count_people }}</td>
                         <td>{{ notification.status_notification ? 'Прочитано' : 'Не прочитано' }}</td>
                         <td>{{ notification.date_start_training }}</td>
                         <td>{{ notification.date_reading }}</td>
@@ -72,8 +55,6 @@ function changeMenuStatus(index, notifyId) {
 
 <style scoped>
 table {
-    margin: 10px auto;
-    padding-top: 20px;
     background-color: #ffffff;
     font-size: 16px;
     border-collapse: collapse;
@@ -89,14 +70,12 @@ table {
             color: #ffffff;
             font-weight: normal;
             background-color: #8f8f8f;
-            border-bottom: solid 2px #8f8f8f;
+            border: solid 1px #8f8f8f;
             position: sticky;
             top: 0;
         }
         td {
             border: solid 1px #d8d8d8;
-            border-left: 0;
-            border-right: 1px solid #d8d8d8;
             cursor: pointer;
         }
     }
@@ -111,7 +90,6 @@ table {
 
                 td {
                     border: solid 1px rgb(205 152 152);
-                    border-right: 1px solid rgb(205 152 152);
                 }
             }
         }
@@ -124,7 +102,6 @@ table {
 
                 td {
                     border: solid 1px rgb(205 152 152);
-                    border-right: 1px solid rgb(205 152 152);
                 }
             }
         }
