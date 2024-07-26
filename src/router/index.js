@@ -4,26 +4,32 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/', //Страница авторизации
-      name: 'home',
-      meta:{sidebar:false},
-      component: () => import('../views/AuthorizationPage.vue')
-    },
-    {
-      path: '/profile', //Страница профиля
-      name: 'profile',
-      component: () => import('../views/ProfilePage.vue')
+        path: '/', //Страница авторизации
+        name: 'authotrization',
+        component: () => import('../views/AuthorizationPage.vue')
     },
     {
         path: '/notification', //Страница уведомлений
         name: 'notification',
-        component: () => import('../views/NotificationPage.vue')
+        component: () => import('../views/NotificationPage.vue'),
+        children: [
+            {
+                path: 'edit/:id', //Страница редактирования уведомлений
+                component: () => import('../components/NotificationEdit.vue')
+            }
+        ]
     },
+    /*
     {
-        path: '/notificationEdit', //Страница редактирования уведомлений
+        path: '/notification/edit/:id', //Страница редактирования уведомлений
         name: 'notificationEdit',
-        props: true,
-        component: () => import('../views/NotificationEditPage.vue')
+        component: () => import('../components/NotificationEdit.vue'),
+    },
+    */
+    {
+      path: '/profile', //Страница профиля
+      name: 'profile',
+      component: () => import('../views/ProfilePage.vue')
     },
     {
         path: '/training', //Страница обучения

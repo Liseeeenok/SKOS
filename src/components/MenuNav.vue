@@ -1,9 +1,12 @@
 <script setup>
 import { ref } from 'vue';
 import router from '../router';
-import { logOut } from '../helpers/navigation';
 const menuItem = ref('/');
 router.beforeEach((to,from,next) => {menuItem.value = to.path; next()});
+function logOut() {
+    localStorage.removeItem('skos-token');
+    router.push('/');
+}
 </script>
 
 <template>

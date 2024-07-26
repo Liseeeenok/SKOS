@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { useStore } from '../stores/PlanStore';
 import { verify, getDirection, getDivision, getNotify, getSection } from '../helpers/API.js';
+import router from '../router/index.js';
 //-------------AUTH-------------------
 verify();
 //------------------------------------
@@ -10,14 +11,15 @@ getNotify();
 getDirection();
 getDivision();
 getSection();
-const page = ref(1);
 const bc = ref({0: 'bc_red'});
+//-------while not use---------------
+const page = ref(1);
 //-----------------------------------
 </script>
 
 <template>
     <div v-if="store.isAuth">   
-        <div>
+        <div class="main_table" :class="$route.params.id && 'hide'">
             <table>
                 <thead>
                     <tr>
@@ -32,39 +34,63 @@ const bc = ref({0: 'bc_red'});
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(notification, key, index_notification) in store.notify" :key="index_notification" :class="bc[notification.status_notification]">
-                        <td>{{ index_notification + 1 + 12 * (page - 1)}}</td>
-                        <td>{{ store.directions[notification.id_direction] ? store.directions[notification.id_direction].name : '' }}</td>
-                        <td>{{ store.divisions[notification.id_division] ? store.divisions[notification.id_division].name : '' }}</td>
-                        <td>{{ store.sections[notification.id_section] ? store.sections[notification.id_section].name : '' }}</td>
-                        <td>{{ notification.count_people }}</td>
-                        <td>{{ notification.status_notification ? 'Прочитано' : 'Не прочитано' }}</td>
-                        <td>{{ notification.date_start_training }}</td>
-                        <td>{{ notification.date_reading }}</td>
-                    </tr>
+                    <template v-for="(notification, key, index_notification) in store.notify" :key="index_notification">
+                        <tr 
+                        :class="bc[notification.status_notification]" 
+                        @click="router.push(`/notification/edit/${key}`)"
+                        >
+                            <td>{{ index_notification + 1 }}</td>
+                            <td>{{ store.directions[notification.id_direction] && store.directions[notification.id_direction].name }}</td>
+                            <td>{{ store.divisions[notification.id_division] && store.divisions[notification.id_division].name }}</td>
+                            <td>{{ store.sections[notification.id_section] && store.sections[notification.id_section].name }}</td>
+                            <td>{{ notification.count_people }}</td>
+                            <td>{{ notification.status_notification ? 'Прочитано' : 'Не прочитано' }}</td>
+                            <td>{{ notification.date_start_training }}</td>
+                            <td>{{ notification.date_reading }}</td>
+                        </tr>
+                    </template>
                 </tbody>
             </table>
         </div>
+        <router-view></router-view>
+        
         <div class="nav" v-if="false">
             <button class="decrement but" v-if="page > 1" @click="page -= 1">>></button>
             <button class="but" @click="page += 1" v-if="arr_notifications.length > page*12">>></button>
         </div>
+
     </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
+.main_table {
+    opacity: 1;
+    transition: 0.2s ease-out;
+
+    &.hide {
+        opacity: 0;
+        height: 0px;
+        visibility: hidden;
+    }
+}
+
 table {
     background-color: #ffffff;
     font-size: 16px;
     border-collapse: collapse;
     width: 100%;
     max-width: 1660px;
+    border-radius: 10px;
+    overflow: hidden;
+
     tr {
+
         th, td {
             text-align: center;
             padding: 15px;
             box-sizing: border-box;
         }
+
         th {
             color: #ffffff;
             font-weight: normal;
@@ -73,11 +99,13 @@ table {
             position: sticky;
             top: 0;
         }
+
         td {
             border: solid 1px #d8d8d8;
             cursor: pointer;
         }
     }
+
     tbody tr {
         transition: background-color 150ms ease-out;
 
@@ -104,8 +132,9 @@ table {
                 }
             }
         }
+
         &:hover {
-            background-color: #d8d8d8;
+            background-color: rgb(216 216 216);
 
             &.bc_red {
                 background-color: rgb(205 152 152);

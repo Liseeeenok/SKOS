@@ -2,6 +2,7 @@
 import { useStore } from '../stores/PlanStore';
 import { getCompany, getDirection, getDivision, getNotify, getProfession, getSection, saveNotification } from '../helpers/API.js';
 import { ref } from 'vue';
+import router from '../router/index.js'
 //------------------------------------
 const admin = useStore();
 getDivision();
@@ -11,22 +12,25 @@ getCompany();
 getNotify();
 getProfession();
 const bc = ref({0: 'bc_red'});
+const notifyId = ref(-1);
+//console.log('TEST', $route);
+router.beforeEach((to,from,next) => {console.log(to); notifyId.value = to.params.id ?? -1; next();});
 //-----------------------------------
 const arr_company = ref([]);
 function addCompany() {
     arr_company.value.push({telegram:'',name:'',count:0});
 };
-function changeNotifyStatus(status) {
-    admin.notify[admin.menuId].status = 1;
-    admin.notify[admin.menuId].status_notification = status;
-    admin.notify[admin.menuId].date_reading = status ? (new Date()).toISOString().substring(0, 10) : "";
+function changeNotifyStatus(id, status) {
+    admin.notify[id].status = 1;
+    admin.notify[id].status_notification = status;
+    admin.notify[id].date_reading = status ? (new Date()).toISOString().substring(0, 10) : "";
     saveNotification();
 }
 </script>
 
 <template>
     <div>
-        <div v-if="admin.menuId && admin.notify[admin.menuId]">
+        <div v-if="$route.params.id && admin.notify[$route.params.id]">
             <table>
                 <thead>
                     <tr>
@@ -41,17 +45,17 @@ function changeNotifyStatus(status) {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr :class="bc[admin.notify[admin.menuId].status_notification]">
-                        <td>{{ admin.directions[admin.notify[admin.menuId].id_direction] ? admin.directions[admin.notify[admin.menuId].id_direction].name : '' }}</td>
-                        <td>{{ admin.divisions[admin.notify[admin.menuId].id_division] ? admin.divisions[admin.notify[admin.menuId].id_division].name : '' }}</td>
-                        <td>{{ admin.sections[admin.notify[admin.menuId].id_section] ? admin.sections[admin.notify[admin.menuId].id_section].name : '' }}</td>
+                    <tr :class="bc[admin.notify[$route.params.id].status_notification]">
+                        <td>{{ admin.directions[admin.notify[$route.params.id].id_direction] && admin.directions[admin.notify[$route.params.id].id_direction].name}}</td>
+                        <td>{{ admin.divisions[admin.notify[$route.params.id].id_division] ? admin.divisions[admin.notify[$route.params.id].id_division].name : '' }}</td>
+                        <td>{{ admin.sections[admin.notify[$route.params.id].id_section] ? admin.sections[admin.notify[$route.params.id].id_section].name : '' }}</td>
                         <td>
-                            {{ admin.professions[admin.notify[admin.menuId].id_profession] ? admin.professions[admin.notify[admin.menuId].id_profession].name : '' }}
+                            {{ admin.professions[admin.notify[$route.params.id].id_profession] ? admin.professions[admin.notify[$route.params.id].id_profession].name : '' }}
                         </td>
-                        <td>{{ admin.notify[admin.menuId].count_people }}</td>
-                        <td>{{ admin.notify[admin.menuId].status_notification ? 'Прочитано' : 'Не прочитано' }}</td>
-                        <td>{{ admin.notify[admin.menuId].date_start_training }}</td>
-                        <td>{{ admin.notify[admin.menuId].date_reading }}</td>
+                        <td>{{ admin.notify[$route.params.id].count_people }}</td>
+                        <td>{{ admin.notify[$route.params.id].status_notification ? 'Прочитано' : 'Не прочитано' }}</td>
+                        <td>{{ admin.notify[$route.params.id].date_start_training }}</td>
+                        <td>{{ admin.notify[$route.params.id].date_reading }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -93,29 +97,33 @@ function changeNotifyStatus(status) {
                 </table>
                 <div class="div_button">
                     <a class="button_save" @click="saveNotification()">Сохранить</a>
-                    <a v-if="admin.notify[admin.menuId].status_notification" class="button_status_0" @click="changeNotifyStatus(0)">
+                    <a v-if="admin.notify[$route.params.id].status_notification" class="button_status_0" @click="changeNotifyStatus($route.params.id, 0)">
                         Отметить не прочитанным
                     </a>
-                    <a v-else class="button_status_1" @click="changeNotifyStatus(1)">Отметить прочитанным</a>
+                    <a v-else class="button_status_1" @click="changeNotifyStatus($route.params.id, 1)">Отметить прочитанным</a>
                 </div>
             </div>
         </div>
     </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 table {
     background-color: #ffffff;
     font-size: 16px;
     border-collapse: collapse;
     width: 100%;
     max-width: 1660px;
+    border-radius: 10px;
+    overflow: hidden;
+
     tr {
         th, td {
             text-align: center;
             padding: 15px;
             box-sizing: border-box;
         }
+
         th {
             color: #ffffff;
             font-weight: normal;
@@ -124,6 +132,7 @@ table {
             position: sticky;
             top: 0;
         }
+        
         td {
             border: solid 1px #d8d8d8;
         }

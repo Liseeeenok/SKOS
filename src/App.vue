@@ -9,7 +9,7 @@ import MenuNav from './components/MenuNav.vue';
         <div class="wrapper">
             <MenuNav/>
             <div class="content">
-                <router-view v-slot="{ Component }" mode="out-in">
+                <router-view v-slot="{ Component }">
                         <transition name="fade">
                             <component :is="Component" />
                         </transition>
