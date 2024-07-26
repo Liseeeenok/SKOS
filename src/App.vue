@@ -1,23 +1,25 @@
 <script setup>
-import { RouterView } from 'vue-router'
+import { RouterView } from 'vue-router';
+import MenuNav from './components/MenuNav.vue';
 </script>
 
 <template>
     <div class="background"></div>
     <main>
-        <RouterView/>
+        <div class="wrapper">
+            <MenuNav/>
+            <div class="content">
+                <router-view v-slot="{ Component }" mode="out-in">
+                        <transition name="fade">
+                            <component :is="Component" />
+                        </transition>
+                </router-view>
+            </div>
+        </div>
     </main>
 </template>
 
-<style scoped>
-main {
-    position: relative; 
-    height: 100vh;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
-
+<style lang="scss" scoped>
 .background {
     height: 100vh;
     width: 100%;
@@ -31,4 +33,32 @@ main {
     opacity: 0.2;
 }
 
+main {
+    position: relative; 
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+
+    .wrapper {
+        width: 100vw;
+
+        .content {
+            margin: 30px auto 0px;
+            max-width: 1660px;
+            height: calc(100vh - 120px);
+            overflow: auto;
+
+            .fade-enter-active,
+            .fade-leave-active {
+                transition: opacity 0.5s ease;
+            }
+
+            .fade-enter-from,
+            .fade-leave-to {
+                opacity: 0;
+            }
+        }
+    }
+}
 </style>

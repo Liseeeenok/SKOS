@@ -1,40 +1,42 @@
 <script setup>
-import { changeMenu, logOut } from '../helpers/navigation';
-import { useStore } from '../stores/PlanStore';
-//------------------------------------
-const admin = useStore();
+import { ref } from 'vue';
+import router from '../router';
+import { logOut } from '../helpers/navigation';
+const menuItem = ref('/');
+router.beforeEach((to,from,next) => {menuItem.value = to.path; next()});
 </script>
 
 <template>
-    <nav class="nav">
+    <nav class="nav" v-if="menuItem !== '/'">
         <img alt="СКОС" class="shape" src="@/assets/logo.svg" width="66" height="66" draggable="false"/>
-        <div class="menu_item" :class="admin.menu == 'admin' ? 'active' : ''" @click="changeMenu('admin')">
+
+        <router-link to="/admin" class="menu_item">
             <div style="min-width: 264px;">
-                <div style="display: inline-block;vertical-align:middle;margin-right:5px;"><img src="./icons/5909015.png" width="30" height="30"/></div>
+                <div class="icon"><img src="./icons/5909015.png" width="30" height="30"/></div>
                 <div style="display: inline-block;">Администрирование</div>
             </div>
-        </div>
-        <div class="menu_item" :class="admin.menu == 'profile' ? 'active' : ''" @click="changeMenu('profile')">
+        </router-link>
+        <router-link to="/profile" class="menu_item">
             <div style="min-width: 139px;">
-                <div style="display: inline-block;vertical-align:middle;margin-right:5px;"><img src="./icons/3106773.png" width="30" height="30"/></div>
+                <div class="icon"><img src="./icons/3106773.png" width="30" height="30"/></div>
                 <div style="display: inline-block;">Профиль</div>
             </div>
-        </div>
-        <div class="menu_item" :class="admin.menu == 'notification' ? 'active' : ''" @click="changeMenu('notification')">
+        </router-link>
+        <router-link to="/notification" class="menu_item">
             <div style="min-width: 186px;">
-                <div style="display: inline-block;vertical-align:middle;margin-right:5px;"><img src="./icons/6824079.png" width="30" height="30"/></div>
+                <div class="icon"><img src="./icons/6824079.png" width="30" height="30"/></div>
                 <div style="display: inline-block;">Уведомления</div>
             </div>
-        </div>
-        <div class="menu_item" :class="admin.menu == 'training' ? 'active' : ''" @click="changeMenu('training')">
+        </router-link>
+        <router-link to="/training" class="menu_item">
             <div style="min-width: 145px">
-                <div style="display: inline-block;vertical-align:middle;margin-right:5px;"><img src="./icons/8500036.png" width="30" height="30"/></div>
+                <div class="icon"><img src="./icons/8500036.png" width="30" height="30"/></div>
                 <div style="display: inline-block;">Обучение</div>
             </div>
-        </div>
+        </router-link>
         <div @click="logOut()" class="menu_item">
             <div style="min-width: 107px">
-                <div style="display: inline-block;vertical-align:middle;margin-right:5px;"><img src="./icons/1286969.png" width="30" height="30"/></div>
+                <div class="icon"><img src="./icons/1286969.png" width="30" height="30"/></div>
                 <div style="display: inline-block;">Выход</div>
             </div>
         </div>
@@ -47,26 +49,38 @@ const admin = useStore();
     max-width: 1200px;
     display: flex;
     justify-content: space-between;
-}
-.menu_item {
-    color: #000;
-    font-family: Arial;
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    border-radius: 20px;
-    padding: 15px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-.active {
-    background: rgb(255 255 255 / 50%);
-}
-.menu_item:hover {
-    background: rgba(182, 168, 189, 0.50);
-}
-.shape {
-    cursor: pointer;
+
+    .shape {
+        cursor: pointer;
+    }
+
+    .menu_item {
+        color: #000;
+        font-family: Arial;
+        font-size: 24px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+        border-radius: 20px;
+        padding: 15px;
+        cursor: pointer;
+        transition: 0.2s;
+
+        &:hover {
+            background: rgba(182, 168, 189, 0.50);
+        }
+
+        .icon {
+            display: inline-block;
+            vertical-align:middle;
+            margin-right:5px;
+        }
+    }
+
+    .router-link-active {
+        &.menu_item {
+            background: rgb(255 255 255 / 50%);
+        }
+    }
 }
 </style>

@@ -1,12 +1,11 @@
 <script setup>
+import { ref } from 'vue';
 import { useStore } from '../stores/PlanStore';
 import { verify, getDirection, getDivision, getNotify, getSection } from '../helpers/API.js';
-import { ref } from 'vue';
-import { changeMenu } from '../helpers/navigation.js';
 //-------------AUTH-------------------
 verify();
 //------------------------------------
-const admin = useStore();
+const store = useStore();
 getNotify();
 getDirection();
 getDivision();
@@ -17,7 +16,7 @@ const bc = ref({0: 'bc_red'});
 </script>
 
 <template>
-    <div v-if="admin.isAuth">   
+    <div v-if="store.isAuth">   
         <div>
             <table>
                 <thead>
@@ -33,11 +32,11 @@ const bc = ref({0: 'bc_red'});
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(notification, key, index_notification) in admin.notify" :key="index_notification" :class="bc[notification.status_notification]" @click="changeMenu('notificationEdit', notification.id)">
+                    <tr v-for="(notification, key, index_notification) in store.notify" :key="index_notification" :class="bc[notification.status_notification]">
                         <td>{{ index_notification + 1 + 12 * (page - 1)}}</td>
-                        <td>{{ admin.directions[notification.id_direction] ? admin.directions[notification.id_direction].name : '' }}</td>
-                        <td>{{ admin.divisions[notification.id_division] ? admin.divisions[notification.id_division].name : '' }}</td>
-                        <td>{{ admin.sections[notification.id_section] ? admin.sections[notification.id_section].name : '' }}</td>
+                        <td>{{ store.directions[notification.id_direction] ? store.directions[notification.id_direction].name : '' }}</td>
+                        <td>{{ store.divisions[notification.id_division] ? store.divisions[notification.id_division].name : '' }}</td>
+                        <td>{{ store.sections[notification.id_section] ? store.sections[notification.id_section].name : '' }}</td>
                         <td>{{ notification.count_people }}</td>
                         <td>{{ notification.status_notification ? 'Прочитано' : 'Не прочитано' }}</td>
                         <td>{{ notification.date_start_training }}</td>
@@ -46,7 +45,7 @@ const bc = ref({0: 'bc_red'});
                 </tbody>
             </table>
         </div>
-        <div class="nav"  v-if="false">
+        <div class="nav" v-if="false">
             <button class="decrement but" v-if="page > 1" @click="page -= 1">>></button>
             <button class="but" @click="page += 1" v-if="arr_notifications.length > page*12">>></button>
         </div>
