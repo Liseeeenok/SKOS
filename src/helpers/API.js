@@ -135,6 +135,7 @@ export function getSection() {
     axios
         .post('https://'+host+'/sections', request)
         .then(response => {
+            admin.sections = {};
             response.data.forEach((section) => {
                 admin.sections[section.id] = section;
             })
@@ -282,6 +283,7 @@ export function saveDirection() {
 export function saveDivision() {
     let divisions = [];
     for (let i in admin.divisions) if (typeof admin.divisions[i].status !== "undefined" && admin.divisions[i].status != 3) divisions.push(admin.divisions[i]);
+
     let request = {
         'jwt': localStorage.getItem('skos-token'),
         'divisions': divisions,
@@ -360,9 +362,12 @@ export async function saveProfessionGroup() {
 }
 
 export function saveSection() {
+    let sections = [];
+    for (let i in admin.sections) if (typeof admin.sections[i].status !== "undefined" && admin.sections[i].status != 3) sections.push(admin.sections[i]);
+
     let request = {
         'jwt': localStorage.getItem('skos-token'),
-        'sections': admin.sections.filter((section) => typeof section.status !== "undefined" && section.status != 3),
+        'sections': sections,
         'type_request': 'sections_change',
     };
     axios
