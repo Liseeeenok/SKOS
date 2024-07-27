@@ -1,24 +1,4 @@
 <script setup>
-import { ref } from 'vue';
-import AdminDivision from './AdminDivision.vue';
-import AdminSection from './AdminSection.vue';
-import AdminDirection from './AdminDirection.vue';
-import AdminProfession from './AdminProfession.vue';
-import AdminUser from './AdminUser.vue';
-import AdminRoles from './AdminRoles.vue';
-import AdminPermission from './AdminPermission.vue';
-import { useStore } from '../stores/PlanStore';
-import AdminUserEdit from './AdminUserEdit.vue';
-import AdminCompany from './AdminCompany.vue';
-import AdminPosition from './AdminPosition.vue';
-const host = 'mypew.ru:7070'; //имя или ip хоста api
-const admin = useStore();
-function changeMenu(index) {
-    admin.chapter = index; 
-    admin.chapterStatus = 'main';
-    localStorage.setItem('skos-chapter', index)
-    localStorage.setItem('skos-chapter-status', 'main')
-}
 </script>
 
 <template>
