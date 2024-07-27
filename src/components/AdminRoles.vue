@@ -1,28 +1,23 @@
 <script setup>
 import { useStore } from '../stores/PlanStore';
 import { getRole, saveRole } from '../helpers/API.js';
+import router from '../router/index.js';
 //------------------------------------
-const admin = useStore();
+const store = useStore();
 getRole();
 //------------------------------------
 function setStatus(index_role) {
-    if (admin.roles[index_role].status != 2) admin.roles[index_role].status = 1;
+    if (store.roles[index_role].status != 2) store.roles[index_role].status = 1;
 }
 function addRole() {
-    admin.roles.push({'id': null, 'name': '', 'status': 2});
+    store.roles[Object.keys(store.roles).pop() + 1] = {'id': null, 'name': '', 'status': 2};
 }
 function deleteRole(index_role) {
-    let result = confirm(`Вы уверены что хотите удалить роль ${admin.roles[index_role].name}?`);
+    let result = confirm(`Вы уверены что хотите удалить роль ${store.roles[index_role].name}?`);
     if (result) {
-        admin.roles[index_role].status != 2 ? admin.roles[index_role].status = 0 : admin.roles[index_role].status = 3;
+        store.roles[index_role].status = store.roles[index_role].status != 2 ? 0 : 3;
         saveRole();
     }
-}
-function openPermission(roleId) {
-    admin.chapter = 7;
-    admin.roleId = roleId;
-    localStorage.setItem('skos-chapter', 7);
-    localStorage.setItem('skos-role-id', roleId);
 }
 //------------------------------------
 </script>
@@ -37,13 +32,13 @@ function openPermission(roleId) {
             </tr>
         </thead>
         <tbody>
-            <template v-for="(role, index_role) in admin.roles" :key="index_role">
+            <template v-for="(role, index_role) in store.roles" :key="index_role">
                 <tr v-if="role.status != 0 && role.status != 3">
                     <td>{{ role.id }}</td>
                     <td><input type="text" v-model="role.name" @change="setStatus(index_role)"/></td>
                     <td>
                         <div class="buttons">
-                            <button v-if="role.status != 2" @click="openPermission(role.id)">Редактировать права</button>
+                            <button v-if="role.status != 2" @click="router.push(`/admin/permission/${role.id}`)">Редактировать права</button>
                             <button class="red" @click="deleteRole(index_role)">Удалить</button>
                         </div>
                     </td>
@@ -57,55 +52,90 @@ function openPermission(roleId) {
 
 <style scoped>
 table {
+    background-color: #ffffff;
+    font-size: 16px;
     border-collapse: collapse;
-}
-th {
-    text-align: center;
-    color: #000;
-    font-family: Arial;
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    border: 1px solid #000;
-}
-td {
-    padding: 5px 10px;
-    text-align: center;
-    color: #000;
-    font-family: Arial;
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    border: 1px solid #000;
+    width: 100%;
+    max-width: 1660px;
+    border-radius: 10px;
+    overflow: hidden;
+
+    tr {
+
+        th, td {
+            text-align: center;
+            padding: 5px 15px;
+            box-sizing: border-box;
+        }
+
+        th {
+            color: #ffffff;
+            font-weight: normal;
+            background-color: #8f8f8f;
+            border: solid 1px #8f8f8f;
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            border: solid 1px #d8d8d8;
+            cursor: pointer;
+        }
+    }
+
+    tbody tr {
+        transition: background-color 150ms ease-out;
+
+        &:nth-child(2n+1) {
+            background-color: rgb(255 255 255);
+        }
+
+        &:nth-child(2n) {
+            background-color: rgb(245 245 245);
+        }
+
+        &:hover {
+            background-color: rgb(216 216 216);
+        }
+    }
 }
 input {
     padding: 5px 10px;
-    font-size: 20px;
     width: 500px;
 }
 button {
     padding: 5px 10px;
-    font-size: 20px;
     margin: 0 10px;
     border-radius: 5px;
     border: solid 1px #000;
     cursor: pointer;
     transition: 0.15s;
-}
-button:hover {
-    transform: scale(1.05);
-}
-.green {
-    color: black;
-    background-color: #2a9630b0;
-}
-.red {
-    background-color: #cc5e5e;
-}
-.add {
-    margin: 15px 0 0 0;
+
+    &.green {
+        color: black;
+        background-color: rgb(217 255 228);
+
+        &:hover {
+            background: rgb(198, 226, 193);
+        }
+    }
+    
+    &.red {
+        background-color: rgb(253 220 214);
+
+        &:hover {
+            background: rgb(252 191 179);
+        }
+    }
+
+    &.add {
+        margin: 15px 0 0 0;
+        background: rgb(240 237 255);
+
+        &:hover {
+            background: rgb(208, 228, 239);
+        }
+    }
 }
 .buttons {
     display: flex;

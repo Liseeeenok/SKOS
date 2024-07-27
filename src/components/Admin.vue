@@ -1,4 +1,8 @@
 <script setup>
+import { verify } from '../helpers/API.js';
+//-------------AUTH-------------------
+verify();
+//------------------------------------
 </script>
 
 <template>
@@ -27,7 +31,7 @@
                     <router-link to="/admin/roles">
                         <div class="menu_item">Роли</div>
                     </router-link>
-                    <router-link to="/admin/permission/-1">
+                    <router-link to="/admin/permission/-1" v-if="false">
                         <div class="menu_item">Права</div>
                     </router-link>
                     <router-link to="/admin/positions">

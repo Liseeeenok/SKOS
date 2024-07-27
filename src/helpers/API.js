@@ -75,6 +75,7 @@ export function getDirection() {
     axios
         .post('https://'+host+'/directions', request)
         .then(response => {
+            admin.directions = {};
             response.data.forEach((direction) => {
                 admin.directions[direction.id] = direction;
             })
@@ -147,10 +148,13 @@ export function getRole() {
         'jwt': localStorage.getItem('skos-token'),
         'type_request': 'roles_info',
     };
-    axios.post('https://'+host+'/roles', request).then(response => {
-        admin.roles = response.data;
-        admin.role = admin.roles.find(x => x.id == admin.roleId);
-        console.log(admin.role);
+    axios
+        .post('https://'+host+'/roles', request)
+        .then(response => {
+            admin.roles = {};
+            response.data.forEach((role) => {
+                admin.roles[role.id] = role;
+            })
     });
 }
 
@@ -244,7 +248,6 @@ export function getCompany() {
         .post('https://'+host+'/companies', request)
         .then(response => {
             admin.companies = response.data;
-            console.log(response.data);
         });
 }
 
@@ -257,7 +260,6 @@ export function getPosition() {
         .post('https://'+host+'/positions', request)
         .then(response => {
             admin.positions = response.data;
-            console.log(response.data);
         });
 }
 
@@ -266,9 +268,12 @@ export function getPosition() {
 //---------------------------------------------------------------------------------------------------
 
 export function saveDirection() {
+    let directions = [];
+    for (let i in admin.directions) if (typeof admin.directions[i].status !== "undefined" && admin.directions[i].status != 3) directions.push(admin.directions[i]);
+
     let request = {
         'jwt': localStorage.getItem('skos-token'),
-        'directions': admin.directions.filter((direction) => typeof direction.status !== "undefined" && direction.status != 3),
+        'directions': directions,
         'type_request': 'directions_change',
     };
     axios
@@ -299,14 +304,20 @@ export function saveDivision() {
 }
 
 export function saveRole() {
+    let roles = [];
+    for (let i in admin.roles) {
+        if (typeof admin.roles[i].status !== "undefined" && admin.roles[i].status != 3) roles.push(admin.roles[i]);
+    }
+
     let request = {
         'jwt': localStorage.getItem('skos-token'),
-        'roles': admin.roles.filter((role) => typeof role.status !== "undefined" && role.status != 3),
+        'roles': roles,
         'type_request': 'roles_change',
     };
     axios
         .post('https://' + host + '/roles', request)
         .then((response) => {
+            console.log(request);
             getRole();
             if (response.data == 'OK') alert('Успешно сохранено!');
             else console.log(response);
@@ -318,6 +329,7 @@ export function saveProfession() {
     for (let id in admin.professions) {
         if (typeof admin.professions[id].status !== "undefined" && admin.professions[id].status != 3) professions.push(admin.professions[id]);
     }
+
     let request = {
         'jwt': localStorage.getItem('skos-token'),
         'professions': professions,
@@ -379,18 +391,24 @@ export function saveSection() {
         })
 }
 
-export function saveUsers(idx) {
+export function saveUsers(id) {
     let request = {
         'jwt': localStorage.getItem('skos-token'),
-        'user': admin.users[idx],
+        'user': admin.users[id],
         'type_request': 'user_change',
     }
     axios
         .post('https://' + host + '/accounts', request)
         .then((response) => {
-            getUsers();
-            if (response.data == 'OK') alert('Успешно сохранено!');
-            else console.log(request, response);
+            if (response.data == 'OK') {
+                getUsers();
+                alert('Успешно сохранено!');
+            }
+            else {
+                alert('Ошибка при сохранении');
+                console.log(request, response)
+            };
+            router.push('/admin/users/all');
         })
 }
 
@@ -484,7 +502,7 @@ export function saveCompany() {
     axios
         .post('https://' + host + '/companies', request)
         .then((response) => {
-            getUsers();
+            getCompany();
             if (response.data == 'OK') alert('Успешно сохранено!');
             else console.log(request, response);
         })

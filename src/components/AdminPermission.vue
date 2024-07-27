@@ -1,32 +1,33 @@
 <script setup>
 import { useStore } from '../stores/PlanStore';
 import { getRole, saveRole, getDirection, getSection, getDivision, getProfession } from '../helpers/API.js';
+import router from '../router/index.js';
 //------------------------------------
-const admin = useStore();
+const store = useStore();
 getRole();
 getDivision();
 getSection();
 getDirection();
 getProfession();
 //------------------------------------
-function setStatus() {
-    if (admin.roles.find(x => x.id == admin.roleId).status != 2) admin.roles.find(x => x.id == admin.roleId).status = 1;
+function setStatus(index_role) {
+    if (store.roles[index_role].status != 2) store.roles[index_role].status = 1;
 }
-function updateRole() {
-    if (admin.role.status == 1 || admin.role.status == 2) saveRole();
-    localStorage.setItem('skos-role-id', admin.roleId);
-    admin.role = admin.roles.find(x => x.id == admin.roleId);
+function updateRole(id) {
+    router.push(`/admin/permission/${id}`);
+    //if (admin.role.status == 1 || admin.role.status == 2) saveRole();
 }
 //------------------------------------
 </script>
+
 <template>
     <h1>Настройка прав доступа ролям</h1>
-    <select v-model="admin.roleId" @change="updateRole()">
-        <template v-for="(role, index_role) in admin.roles" :key="index_role">
+    <select v-model="$route.params.id" @change="updateRole($route.params.id)" class="select_role">
+        <template v-for="(role, index_role) in store.roles" :key="index_role">
             <option :value="role.id">{{ role.name }}</option>
         </template>
     </select>
-    <table>
+    <table v-if="store.roles[$route.params.id]">
         <thead>
             <tr>
                 <th>Право</th>
@@ -37,7 +38,7 @@ function updateRole() {
             <tr>
                 <td>Панель администратора</td>
                 <td>
-                    <select v-model="admin.role.perm_admin_panel.access" @change="setStatus()">
+                    <select v-model="store.roles[$route.params.id].perm_admin_panel.access" @change="setStatus($route.params.id)">
                         <option value="-">Закрыт</option>
                         <option value="limited">Ограничен</option>
                         <option value="*">Все</option>
@@ -47,13 +48,15 @@ function updateRole() {
             <tr>
                 <td>Подразделения</td>
                 <td style="min-width: 370px;">
-                    <select v-model="admin.role.perm_divisions.access" @change="setStatus()">
+                    <select v-model="store.roles[$route.params.id].perm_divisions.access" @change="setStatus($route.params.id)">
                         <option value="-">Закрыт</option>
                         <option value="limited">Ограничен</option>
                         <option value="*">Все</option>
                     </select>
-                    <select class="selected_two" v-if="admin.role.perm_divisions.access == 'limited'" v-model="admin.role.perm_divisions.id_division" @change="setStatus()">
-                        <template v-for="(division, index_division) in admin.divisions" :key="index_division">
+                    <select class="selected_two" 
+                    v-if="store.roles[$route.params.id].perm_divisions.access == 'limited'" 
+                    v-model="store.roles[$route.params.id].perm_divisions.id_division" @change="setStatus($route.params.id)">
+                        <template v-for="(division, index_division) in store.divisions" :key="index_division">
                             <option :value="division.id">{{ division.name }}</option>
                         </template>
                     </select>
@@ -62,13 +65,14 @@ function updateRole() {
             <tr>
                 <td>Секции</td>
                 <td>
-                    <select v-model="admin.role.perm_sections.access" @change="setStatus()">
+                    <select v-model="store.roles[$route.params.id].perm_sections.access" @change="setStatus($route.params.id)">
                         <option value="-">Закрыт</option>
                         <option value="limited">Ограничен</option>
                         <option value="*">Все</option>
                     </select>
-                    <select class="selected_two" v-if="admin.role.perm_sections.access == 'limited'" v-model="admin.role.perm_sections.id_section" @change="setStatus()">
-                        <template v-for="(section, index_section) in admin.sections" :key="index_section">
+                    <select class="selected_two" v-if="store.roles[$route.params.id].perm_sections.access == 'limited'" 
+                    v-model="store.roles[$route.params.id].perm_sections.id_section" @change="setStatus($route.params.id)">
+                        <template v-for="(section, index_section) in store.sections" :key="index_section">
                             <option :value="section.id">{{ section.name }}</option>
                         </template>
                     </select>
@@ -77,13 +81,14 @@ function updateRole() {
             <tr>
                 <td>Дирекции</td>
                 <td>
-                    <select v-model="admin.role.perm_directions.access" @change="setStatus()">
+                    <select v-model="store.roles[$route.params.id].perm_directions.access" @change="setStatus($route.params.id)">
                         <option value="-">Закрыт</option>
                         <option value="limited">Ограничен</option>
                         <option value="*">Все</option>
                     </select>
-                    <select class="selected_two" v-if="admin.role.perm_directions.access == 'limited'" v-model="admin.role.perm_directions.id_direction" @change="setStatus()">
-                        <template v-for="(direction, index_direction) in admin.directions" :key="index_direction">
+                    <select class="selected_two" v-if="store.roles[$route.params.id].perm_directions.access == 'limited'" 
+                    v-model="store.roles[$route.params.id].perm_directions.id_direction" @change="setStatus($route.params.id)">
+                        <template v-for="(direction, index_direction) in store.directions" :key="index_direction">
                             <option :value="direction.id">{{ direction.name }}</option>
                         </template>
                     </select>
@@ -92,13 +97,14 @@ function updateRole() {
             <tr>
                 <td>Предприятия</td>
                 <td>
-                    <select v-model="admin.role.perm_companies.access" @change="setStatus()">
+                    <select v-model="store.roles[$route.params.id].perm_companies.access" @change="setStatus($route.params.id)">
                         <option value="-">Закрыт</option>
                         <option value="limited">Ограничен</option>
                         <option value="*">Все</option>
                     </select>
-                    <select class="selected_two" v-if="admin.role.perm_directions.access == 'limited'" v-model="admin.role.perm_directions.id_direction" @change="setStatus()">
-                        <template v-for="(direction, index_direction) in admin.directions" :key="index_direction">
+                    <select class="selected_two" v-if="store.roles[$route.params.id].perm_directions.access == 'limited'" 
+                    v-model="store.roles[$route.params.id].perm_directions.id_direction" @change="setStatus($route.params.id)">
+                        <template v-for="(direction, index_direction) in store.directions" :key="index_direction">
                             <option :value="direction.id">{{ direction.name }}</option>
                         </template>
                     </select>
@@ -107,13 +113,14 @@ function updateRole() {
             <tr>
                 <td>Профессии</td>
                 <td>
-                    <select v-model="admin.role.perm_professions.access" @change="setStatus()">
+                    <select v-model="store.roles[$route.params.id].perm_professions.access" @change="setStatus($route.params.id)">
                         <option value="-">Закрыт</option>
                         <option value="limited">Ограничен</option>
                         <option value="*">Все</option>
                     </select>
-                    <select class="selected_two" v-if="admin.role.perm_professions.access == 'limited'" v-model="admin.role.perm_professions.id_profession" @change="setStatus()">
-                        <template v-for="(profession, index_profession) in admin.professions" :key="index_profession">
+                    <select class="selected_two" v-if="store.roles[$route.params.id].perm_professions.access == 'limited'" 
+                    v-model="store.roles[$route.params.id].perm_professions.id_profession" @change="setStatus($route.params.id)">
+                        <template v-for="(profession, index_profession) in store.professions" :key="index_profession">
                             <option :value="profession.id">{{ profession.name }}</option>
                         </template>
                     </select>
@@ -122,13 +129,14 @@ function updateRole() {
             <tr>
                 <td>Группы профессий</td>
                 <td>
-                    <select v-model="admin.role.perm_profession_groups.access" @change="setStatus()">
+                    <select v-model="store.roles[$route.params.id].perm_profession_groups.access" @change="setStatus($route.params.id)">
                         <option value="-">Закрыт</option>
                         <option value="limited">Ограничен</option>
                         <option value="*">Все</option>
                     </select>
-                    <select class="selected_two" v-if="admin.role.perm_profession_groups.access == 'limited'" v-model="admin.role.perm_profession_groups.id_profession" @change="setStatus()">
-                        <template v-for="(profession, index_profession) in admin.professions" :key="index_profession">
+                    <select class="selected_two" v-if="store.roles[$route.params.id].perm_profession_groups.access == 'limited'" 
+                    v-model="store.roles[$route.params.id].perm_profession_groups.id_profession" @change="setStatus($route.params.id)">
+                        <template v-for="(profession, index_profession) in store.professions" :key="index_profession">
                             <option :value="profession.id">{{ profession.name }}</option>
                         </template>
                     </select>
@@ -137,24 +145,26 @@ function updateRole() {
             <tr>
                 <td>Роли</td>
                 <td>
-                    <select v-model="admin.role.perm_roles.access" @change="setStatus()">
+                    <select v-model="store.roles[$route.params.id].perm_roles.access" @change="setStatus($route.params.id)">
                         <option value="-">Закрыт</option>
                         <option value="*">Все</option>
                     </select>
                 </td>
             </tr>
-            <td>Должности</td>
+            <tr>
+                <td>Должности</td>
                 <td>
-                    <select v-model="admin.role.perm_positions.access" @change="setStatus()">
+                    <select v-model="store.roles[$route.params.id].perm_positions.access" @change="setStatus($route.params.id)">
                         <option value="-">Закрыт</option>
                         <option value="limited">Ограничен</option>
                         <option value="*">Все</option>
                     </select>
                 </td>
+            </tr>
             <tr>
                 <td>Пользователи</td>
                 <td>
-                    <select v-model="admin.role.perm_users.access" @change="setStatus()">
+                    <select v-model="store.roles[$route.params.id].perm_users.access" @change="setStatus($route.params.id)">
                         <option value="-">Закрыт</option>
                         <option value="*">Все</option>
                     </select>
@@ -163,7 +173,7 @@ function updateRole() {
             <tr>
                 <td>Уведомления</td>
                 <td>
-                    <select v-model="admin.role.perm_notifications.access" @change="setStatus()">
+                    <select v-model="store.roles[$route.params.id].perm_notifications.access" @change="setStatus($route.params.id)">
                         <option value="-">Закрыт</option>
                         <option value="*">Все</option>
                     </select>
@@ -172,7 +182,7 @@ function updateRole() {
             <tr>
                 <td>План-график</td>
                 <td>
-                    <select v-model="admin.role.perm_plan_schedule.access" @change="setStatus()">
+                    <select v-model="store.roles[$route.params.id].perm_plan_schedule.access" @change="setStatus($route.params.id)">
                         <option value="-">Закрыт</option>
                         <option value="limited">Просмотр</option>
                         <option value="*">Редактирование</option>
@@ -182,7 +192,7 @@ function updateRole() {
             <tr>
                 <td>Ведомость</td>
                 <td>
-                    <select v-model="admin.role.perm_statement.access" @change="setStatus()">
+                    <select v-model="store.roles[$route.params.id].perm_statement.access" @change="setStatus($route.params.id)">
                         <option value="-">Закрыт</option>
                         <option value="limited">Просмотр</option>
                         <option value="*">Редактирование</option>
@@ -196,65 +206,82 @@ function updateRole() {
 
 <style scoped>
 table {
+    background-color: #ffffff;
+    font-size: 16px;
     border-collapse: collapse;
-    margin-bottom: 20px;
-}
-th {
-    text-align: center;
-    color: #000;
-    font-family: Arial;
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    border: 1px solid #000;
-}
-td {
-    padding: 5px 10px;
-    text-align: center;
-    color: #000;
-    font-family: Arial;
-    font-size: 20px;
-    font-style: normal;
-    line-height: normal;
-    border: 1px solid #000;
+    width: 100%;
+    max-width: 1660px;
+    border-radius: 10px;
+    overflow: hidden;
+
+    tr {
+
+        th, td {
+            text-align: center;
+            padding: 5px 15px;
+            box-sizing: border-box;
+        }
+
+        th {
+            color: #ffffff;
+            font-weight: normal;
+            background-color: #8f8f8f;
+            border: solid 1px #8f8f8f;
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            border: solid 1px #d8d8d8;
+            cursor: pointer;
+        }
+    }
+
+    tbody tr {
+        transition: background-color 150ms ease-out;
+
+        &:nth-child(2n+1) {
+            background-color: rgb(255 255 255);
+        }
+
+        &:nth-child(2n) {
+            background-color: rgb(245 245 245);
+        }
+
+        &:hover {
+            background-color: rgb(216 216 216);
+        }
+    }
 }
 input {
     padding: 5px 10px;
-    font-size: 20px;
     width: 500px;
 }
 button {
     padding: 5px 10px;
-    font-size: 20px;
     margin: 0 10px;
     border-radius: 5px;
     border: solid 1px #000;
     cursor: pointer;
     transition: 0.15s;
+
+    &.green {
+        color: black;
+        background-color: rgb(217 255 228);
+        margin: 15px 0 0 0;
+
+        &:hover {
+            background: rgb(198, 226, 193);
+        }
+    }
 }
-button:hover {
-    transform: scale(1.05);
+
+.select_role {
+    margin: 15px 0;
 }
+
 select {
-    font-size: 20px;
-    margin: 15px 10px;
+    padding: 5px 10px;
     width: 180px;
-}
-.selected_two {
-    width: 300px;
-}
-.green {
-    color: black;
-    background-color: #2a9630b0;
-}
-.red {
-    background-color: #cc5e5e;
-}
-.add {
-    margin: 15px 0 0 0;
-}
-.buttons {
-    display: flex;
 }
 </style>

@@ -1,8 +1,6 @@
 <script setup>
 import { useStore } from '../stores/PlanStore';
-import { verify, getSection, saveSection } from '../helpers/API.js';
-//-------------AUTH-------------------
-verify();
+import { getSection, saveSection } from '../helpers/API.js';
 //------------------------------------
 const store = useStore();
 getSection();
@@ -16,13 +14,13 @@ function addSection() {
 function deleteSection(index_section) {
     let result = confirm(`Вы уверены что хотите удалить направление ${store.sections[index_section].name}?`);
     if (result) {
-        if (store.sections[index_section].status != 2) store.sections[index_section].status = 0;
-        else store.sections[index_section].status = 3;
+        store.sections[index_section].status = store.sections[index_section].status != 2 ? 0 : 3;
         saveSection();
     }
 }
 //------------------------------------
 </script>
+
 <template>
     <h1>Настройка секций</h1>
     <table>

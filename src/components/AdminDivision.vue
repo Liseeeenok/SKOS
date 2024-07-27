@@ -1,8 +1,6 @@
 <script setup>
 import { useStore } from '../stores/PlanStore';
-import { verify, getDivision, saveDivision } from '../helpers/API.js';
-//-------------AUTH-------------------
-verify();
+import { getDivision, saveDivision } from '../helpers/API.js';
 //------------------------------------
 const store = useStore();
 getDivision();
@@ -16,12 +14,13 @@ function addDivision() {
 function deleteDivision(index_division) {
     let result = confirm(`Вы уверены что хотите удалить подразделение ${store.divisions[index_division].name}?`);
     if (result) {
-        store.divisions[index_division].status != 2 ? store.divisions[index_division].status = 0 : store.divisions[index_division].status = 3;
+        store.divisions[index_division].status = store.divisions[index_division].status != 2 ? 0 : 3;
         saveDivision();
     }
 }
 //------------------------------------
 </script>
+
 <template>
     <h1>Настройка подразделений</h1>
     <table>
