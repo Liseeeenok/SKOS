@@ -52,7 +52,6 @@ const page = ref(1);
                 </tbody>
             </table>
         </div>
-        <router-view></router-view>
         
         <div class="nav" v-if="false">
             <button class="decrement but" v-if="page > 1" @click="page -= 1">>></button>
@@ -63,17 +62,6 @@ const page = ref(1);
 </template>
 
 <style lang="scss" scoped>
-.main_table {
-    opacity: 1;
-    transition: 0.2s ease-out;
-
-    &.hide {
-        opacity: 0;
-        height: 0px;
-        visibility: hidden;
-    }
-}
-
 table {
     background-color: #ffffff;
     font-size: 16px;

@@ -10,7 +10,7 @@ import MenuNav from './components/MenuNav.vue';
             <MenuNav/>
             <div class="content">
                 <router-view v-slot="{ Component }">
-                        <transition name="fade">
+                        <transition name="fade" mode="out-in">
                             <component :is="Component" />
                         </transition>
                 </router-view>
@@ -51,7 +51,7 @@ main {
 
             .fade-enter-active,
             .fade-leave-active {
-                transition: opacity 0.5s ease;
+                transition: opacity 0.3s ease;
             }
 
             .fade-enter-from,

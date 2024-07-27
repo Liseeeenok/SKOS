@@ -1,8 +1,10 @@
 <script setup>
 import { useStore } from '../stores/PlanStore';
-import { getCompany, getDirection, getDivision, getNotify, getProfession, getSection, saveNotification } from '../helpers/API.js';
+import { verify, getCompany, getDirection, getDivision, getNotify, getProfession, getSection, saveNotification } from '../helpers/API.js';
 import { ref } from 'vue';
 import router from '../router/index.js'
+//-------------AUTH-------------------
+verify();
 //------------------------------------
 const admin = useStore();
 getDivision();
@@ -185,16 +187,16 @@ select, input {
     border-radius: 3px;
     box-shadow: 0px 0px 12px -2px rgba(0,0,0,0.5);
     line-height: 1.25;
-    background: rgb(151 127 255);
+    background: rgb(240 237 255);
     text-decoration: none;
     user-select: none;
-    color: white;
+    color: black;
     letter-spacing: .08em;
     position: relative;
     transition: background-color .6s ease;
 
     &:hover {
-        background: rgb(150 98 220);
+        background: rgb(208, 228, 239);
     }
 }
 .button_status_0 {
@@ -204,16 +206,16 @@ select, input {
     border-radius: 3px;
     box-shadow: 0px 0px 12px -2px rgba(0,0,0,0.5);
     line-height: 1.25;
-    background: rgb(252 110 81);
+    background: rgb(253 220 214);
     text-decoration: none;
     user-select: none;
-    color: white;
+    color: black;
     letter-spacing: .08em;
     position: relative;
     transition: background-color .6s ease;
 
     &:hover {
-        background: rgb(251 81 46);
+        background: rgb(252 191 179);
     }
 }
 .button_status_1 {
@@ -223,16 +225,16 @@ select, input {
     border-radius: 3px;
     box-shadow: 0px 0px 12px -2px rgba(0,0,0,0.5);
     line-height: 1.25;
-    background: rgb(18 154 57);
+    background: rgb(217 255 228);
     text-decoration: none;
     user-select: none;
-    color: white;
+    color: black;
     letter-spacing: .08em;
     position: relative;
     transition: background-color .6s ease;
 
     &:hover {
-        background: rgb(17 125 22);
+        background: rgb(198, 226, 193);
     }
 }
 .addCompany {

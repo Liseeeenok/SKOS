@@ -26,8 +26,12 @@ function changeMenu(index) {
         <div class="admin">
             <div class="container_menu">
                 <div class="menu">
-                    <div class="menu_item" :class="admin.chapter == 1 ? 'active':''" @click="changeMenu(1)">Подразделения</div>
-                    <div class="menu_item" :class="admin.chapter == 2 ? 'active':''" @click="changeMenu(2)">Секции</div>
+                    <router-link to="/admin/division">
+                        <div class="menu_item">Подразделения</div>
+                    </router-link>
+                    <router-link to="/admin/section">
+                        <div class="menu_item">Секции</div>
+                    </router-link>
                     <div class="menu_item" :class="admin.chapter == 3 ? 'active':''" @click="changeMenu(3)">Дирекции</div>
                     <div class="menu_item" :class="admin.chapter == 8 ? 'active':''" @click="changeMenu(8)">Предприятия</div>
                     <div class="menu_item" :class="admin.chapter == 4 ? 'active':''" @click="changeMenu(4)">Профессии</div>
@@ -38,8 +42,7 @@ function changeMenu(index) {
                 </div>
             </div>
             <div class="container_content">
-                <template v-if="admin.chapter == 1"><AdminDivision/></template>
-                <template v-if="admin.chapter == 2"><AdminSection/></template>
+                <router-view></router-view>
                 <template v-if="admin.chapter == 3"><AdminDirection/></template>
                 <template v-if="admin.chapter == 4"><AdminProfession/></template>
                 <template v-if="admin.chapter == 5 && admin.chapterStatus == 'main'"><AdminUser/></template>
@@ -53,35 +56,41 @@ function changeMenu(index) {
     </div>
 </template>
 
-<style scoped>
+<style lang="scss"scoped>
 .container {
-    padding: 100px 20px 0 20px;
-}
+    padding: 10px 20px 0 20px;
 
-.admin {
-    display: flex;
-}
+    .admin {
+        display: flex;
 
-.container_menu {
-    padding-right: 20px;
-}
+        .container_menu {
+            padding-right: 20px;
 
-.menu_item {
-    font-size: 24px;
-    cursor: pointer;
-    transition: 0.2s;
-    padding: 10px 20px;
-    border-radius: 10px;
-    margin: 5px 0;
-}
-.menu_item:hover {
-    background: rgba(182, 168, 189, 0.50);
-    transform: scale(1.1);
-}
-.active {
-    background: rgba(154, 138, 161, 0.5);
-}
-.container_content {
-    padding-bottom: 50px;
+            .menu_item {
+                font-size: 24px;
+                cursor: pointer;
+                transition: 0.2s;
+                padding: 10px 20px;
+                border-radius: 10px;
+                margin: 5px 0;
+                color: black;
+
+                &:hover {
+                    background: rgba(182, 168, 189, 0.50);
+                    transform: scale(1.1);
+                }
+            }
+
+            .router-link-active {
+                .menu_item {
+                    background: rgb(255 255 255 / 50%);
+                }
+            }
+        }
+
+        .container_content {
+            padding-bottom: 50px;
+        }
+    }
 }
 </style>

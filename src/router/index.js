@@ -11,26 +11,40 @@ const router = createRouter({
     {
         path: '/notification', //Страница уведомлений
         name: 'notification',
-        component: () => import('../views/NotificationPage.vue'),
+        redirect: '/notification/all',
         children: [
+            {
+                path: 'all', //Страница редактирования уведомлений
+                component: () => import('../components/Notification.vue')
+            },
             {
                 path: 'edit/:id', //Страница редактирования уведомлений
                 component: () => import('../components/NotificationEdit.vue')
             }
         ]
     },
-    /*
-    {
-        path: '/notification/edit/:id', //Страница редактирования уведомлений
-        name: 'notificationEdit',
-        component: () => import('../components/NotificationEdit.vue'),
-    },
-    */
     {
       path: '/profile', //Страница профиля
       name: 'profile',
-      component: () => import('../views/ProfilePage.vue')
+      component: () => import('../components/Profile.vue')
     },
+    {
+        path: '/admin', //Страница админки
+        name: 'admin',
+        redirect: '/admin/division',
+        component: () => import('../components/Admin.vue'),
+        children: [
+            {
+                path: 'division', //Страница подразделений
+                component: () => import('../components/AdminDivision.vue')
+            },
+            {
+                path: 'section', //Страница дирекций
+                component: () => import('../components/AdminSection.vue')
+            },
+        ]
+    },
+
     {
         path: '/training', //Страница обучения
         name: 'training',
@@ -55,11 +69,6 @@ const router = createRouter({
         path: '/statementEdit', //Страница редактирования ведомости
         name: 'statementEdit',
         component: () => import('../views/StatementEditPage.vue')
-    },
-    {
-        path: '/admin', //Страница админки
-        name: 'admin',
-        component: () => import('../views/AdminPage.vue')
     },
   ]
 })

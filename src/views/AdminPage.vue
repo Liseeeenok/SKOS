@@ -3,9 +3,7 @@ import Admin from '../components/Admin.vue';
 </script>
 
 <template>
-    <transition name="fade">
-        <Admin/>
-    </transition>
+    <Admin/>
 </template>
 
 <style scoped>

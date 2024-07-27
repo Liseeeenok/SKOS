@@ -89,6 +89,7 @@ export function getDivision() {
     axios
         .post('https://'+host+'/divisions', request)
         .then(response => {
+            admin.divisions = {};
             response.data.forEach((division) => {
                 admin.divisions[division.id] = division;
             })
@@ -279,9 +280,11 @@ export function saveDirection() {
 }
 
 export function saveDivision() {
+    let divisions = [];
+    for (let i in admin.divisions) if (typeof admin.divisions[i].status !== "undefined" && admin.divisions[i].status != 3) divisions.push(admin.divisions[i]);
     let request = {
         'jwt': localStorage.getItem('skos-token'),
-        'divisions': admin.divisions.filter((division) => typeof division.status !== "undefined" && division.status != 3),
+        'divisions': divisions,
         'type_request': 'divisions_change',
     };
     axios
