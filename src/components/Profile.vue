@@ -1,9 +1,10 @@
 <script setup>
 import { useStore } from '../stores/PlanStore';
 import { getUser } from '../helpers/API.js';
-import { verify } from '../helpers/API.js';
+import { verify, preLoad } from '../helpers/API.js';
 //-------------AUTH-------------------
 verify();
+preLoad();
 //------------------------------------
 const admin = useStore();
 getUser();

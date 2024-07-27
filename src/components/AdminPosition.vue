@@ -49,62 +49,89 @@ function deletePosition(index_position) {
 
 <style scoped>
 table {
+    background-color: #ffffff;
+    font-size: 16px;
     border-collapse: collapse;
-}
-th {
-    text-align: center;
-    color: #000;
-    font-family: Arial;
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    border: 1px solid #000;
-}
-td {
-    padding: 5px 10px;
-    text-align: center;
-    color: #000;
-    font-family: Arial;
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    border: 1px solid #000;
+    width: 100%;
+    max-width: 1660px;
+    border-radius: 10px;
+    overflow: hidden;
+
+    tr {
+
+        th, td {
+            text-align: center;
+            padding: 5px 15px;
+            box-sizing: border-box;
+        }
+
+        th {
+            color: #ffffff;
+            font-weight: normal;
+            background-color: #8f8f8f;
+            border: solid 1px #8f8f8f;
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            border: solid 1px #d8d8d8;
+            cursor: pointer;
+        }
+    }
+
+    tbody tr {
+        transition: background-color 150ms ease-out;
+
+        &:nth-child(2n+1) {
+            background-color: rgb(255 255 255);
+        }
+
+        &:nth-child(2n) {
+            background-color: rgb(245 245 245);
+        }
+
+        &:hover {
+            background-color: rgb(216 216 216);
+        }
+    }
 }
 input {
     padding: 5px 10px;
-    font-size: 20px;
     width: 400px;
-}
-select {
-    padding: 5px 10px;
-    font-size: 20px;
-    width: 350px;
 }
 button {
     padding: 5px 10px;
-    font-size: 20px;
     margin: 0 10px;
     border-radius: 5px;
     border: solid 1px #000;
     cursor: pointer;
     transition: 0.15s;
-}
-button:hover {
-    transform: scale(1.05);
-}
-.green {
-    color: black;
-    background-color: #2a9630b0;
-}
-.red {
-    background-color: #cc5e5e;
-}
-.add {
-    margin: 15px 0 0 0;
-}
-.input {
-    width: 340px;
+
+    &.green {
+        color: black;
+        background-color: rgb(217 255 228);
+
+        &:hover {
+            background: rgb(198, 226, 193);
+        }
+    }
+    
+    &.red {
+        background-color: rgb(253 220 214);
+
+        &:hover {
+            background: rgb(252 191 179);
+        }
+    }
+
+    &.add {
+        margin: 15px 0 0 0;
+        background: rgb(240 237 255);
+
+        &:hover {
+            background: rgb(208, 228, 239);
+        }
+    }
 }
 </style>

@@ -1,7 +1,8 @@
 <script setup>
-import { verify } from '../helpers/API.js';
+import { preLoad, verify } from '../helpers/API.js';
 //-------------AUTH-------------------
 verify();
+preLoad();
 //------------------------------------
 </script>
 

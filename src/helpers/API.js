@@ -235,7 +235,6 @@ export function getNotify() {
             response.data.forEach((notif) => {
                 admin.notify[notif.id] = notif;
             })
-            console.log(admin.notify);
         });
 }
 

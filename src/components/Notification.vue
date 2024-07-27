@@ -1,10 +1,11 @@
 <script setup>
 import { ref } from 'vue';
 import { useStore } from '../stores/PlanStore';
-import { verify, getDirection, getDivision, getNotify, getSection } from '../helpers/API.js';
+import { verify, preLoad, getDirection, getDivision, getNotify, getSection } from '../helpers/API.js';
 import router from '../router/index.js';
 //-------------AUTH-------------------
 verify();
+preLoad();
 //------------------------------------
 const store = useStore();
 getNotify();
