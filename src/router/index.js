@@ -39,8 +39,46 @@ const router = createRouter({
                 component: () => import('../components/AdminDivision.vue')
             },
             {
-                path: 'section', //Страница дирекций
+                path: 'section', //Страница секций
                 component: () => import('../components/AdminSection.vue')
+            },
+            {
+                path: 'directions', //Страница дирекций
+                component: () => import('../components/AdminDirection.vue')
+            },
+            {
+                path: 'companies', //Страница предприятий
+                component: () => import('../components/AdminCompany.vue')
+            },
+            {
+                path: 'professions', //Страница профессий
+                component: () => import('../components/AdminProfession.vue')
+            },
+            {
+                path: 'users', //Страница пользователей
+                redirect: '/admin/users/all',
+                children: [
+                    {
+                        path: 'all', //Всех
+                        component: () => import('../components/AdminUser.vue')
+                    },
+                    {
+                        path: 'edit/:id', //Редактирование
+                        component: () => import('../components/AdminUserEdit.vue')
+                    }
+                ]
+            },
+            {
+                path: 'roles', //Страница ролей
+                component: () => import('../components/AdminRoles.vue')
+            },
+            {
+                path: 'permission/:id', //Страница прав
+                component: () => import('../components/AdminPermission.vue')
+            },
+            {
+                path: 'positions', //Страница должностей
+                component: () => import('../components/AdminPosition.vue')
             },
         ]
     },

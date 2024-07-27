@@ -32,25 +32,31 @@ function changeMenu(index) {
                     <router-link to="/admin/section">
                         <div class="menu_item">Секции</div>
                     </router-link>
-                    <div class="menu_item" :class="admin.chapter == 3 ? 'active':''" @click="changeMenu(3)">Дирекции</div>
-                    <div class="menu_item" :class="admin.chapter == 8 ? 'active':''" @click="changeMenu(8)">Предприятия</div>
-                    <div class="menu_item" :class="admin.chapter == 4 ? 'active':''" @click="changeMenu(4)">Профессии</div>
-                    <div class="menu_item" :class="admin.chapter == 5 ? 'active':''" @click="changeMenu(5)">Пользователи</div>
-                    <div class="menu_item" :class="admin.chapter == 6 ? 'active':''" @click="changeMenu(6)">Роли</div>
-                    <div class="menu_item" :class="admin.chapter == 7 ? 'active':''" @click="changeMenu(7)">Права</div>
-                    <div class="menu_item" :class="admin.chapter == 9 ? 'active':''" @click="changeMenu(9)">Должности</div>
+                    <router-link to="/admin/directions">
+                        <div class="menu_item">Дирекции</div>
+                    </router-link>
+                    <router-link to="/admin/companies">
+                        <div class="menu_item">Предприятия</div>
+                    </router-link>
+                    <router-link to="/admin/professions">
+                        <div class="menu_item">Профессии</div>
+                    </router-link>
+                    <router-link to="/admin/users">
+                        <div class="menu_item">Пользователи</div>
+                    </router-link>
+                    <router-link to="/admin/roles">
+                        <div class="menu_item">Роли</div>
+                    </router-link>
+                    <router-link to="/admin/permission/-1">
+                        <div class="menu_item">Права</div>
+                    </router-link>
+                    <router-link to="/admin/positions">
+                        <div class="menu_item">Должности</div>
+                    </router-link>
                 </div>
             </div>
             <div class="container_content">
                 <router-view></router-view>
-                <template v-if="admin.chapter == 3"><AdminDirection/></template>
-                <template v-if="admin.chapter == 4"><AdminProfession/></template>
-                <template v-if="admin.chapter == 5 && admin.chapterStatus == 'main'"><AdminUser/></template>
-                <template v-if="admin.chapter == 5 && admin.chapterStatus == 'edit'"><AdminUserEdit/></template>
-                <template v-if="admin.chapter == 6"><AdminRoles/></template>
-                <template v-if="admin.chapter == 7"><AdminPermission/></template>
-                <template v-if="admin.chapter == 8"><AdminCompany/></template>
-                <template v-if="admin.chapter == 9"><AdminPosition/></template>
             </div>
         </div>
     </div>
