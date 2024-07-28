@@ -104,17 +104,25 @@ const router = createRouter({
                     },
                 ]
             },
+            {
+                path: 'statement', //Страница ведомости
+                redirect: '/training/statement/view',
+                children: [
+                    {
+                        path: 'view', //Просмотр
+                        component: () => import('../components/Statement.vue')
+                    },
+                    {
+                        path: 'edit', //Редактор
+                        component: () => import('../components/StatementEdit.vue')
+                    },
+                ]
+            },
         ]
     },
     {
-        path: '/statement', //Страница ведомости
-        name: 'statement',
-        component: () => import('../views/StatementPage.vue')
-    },
-    {
-        path: '/statementEdit', //Страница редактирования ведомости
-        name: 'statementEdit',
-        component: () => import('../views/StatementEditPage.vue')
+        path: '/none', //Главное меню
+        component: () => import('../components/Error.vue')
     },
   ]
 })

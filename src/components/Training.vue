@@ -1,7 +1,5 @@
 <script setup>
-import { ref } from 'vue';
 import { verify, preLoad } from '../helpers/API.js';
-import router from '../router/index.js';
 //-------------AUTH-------------------
 verify();
 preLoad();
@@ -17,14 +15,14 @@ preLoad();
                 </div>
             </div>
         </router-link>
-        <router-link>
+        <router-link to="/training/statement/view">
             <div class="block statement">
                 <div>
                     Ведомость
                 </div>
             </div>
         </router-link>
-        <router-link>
+        <router-link to="/none">
             <div class="block none">
                 <div>
                     Отчет (в разработке)

@@ -91,16 +91,6 @@ function getProfessionDirections(index_division, index_chapter) {
     });
     getChapterDirections(index_division);
 }
-function getNameById(arr, id) {
-    let name = '';
-    arr.forEach(item => {
-        if (item.id == id) {
-            name = item.name;
-            return;
-        }
-    });
-    return name;
-}
 function getChapterResults(index_division) {
     console.log('getChapterResults +');
     getChapterColumnResult(index_division);
@@ -246,7 +236,7 @@ function changeMenuStatus(index) {
                         <th rowspan="2">
                             Шифр Группы
                         </th>
-                        <th colspan="5">
+                        <th colspan="5" style="height: 35px;">
                             Количество часов для педагогической нагрузки
                         </th>
                         <th colspan="3">
@@ -478,7 +468,7 @@ function changeMenuStatus(index) {
                     <template v-if="chapter.results">
                     <tr>
                         <td></td>
-                        <td>Итого по ПР ({{ getNameById(admin.sections, chapter.title) }}) {{ getNameById(admin.divisions, division.division) }}</td>
+                        <td>Итого по ПР ({{ admin.sections[chapter.title].name }}) {{ admin.divisions[division.division].name }}</td>
                         <td></td>
                         <td>{{ chapter.arr_profession_results['to1'] }}</td>
                         <td>{{ chapter.arr_profession_results['indt'] }}</td>
@@ -498,7 +488,7 @@ function changeMenuStatus(index) {
                     </tr>
                     <tr v-for="(result, index_result) in chapter.arr_profession_results['directions']" :key="index_result">
                         <td></td>
-                        <td>{{ getNameById(admin.directions, index_result) }}</td>
+                        <td>{{ admin.directions[index_result].name }}</td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -527,7 +517,7 @@ function changeMenuStatus(index) {
                     <template v-if="division.results">
                     <tr>
                         <td></td>
-                        <td>Итого по подразделению {{ getNameById(admin.divisions, division.division) }}</td>
+                        <td>Итого по подразделению {{ admin.divisions[division.division].name }}</td>
                         <td></td>
                         <td>{{ division.arr_chapter_results['to1'] }}</td>
                         <td>{{ division.arr_chapter_results['indt'] }}</td>
@@ -547,7 +537,7 @@ function changeMenuStatus(index) {
                     </tr>
                     <tr v-for="(result, index_result) in division.arr_chapter_results['directions']" :key="index_result">
                         <td></td>
-                        <td>{{ getNameById(admin.directions, index_result) }}</td>
+                        <td>{{ admin.directions[index_result].name }}</td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -597,7 +587,7 @@ function changeMenuStatus(index) {
                     </tr>
                     <tr v-for="(result, index_result) in admin.plan.arr_plan_result['directions']" :key="index_result">
                         <td></td>
-                        <td>{{ getNameById(admin.directions, index_result) }}</td>
+                        <td>{{ admin.directions[index_result].name }}</td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -619,55 +609,87 @@ function changeMenuStatus(index) {
                 </tbody>
             </table>
             <div class="div_button">
-                <button class="button_save" @click="changeMenuStatus('developmentView')">Назад</button>
-                <button class="button_save" @click="savePlan()">Сохранить</button>
+                <button class="add" @click="savePlan()">Сохранить</button>
             </div>
         </div>
     </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .container {
-    padding: 100px 20px 0 20px;
-}
-.title {
-    text-align: center;
-    color: #000;
-    font-family: Arial;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-}
-#input_year {
-    width: 60px;
-}
-.table {
-    margin: 10px 0 0 0;
-    width: 100%;
-}
-table {
-    border-collapse: collapse;
-}
-th {
-    text-align: center;
-    color: #000;
-    font-family: Arial;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    border: 1px solid #000;
-}
-td {
-    text-align: center;
-    color: #000;
-    font-family: Arial;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    border: 1px solid #000;
+    margin-top: 30px;
+    padding: 10px 0 0 0;
+    background-color: white;
+    border-radius: 10px;
+
+    .title {
+        text-align: center;
+        color: #000;
+        font-family: Arial;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+    }
+
+    .table {
+        margin: 10px;
+        width: calc(100% - 20px);
+    }
+
+    table {
+        background-color: #ffffff;
+        font-size: 16px;
+        border-collapse: collapse;
+
+        thead tr {
+            th {
+                position: sticky;
+                border: 1px solid #000;
+                background-color: white;
+                top: 35px;
+            }
+
+            &:first-child th {
+                position: sticky;
+                border: 1px solid #000;
+                background-color: white;
+                top: 0px;
+            }
+        }
+
+        tr {
+
+            th, td {
+                text-align: center;
+                box-sizing: border-box;
+                color: #000;
+                font-family: Arial;
+                font-size: 14px;
+                font-style: normal;
+                font-weight: 700;
+                line-height: normal;
+                border: 1px solid #000;
+                top: 0;
+            }
+        }
+
+        tbody tr {
+            transition: background-color 150ms ease-out;
+
+            &:nth-child(2n+1) {
+                background-color: rgb(255 255 255);
+            }
+
+            &:nth-child(2n) {
+                background-color: rgb(245 245 245);
+            }
+
+            &:hover {
+                background-color: rgb(216 216 216);
+            }
+        }
+    }
 }
 .add_direction {
     padding: 10px;
@@ -676,12 +698,6 @@ td {
 }
 .add_direction:hover {
     transform: scale(1.1);
-}
-.vetical_text {
-    display: inline-block;
-    -webkit-writing-mode: vertical-rl;
-    -ms-writing-mode: tb-rl;
-    writing-mode: vertical-rl;
 }
 .nested_table {
     padding: 0;
@@ -713,14 +729,27 @@ td {
     justify-content: center;
 }
 .div_button {
-    margin: 50px auto;
+    margin: 10px auto;
     width: 60%;
     display: flex;
     justify-content: space-around;
-}
-.button_save {
-    font-size: 20px;
-    padding: 10px;
-    cursor: pointer;
+
+    button {
+        padding: 5px 10px;
+        margin: 0 10px;
+        border-radius: 5px;
+        border: solid 1px #000;
+        cursor: pointer;
+        transition: 0.15s;
+
+        &.add {
+            margin: 15px 0;
+            background: rgb(240 237 255);
+
+            &:hover {
+                background: rgb(208, 228, 239);
+            }
+        }
+    }
 }
 </style>

@@ -49,7 +49,7 @@ function getNameById(arr, id) {
                         <th rowspan="2">
                             Шифр Группы
                         </th>
-                        <th colspan="5">
+                        <th colspan="5" style="height: 35px;">
                             Количество часов для педагогической нагрузки
                         </th>
                         <th colspan="3">
@@ -366,8 +366,6 @@ function getNameById(arr, id) {
         background-color: #ffffff;
         font-size: 16px;
         border-collapse: collapse;
-        //width: 100%;
-        //max-width: 1660px;
 
         thead tr {
             th {
@@ -398,18 +396,7 @@ function getNameById(arr, id) {
                 line-height: normal;
                 border: 1px solid #000;
                 top: 0;
-                
-}
-}
-.add_direction {
-    padding: 10px;
-    cursor: pointer;
-    transition: 0.2s;
             }
-.add_direction {
-    padding: 10px;
-    cursor: pointer;
-    transition: 0.2s;
         }
 
         tbody tr {
