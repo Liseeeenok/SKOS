@@ -6,9 +6,6 @@ import router from '../router/index.js';
 verify();
 preLoad();
 //------------------------------------
-const die_students = ref(false);
-const die_items = ref(false);
-const die_professions = ref(false);
 </script>
 
 <template>
