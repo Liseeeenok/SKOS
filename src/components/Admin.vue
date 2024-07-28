@@ -47,7 +47,7 @@ preLoad();
     </div>
 </template>
 
-<style lang="scss"scoped>
+<style lang="scss" scoped>
 .container {
     margin: 30px auto 0px;
     max-width: 1660px;
