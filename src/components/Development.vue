@@ -1,8 +1,11 @@
 <script setup>
 //------------------------------------
 import { useStore } from '../stores/PlanStore';
-import { getDirection, getDivision, getPlan, getProfession, getSection } from '../helpers/API.js';
+import { verify, preLoad, getDirection, getDivision, getPlan, getProfession, getSection } from '../helpers/API.js';
 import router from '../router/index.js';
+//-------------AUTH-------------------
+verify();
+preLoad();
 //------------------------------------
 const admin = useStore();
 getPlan();
