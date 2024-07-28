@@ -1,7 +1,10 @@
 <script setup>
 import { ref } from 'vue';
 import { useStore } from '../stores/PlanStore';
-import { getDirection, getDivision, getProfession, getStatement, saveStatement } from '../helpers/API.js';
+import { verify, preLoad, getDirection, getDivision, getProfession, getStatement, saveStatement } from '../helpers/API.js';
+//-------------AUTH-------------------
+verify();
+preLoad();
 //------------------------------------
 const admin = useStore();
 getStatement();
@@ -13,17 +16,6 @@ const division_filter = ref('');
 const direction_filter = ref('');
 const profession_filter = ref('');
 //-------------Filter------------------------
-function getNameById(arr, id) {
-    let name = '';
-    if (arr != undefined)
-        arr.forEach(item => {
-            if (item.id == id) {
-                name = item.name;
-                return;
-            }
-        });
-    return name;
-}
 function filterStatement() {
     admin.statement.forEach((profession) => {
         profession.count_directions = 0;
@@ -49,10 +41,6 @@ function setStatus(index_profession, index_direction) {
     admin.statement[index_profession].status = 1;
     filterStatement();
 }
-function changeMenuStatus(index) {
-    admin.menuStatus = index;
-    localStorage.setItem('skos-menu-status', index);
-}
 //------------------------------------
 </script>
 
@@ -62,7 +50,7 @@ function changeMenuStatus(index) {
             <div class="input_filter">
                 <table class="filter_table">
                     <tr>
-                        <td><h2>Подразделение:</h2></td>
+                        <td>Подразделение:</td>
                         <td>
                             <select v-model="division_filter" class="input_text input_titles" @change="filterStatement()">
                                 <option value="">Все</option>
@@ -73,7 +61,7 @@ function changeMenuStatus(index) {
                         </td>
                     </tr>
                     <tr>
-                        <td><h2>Профессия:</h2></td>
+                        <td>Профессия:</td>
                         <td>
                             <select v-model="profession_filter" class="input_text input_titles" @change="filterStatement()">
                                 <option value="">Все</option>
@@ -84,7 +72,7 @@ function changeMenuStatus(index) {
                         </td>
                     </tr>
                     <tr>
-                        <td><h2>Дирекция:</h2></td>
+                        <td>Дирекция:</td>
                         <td>
                             <select v-model="direction_filter" class="input_text input_titles" @change="filterStatement()">
                                 <option value="">Все</option>
@@ -97,17 +85,17 @@ function changeMenuStatus(index) {
                 </table>
             </div>
         </div>
-        <div>
-            <h1>Ведомость на <input type="number" style="width: 100px; font-size: 1em;" v-model="admin.academic_year" @change="getStatement()"/> год</h1>
+        <div class="title">
+            Ведомость на <input type="number" style="width: 100px; font-size: 1em;" v-model="admin.academic_year" @change="getStatement()"/> год
         </div>
         <table class="table">
             <thead>
                 <tr>
                     <th rowspan="2">№</th>
                     <th rowspan="2">Наименование профессии</th>
-                    <th colspan="3">План</th>
-                    <th colspan="3">Факт</th>
-                    <th colspan="3">Количество прошедших обучение</th>
+                    <th colspan="3" style="height: 35px;">План</th>
+                    <th colspan="2">Факт</th>
+                    <th colspan="2">Количество прошедших обучение</th>
                 </tr>
                 <tr>
                     <th style="writing-mode: vertical-rl; transform: rotate(180deg);">
@@ -118,15 +106,9 @@ function changeMenuStatus(index) {
                     </th>
                     <th style="writing-mode: vertical-rl; transform: rotate(180deg);">Всего</th>
                     <th style="writing-mode: vertical-rl; transform: rotate(180deg);">
-                        Дирекция/<br>структурное <br> подразделение
-                    </th>
-                    <th style="writing-mode: vertical-rl; transform: rotate(180deg);">
                         Количество
                     </th>
                     <th style="writing-mode: vertical-rl; transform: rotate(180deg);">Всего</th>
-                    <th style="writing-mode: vertical-rl; transform: rotate(180deg);">
-                        Дирекция/<br>структурное <br> подразделение
-                    </th>
                     <th style="writing-mode: vertical-rl; transform: rotate(180deg);">
                         Количество
                     </th>
@@ -144,21 +126,17 @@ function changeMenuStatus(index) {
                                 <td style="visibility: hidden;"></td>
                                 <td :rowspan="Math.max(profession.count_directions + 1, 2)">{{ profession.count_people }}</td>
                                 <td style="visibility: hidden;"></td>
-                                <td style="visibility: hidden;"></td>
                                 <td :rowspan="Math.max(profession.count_directions + 1, 2)">{{ profession.count_people_fact }}</td>
-                                <td style="visibility: hidden;"></td>
                                 <td style="visibility: hidden;"></td>
                                 <td :rowspan="Math.max(profession.count_directions + 1, 2)">{{ profession.count_people_trained }}</td>
                             </tr>
                             <template v-for="(direction, index_direction) in profession.directions" :key="index_direction">
                                 <tr v-if="direction_filter == '' || direction_filter == direction.id_direction">
-                                    <td>{{ getNameById(admin.directions, direction.id_direction) }}</td>
+                                    <td>{{ admin.directions[direction.id_direction].name }}</td>
                                     <td>{{ direction.count_people }}</td>
-                                    <td>{{ getNameById(admin.directions, direction.id_direction) }}</td>
                                     <td>
                                         <input type="number" class="input_number" v-model="direction.count_people_fact" @change="setStatus(index_profession, index_direction)">
                                     </td>
-                                    <td>{{ getNameById(admin.directions, direction.id_direction) }}</td>
                                     <td>
                                         <input type="number" class="input_number" v-model="direction.count_people_trained" @change="setStatus(index_profession, index_direction)">
                                     </td>
@@ -170,43 +148,86 @@ function changeMenuStatus(index) {
             </tbody>
         </table>
         <div class="div_button">
-            <button class="button_save" @click="changeMenuStatus('statementView')">Назад</button>
-            <button class="button_save" @click="saveStatement()">Сохранить</button>
+            <button class="add" @click="saveStatement()">Сохранить</button>
         </div>
     </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .container {
-    padding: 100px 20px 0 20px;
-    text-align: center;
-}
-.table {
-    margin: 10px 0 0 0;
-    width: 100%;
-}
-table {
-    border-collapse: collapse;
-}
-th {
-    text-align: center;
-    color: #000;
-    font-family: Arial;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    border: 1px solid #000;
-}
-td {
-    text-align: center;
-    color: #000;
-    font-family: Arial;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    border: 1px solid #000;
+    margin-top: 30px;
+    padding: 10px 0 0 0;
+    background-color: white;
+    border-radius: 10px;
+
+    .title {
+        text-align: center;
+        color: #000;
+        font-family: Arial;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+    }
+
+    .table {
+        margin: 10px;
+        width: calc(100% - 20px);
+    }
+
+    table.table {
+        background-color: #ffffff;
+        font-size: 16px;
+        border-collapse: collapse;
+
+        thead tr {
+            th {
+                position: sticky;
+                border: 1px solid #000;
+                background-color: white;
+                top: 35px;
+            }
+
+            &:first-child th {
+                position: sticky;
+                border: 1px solid #000;
+                background-color: white;
+                top: 0px;
+            }
+        }
+
+        tr {
+
+            th, td {
+                text-align: center;
+                box-sizing: border-box;
+                color: #000;
+                font-family: Arial;
+                font-size: 14px;
+                font-style: normal;
+                font-weight: 700;
+                line-height: normal;
+                border: 1px solid #000;
+                top: 0;
+            }
+        }
+
+        tbody tr {
+            transition: background-color 150ms ease-out;
+
+            &:nth-child(2n+1) {
+                background-color: rgb(255 255 255);
+            }
+
+            &:nth-child(2n) {
+                background-color: rgb(245 245 245);
+            }
+
+            &:hover {
+                background-color: rgb(216 216 216);
+            }
+        }
+    }
 }
 .input_filter {
     display: flex;
@@ -220,7 +241,7 @@ td {
     text-align: center;
     color: #000;
     font-family: Arial;
-    font-size: 20px;
+    font-size: 16px;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
@@ -231,17 +252,6 @@ td {
 }
 .input_titles {
     width: 500px;
-}
-.div_button {
-    margin: 50px auto;
-    width: 60%;
-    display: flex;
-    justify-content: space-around;
-}
-.button_save {
-    font-size: 20px;
-    padding: 10px;
-    cursor: pointer;
 }
 .input_number {
     text-align: center;
@@ -255,5 +265,29 @@ td {
     width: 100%;
     box-sizing: border-box;
     min-width: 65px;
+}
+.div_button {
+    margin: 10px auto;
+    width: 60%;
+    display: flex;
+    justify-content: space-around;
+
+    button {
+        padding: 5px 10px;
+        margin: 0 10px;
+        border-radius: 5px;
+        border: solid 1px #000;
+        cursor: pointer;
+        transition: 0.15s;
+
+        &.add {
+            margin: 15px 0;
+            background: rgb(240 237 255);
+
+            &:hover {
+                background: rgb(208, 228, 239);
+            }
+        }
+    }
 }
 </style>

@@ -1,28 +1,62 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterView } from 'vue-router';
+import MenuNav from './components/MenuNav.vue';
 </script>
 
 <template>
-    <header>
-        <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-    </header>
+    <div class="background"></div>
     <main>
-        <RouterView />
+        <div class="wrapper">
+            <MenuNav/>
+            <div class="content">
+                <router-view v-slot="{ Component }">
+                        <transition name="fade" mode="out-in">
+                            <component :is="Component" />
+                        </transition>
+                </router-view>
+            </div>
+        </div>
     </main>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+<style lang="scss" scoped>
+.background {
+    height: 100vh;
+    width: 100%;
+    background-image: url("assets/1647619030_47-amiel-club-p-poezd-kartinki-krasivie-53.jpg");
+    background-size: cover;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    opacity: 0.2;
 }
 
-.logo {
-  display: block;
-  position: absolute;
-  top: 68px;
-  left: 7.3%;
-  width: 193.538px;
-  height: 132.746px;
+main {
+    position: relative; 
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+
+    .wrapper {
+        width: 100vw;
+
+        .content {
+            height: calc(100vh - 120px);
+            overflow: auto;
+
+            .fade-enter-active,
+            .fade-leave-active {
+                transition: opacity 0.3s ease;
+            }
+
+            .fade-enter-from,
+            .fade-leave-to {
+                opacity: 0;
+            }
+        }
+    }
 }
 </style>

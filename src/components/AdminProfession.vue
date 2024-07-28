@@ -1,39 +1,29 @@
 <script setup>
 import { useStore } from '../stores/PlanStore';
 import { getProfession, saveProfession } from '../helpers/API.js';
-import { ref } from 'vue';
 //------------------------------------
-const admin = useStore();
+const store = useStore();
 getProfession();
-const newId = ref(0);
 //------------------------------------
 function setStatus(index_profession) {
-    if (admin.professions[index_profession].status != 2) admin.professions[index_profession].status = 1;
+    if (store.professions[index_profession].status != 2) store.professions[index_profession].status = 1;
 }
 function setStatusGroup(index_profession, index_group) {
-    admin.professions[index_profession].groups[index_group].id_profession = admin.professions[index_profession].id;
-    if (admin.professions[index_profession].groups[index_group].status != 2) {
-        if (admin.professions[index_profession].groups[index_group].name == "") admin.professions[index_profession].groups[index_group].status = 0;
-        else admin.professions[index_profession].groups[index_group].status = 1;
+    store.professions[index_profession].groups[index_group].id_profession = store.professions[index_profession].id;
+    if (store.professions[index_profession].groups[index_group].status != 2) {
+        store.professions[index_profession].groups[index_group].status = store.professions[index_profession].groups[index_group].name == "" ? 0 : 1;
     }
 }
 function addProfession() {
-    if (newId.value == 0) {
-        let count = Object.keys(admin.professions).length;
-        newId.value = 1000000 + count;
-    } else {
-        newId.value++;
-    }
-    admin.professions[newId.value] = {'id': null, 'name': '', 'status': 2, 'groups': []};
+    store.professions[Object.keys(store.professions).pop() + 1] = {'id': null, 'name': '', 'status': 2, 'groups': []};
 }
 function addGroup(index_profession) {
-    admin.professions[index_profession].groups.push({'id': null, 'name': '', 'status': 2});
+    store.professions[index_profession].groups.push({'id': null, 'name': '', 'status': 2});
 }
 function deleteProfession(index_profession) {
-    let result = confirm(`Вы уверены что хотите удалить профессию ${admin.professions[index_profession].name}?`);
+    let result = confirm(`Вы уверены что хотите удалить профессию ${store.professions[index_profession].name}?`);
     if (result) {
-        if (admin.professions[index_profession].status != 2) admin.professions[index_profession].status = 0;
-        else admin.professions[index_profession].status = 3;
+        store.professions[index_profession].status = store.professions[index_profession].status != 2 ? 0 : 3;
         saveProfession();
     }
 }
@@ -47,11 +37,11 @@ function deleteProfession(index_profession) {
                 <th>ID</th>
                 <th>Название</th>
                 <th>Группы</th>
-                <th>Действия</th>
+                <th style="width: 250px;">Действия</th>
             </tr>
         </thead>
         <tbody>
-            <template v-for="(profession, index_profession) in admin.professions" :key="index_profession">
+            <template v-for="(profession, index_profession) in store.professions" :key="index_profession">
                 <template v-if="profession.status != 0 && profession.status != 3">
                     <tr>
                         <td :rowspan="Math.max(profession.groups.length, 1)">{{ profession.id}}</td>
@@ -79,55 +69,90 @@ function deleteProfession(index_profession) {
 
 <style scoped>
 table {
+    background-color: #ffffff;
+    font-size: 16px;
     border-collapse: collapse;
-}
-th {
-    text-align: center;
-    color: #000;
-    font-family: Arial;
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    border: 1px solid #000;
-}
-td {
-    padding: 5px 10px;
-    text-align: center;
-    color: #000;
-    font-family: Arial;
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    border: 1px solid #000;
+    width: 100%;
+    max-width: 1660px;
+    border-radius: 10px;
+    overflow: hidden;
+
+    tr {
+
+        th, td {
+            text-align: center;
+            padding: 5px 15px;
+            box-sizing: border-box;
+        }
+
+        th {
+            color: #ffffff;
+            font-weight: normal;
+            background-color: #8f8f8f;
+            border: solid 1px #8f8f8f;
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            border: solid 1px #d8d8d8;
+            cursor: pointer;
+        }
+    }
+
+    tbody tr {
+        transition: background-color 150ms ease-out;
+
+        &:nth-child(2n+1) {
+            background-color: rgb(255 255 255);
+        }
+
+        &:nth-child(2n) {
+            background-color: rgb(245 245 245);
+        }
+
+        &:hover {
+            background-color: rgb(216 216 216);
+        }
+    }
 }
 input {
     padding: 5px 10px;
-    font-size: 20px;
     width: 800px;
 }
 button {
     padding: 5px 10px;
-    font-size: 20px;
     margin: 0 10px;
     border-radius: 5px;
     border: solid 1px #000;
     cursor: pointer;
     transition: 0.15s;
-}
-button:hover {
-    transform: scale(1.05);
-}
-.green {
-    color: black;
-    background-color: #2a9630b0;
-}
-.red {
-    background-color: #cc5e5e;
-}
-.add {
-    margin: 15px 0 0 0;
+
+    &.green {
+        color: black;
+        background-color: rgb(217 255 228);
+
+        &:hover {
+            background: rgb(198, 226, 193);
+        }
+    }
+    
+    &.red {
+        background-color: rgb(253 220 214);
+
+        &:hover {
+            background: rgb(252 191 179);
+        }
+    }
+
+    &.add {
+        margin: 15px 0 0 0;
+        background: rgb(240 237 255);
+
+        &:hover {
+            background: rgb(208, 228, 239);
+        }
+    }
 }
 .groups {
     width: 200px;

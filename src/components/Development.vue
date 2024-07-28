@@ -1,7 +1,11 @@
 <script setup>
 //------------------------------------
 import { useStore } from '../stores/PlanStore';
-import { getDirection, getDivision, getPlan, getProfession, getSection } from '../helpers/API.js';
+import { verify, preLoad, getDirection, getDivision, getPlan, getProfession, getSection } from '../helpers/API.js';
+import router from '../router/index.js';
+//-------------AUTH-------------------
+verify();
+preLoad();
 //------------------------------------
 const admin = useStore();
 getPlan();
@@ -20,10 +24,6 @@ function getNameById(arr, id) {
             }
         });
     return name;
-}
-function changeMenuStatus(index) {
-    admin.menuStatus = index;
-    localStorage.setItem('skos-menu-status', index);
 }
 //------------------------------------
 </script>
@@ -49,7 +49,7 @@ function changeMenuStatus(index) {
                         <th rowspan="2">
                             Шифр Группы
                         </th>
-                        <th colspan="5">
+                        <th colspan="5" style="height: 35px;">
                             Количество часов для педагогической нагрузки
                         </th>
                         <th colspan="3">
@@ -113,13 +113,13 @@ function changeMenuStatus(index) {
                 <tbody v-for="(division, index_division) in admin.plan.arr_plan" :key="index_division">
                     <tr>
                         <td colspan="18">
-                            Подразделение {{ getNameById(admin.divisions, division.division) }}
+                            Подразделение {{ admin.divisions[division.division].name }}
                         </td>
                     </tr>
                     <template v-for="(chapter, index_chapter) in division.arr_chapter" :key="index_chapter">
                     <tr>
                         <td colspan="18">
-                            {{ getNameById(admin.sections, chapter.title) }}
+                            {{ admin.sections[chapter.title].name }}
                         </td>
                     </tr>
                     <template v-for="(profession, index_profession) in chapter.arr_profession" :key="index_profession">
@@ -186,7 +186,7 @@ function changeMenuStatus(index) {
                             <table class="table_nested">
                                 <tr v-for="(dir, index_dir) in profession.direction" :key="index_dir">
                                     <td class="nested_input">
-                                        {{ getNameById(admin.directions, dir.id_direction) }}
+                                        {{ admin.directions[dir.id_direction].name }}
                                     </td>
                                 </tr>
                             </table>
@@ -205,7 +205,7 @@ function changeMenuStatus(index) {
                     <template v-if="chapter.results">
                     <tr>
                         <td></td>
-                        <td>Итого по ПР ({{ getNameById(admin.sections, chapter.title) }}) {{ getNameById(admin.divisions, division.division) }}</td>
+                        <td>Итого по ПР ({{ admin.sections[chapter.title].name }}) {{ admin.divisions[division.division].name }}</td>
                         <td></td>
                         <td>{{ chapter.arr_profession_results['to1'] }}</td>
                         <td>{{ chapter.arr_profession_results['indt'] }}</td>
@@ -225,7 +225,7 @@ function changeMenuStatus(index) {
                     </tr>
                     <tr v-for="(result, index_result) in chapter.arr_profession_results['directions']" :key="result">
                         <td></td>
-                        <td>{{ getNameById(admin.directions, index_result) }}</td>
+                        <td>{{ admin.directions[index_result].name }}</td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -248,7 +248,7 @@ function changeMenuStatus(index) {
                     <template v-if="division.results">
                     <tr>
                         <td></td>
-                        <td>Итого по подразделению {{ getNameById(admin.divisions, division.division) }}</td>
+                        <td>Итого по подразделению {{ admin.divisions[division.division].name }}</td>
                         <td></td>
                         <td>{{ division.arr_chapter_results['to1'] }}</td>
                         <td>{{ division.arr_chapter_results['indt'] }}</td>
@@ -268,7 +268,7 @@ function changeMenuStatus(index) {
                     </tr>
                     <tr v-for="(result, index_result) in division.arr_chapter_results['directions']" :key="result">
                         <td></td>
-                        <td>{{ getNameById(admin.directions, index_result) }}</td>
+                        <td>{{ admin.directions[index_result].name }}</td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -312,7 +312,7 @@ function changeMenuStatus(index) {
                     </tr>
                     <tr v-for="(result, index_result) in admin.plan.arr_plan_result['directions']" :key="result">
                         <td></td>
-                        <td>{{ getNameById(admin.directions, index_result) }}</td>
+                        <td>{{ admin.directions[index_result].name }}</td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -334,69 +334,87 @@ function changeMenuStatus(index) {
                 </tbody>
             </table>
             <div class="div_button">
-                <button class="button_save" @click="changeMenuStatus('main')">Назад</button>
-                <button class="button_save" @click="changeMenuStatus('developmentEdit')">Редактировать</button>
+                <button class="add" @click="router.push('/training/development/edit')">Редактировать</button>
             </div>
         </div>
     </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .container {
-    padding: 100px 20px 0 20px;
-}
-.title {
-    text-align: center;
-    color: #000;
-    font-family: Arial;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-}
-#input_year {
-    width: 60px;
-}
-.table {
-    margin: 10px 0 0 0;
-    width: 100%;
-}
-table {
-    border-collapse: collapse;
-}
-th {
-    text-align: center;
-    color: #000;
-    font-family: Arial;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    border: 1px solid #000;
-}
-td {
-    text-align: center;
-    color: #000;
-    font-family: Arial;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    border: 1px solid #000;
-}
-.add_direction {
-    padding: 10px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-.add_direction:hover {
-    transform: scale(1.1);
-}
-.vetical_text {
-    display: inline-block;
-    -webkit-writing-mode: vertical-rl;
-    -ms-writing-mode: tb-rl;
-    writing-mode: vertical-rl;
+    margin-top: 30px;
+    padding: 10px 0 0 0;
+    background-color: white;
+    border-radius: 10px;
+
+    .title {
+        text-align: center;
+        color: #000;
+        font-family: Arial;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+    }
+
+    .table {
+        margin: 10px;
+        width: calc(100% - 20px);
+    }
+
+    table {
+        background-color: #ffffff;
+        font-size: 16px;
+        border-collapse: collapse;
+
+        thead tr {
+            th {
+                position: sticky;
+                border: 1px solid #000;
+                background-color: white;
+                top: 35px;
+            }
+
+            &:first-child th {
+                position: sticky;
+                border: 1px solid #000;
+                background-color: white;
+                top: 0px;
+            }
+        }
+
+        tr {
+
+            th, td {
+                text-align: center;
+                box-sizing: border-box;
+                color: #000;
+                font-family: Arial;
+                font-size: 14px;
+                font-style: normal;
+                font-weight: 700;
+                line-height: normal;
+                border: 1px solid #000;
+                top: 0;
+            }
+        }
+
+        tbody tr {
+            transition: background-color 150ms ease-out;
+
+            &:nth-child(2n+1) {
+                background-color: rgb(255 255 255);
+            }
+
+            &:nth-child(2n) {
+                background-color: rgb(245 245 245);
+            }
+
+            &:hover {
+                background-color: rgb(216 216 216);
+            }
+        }
+    }
 }
 .nested_table {
     padding: 0;
@@ -404,38 +422,31 @@ td {
 .table_nested {
     width: 100%;
 }
-.input_text {
-    text-align: center;
-    color: #000;
-    font-family: Arial;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    border: 1px solid #000;
-    width: 100%;
-    box-sizing: border-box;
-    min-width: 65px;
-}
-.input_titles {
-    width: auto;
-}
 .nested_input {
     padding: 0;
 }
-.nested_text {
-    display: flex;
-    justify-content: center;
-}
 .div_button {
-    margin: 50px auto;
+    margin: 10px auto;
     width: 60%;
     display: flex;
     justify-content: space-around;
-}
-.button_save {
-    font-size: 20px;
-    padding: 10px;
-    cursor: pointer;
+
+    button {
+        padding: 5px 10px;
+        margin: 0 10px;
+        border-radius: 5px;
+        border: solid 1px #000;
+        cursor: pointer;
+        transition: 0.15s;
+
+        &.add {
+            margin: 15px 0;
+            background: rgb(240 237 255);
+
+            &:hover {
+                background: rgb(208, 228, 239);
+            }
+        }
+    }
 }
 </style>

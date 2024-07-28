@@ -1,134 +1,104 @@
 <script setup>
-import { ref } from 'vue';
-import { useStore } from '../stores/PlanStore';
+import { verify, preLoad } from '../helpers/API.js';
+//-------------AUTH-------------------
+verify();
+preLoad();
 //------------------------------------
-const admin = useStore();
-const die_students = ref(false);
-const die_items = ref(false);
-const die_professions = ref(false);
-function changeMenuStatus(index) {
-    admin.menuStatus = index;
-    localStorage.setItem('skos-menu-status', index);
-}
 </script>
 
 <template>
     <div class="container">
-        <div>
-            <div class="die die_title">План-график</div>
-            <div class="die die_main" @click="changeMenuStatus('developmentView')">Проф. развитие</div>
-            <div class="die die_main" v-if="false">ДПО</div>
-        </div>
-        <div v-if="false">
-            <div class="die die_title">Обучающиеся</div>
-            <div class="die die_main" @click="die_students = !die_students" :class="die_students ? 'die_active':''">Сотрудники</div>
-            <div class="die_absolute">
-                <div class="die_hidden" :class="die_students ? 'die_active_students':'die_hide'">
-                    <div class="die die_main">Опоздание</div>
-                    <div class="die die_main">Выпуск</div>
-                    <div class="die die_main">Отчисление</div>
-                    <div class="die die_main">Пересдача</div>
-                </div>
-                <div class="die die_main">Группы</div>
-            </div>
-        </div>
-        <div>
-            <div class="die die_title">Обучение</div>
-            <div class="die die_main" @click="changeMenuStatus('statementView')">Ведомости</div>
-            <div class="die_absolute" v-if="false">
-                <div class="die die_main" @click="die_items = !die_items" :class="die_items ? 'die_active':''">Предметы</div>
-                <div class="die_hidden" :class="die_items ? 'die_active_items':'die_hide'">
-                    <div class="die die_main">Вид контроля</div>
-                </div>
-                <div class="die die_main">Нагрузка</div>
-                <div class="die die_main" @click="die_professions = !die_professions" :class="die_professions ? 'die_active':''">Профессии</div>
-                <div class="die_hidden" :class="die_professions ? 'die_active_professions':'die_hide'">
-                    <div class="die die_main">Виды обучения</div>
+        <router-link to="/training/development/view">
+            <div class="block worker">
+                <div>
+                    Проф. развитие
                 </div>
             </div>
-        </div>
-        <div v-if="false">
-            <div class="die die_title">Дирекции</div>
-            <div class="die die_main">Дирекции</div>
-            <div class="die die_main">Подразделения</div>
-            <div class="die die_main">Посещения</div>
-        </div>
-        <div v-if="false">
-            <div class="die die_title">Проживание</div>
-            <div class="die die_main">Проживание</div>
-            <div class="die die_main">Объект прожив.</div>
-            <div class="die die_main">Выселение</div>
-        </div>
-        <div style="margin-bottom: 200px;" v-if="false">
-            <div class="die die_title">УЦПК</div>
-            <div class="die die_main">Подразделения</div>
-            <div class="die die_main">Персонал</div>
-            <div class="die die_main">Должности</div>
-            <div class="die die_main">Кураторы</div>
-        </div>
+        </router-link>
+        <router-link to="/training/statement/view">
+            <div class="block statement">
+                <div>
+                    Ведомость
+                </div>
+            </div>
+        </router-link>
+        <router-link to="/none">
+            <div class="block none">
+                <div>
+                    Отчет (в разработке)
+                </div>
+            </div>
+        </router-link>
     </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
+$g: .75em;
+
 .container {
-    width: 80%;
-    margin: 100px auto 0 auto;
-    display: grid;
-    grid-template-columns: auto auto auto auto auto;
-}
-.die {
-    width: 90%;
-    height: 53px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #000;
-    font-family: Arial;
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-    border-radius: 20px;
-    
-}
-.die_main {
-    background: #DCDADD;
-    cursor: pointer;
-    margin: 10px 5px 0 5px;
-    transition: 0.2s;
-}
-.die_main:hover {
-    background: #bcbabd;
-    transform: scale(1.1);
-}
-.die_title {
-    font-weight: 700;
-    background: #e9ebf0;
-}
-.die_absolute {
-    /*position: absolute;*/
-    display: block;
-}
-.die_hidden {
-    overflow: hidden;
-    transition: max-height 0.5s ease-out;
-}
-.die_hidden .die {
-    background: #D3CCD7;
-}
-.die_hide {
-    max-height: 0;
-}
-.die_active {
-    background: #a2a2a2;
-}
-.die_active_students {
-    max-height: 252px;
-}
-.die_active_items {
-    max-height: 63px;
-}
-.die_active_professions {
-    max-height: 63px;
+    margin: 30px auto 0px;
+    max-width: 1660px;
+    box-sizing: border-box;
+	display: grid;
+	grid-gap: $g;
+	grid-template-columns: repeat(auto-fit, 15em);
+	padding: $g;
+
+    .block {
+        height: 10em;
+        background: white;
+        border-radius: 4px;
+        box-shadow: 2px 2px 5px rgba(#000, .7);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: 0.2s ease-out;
+        padding: 10px;
+
+        &:first-child {
+            grid-column: 1/ -1;
+        }
+
+        &:hover {
+            background-color: rgb(222, 222, 222);
+        }
+
+        div {
+            width: 100%;
+            text-align: center;
+            color: black;
+            font-size: 20px;
+        }
+
+        &.worker:before {
+            opacity: 0.2;
+            content: "";
+            width: 90px;
+            height: 100px;
+            background: url('../assets/worker.png');
+            background-repeat: no-repeat;
+            background-size: contain;
+        }
+
+        &.statement:before {
+            opacity: 0.2;
+            content: "";
+            width: 90px;
+            height: 100px;
+            background: url('../assets/statement.svg');
+            background-repeat: no-repeat;
+            background-size: contain;
+        }
+
+        &.none:before {
+            opacity: 0.2;
+            content: "";
+            width: 90px;
+            height: 100px;
+            background: url('');
+            background-repeat: no-repeat;
+            background-size: contain;
+        }
+    }
 }
 </style>

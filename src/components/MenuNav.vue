@@ -1,50 +1,45 @@
 <script setup>
+import { ref } from 'vue';
 import router from '../router';
-import { useStore } from '../stores/PlanStore';
-//------------------------------------
-const admin = useStore();
-function delLocal() {
+const menuItem = ref('/');
+router.beforeEach((to,from,next) => {menuItem.value = to.path; next()});
+function logOut() {
     localStorage.removeItem('skos-token');
-    localStorage.removeItem('skos-dir');
     router.push('/');
-}
-function changeMenu(index) {
-    admin.menu = index;
-    admin.menuStatus = 'main';
-    localStorage.setItem('skos-menu', index);
-    localStorage.setItem('skos-menu-status', 'main');
 }
 </script>
 
 <template>
-    <nav class="nav">
-        <div class="menu_item" :class="admin.menu == 1 ? 'active' : ''" @click="changeMenu(1)">
+    <nav class="nav" v-if="menuItem !== '/'">
+        <img alt="СКОС" class="shape" src="@/assets/logo.svg" width="66" height="66" draggable="false"/>
+
+        <router-link to="/admin" class="menu_item">
             <div style="min-width: 264px;">
-                <div style="display: inline-block;vertical-align:middle;margin-right:5px;"><img src="./icons/5909015.png" width="30" height="30"/></div>
+                <div class="icon"><img src="./icons/5909015.png" width="30" height="30"/></div>
                 <div style="display: inline-block;">Администрирование</div>
             </div>
-        </div>
-        <div class="menu_item" :class="admin.menu == 2 ? 'active' : ''" @click="changeMenu(2)">
+        </router-link>
+        <router-link to="/profile" class="menu_item">
             <div style="min-width: 139px;">
-                <div style="display: inline-block;vertical-align:middle;margin-right:5px;"><img src="./icons/3106773.png" width="30" height="30"/></div>
+                <div class="icon"><img src="./icons/3106773.png" width="30" height="30"/></div>
                 <div style="display: inline-block;">Профиль</div>
             </div>
-        </div>
-        <div class="menu_item" :class="admin.menu == 3 ? 'active' : ''" @click="changeMenu(3)">
+        </router-link>
+        <router-link to="/notification" class="menu_item">
             <div style="min-width: 186px;">
-                <div style="display: inline-block;vertical-align:middle;margin-right:5px;"><img src="./icons/6824079.png" width="30" height="30"/></div>
+                <div class="icon"><img src="./icons/6824079.png" width="30" height="30"/></div>
                 <div style="display: inline-block;">Уведомления</div>
             </div>
-        </div>
-        <div class="menu_item" :class="admin.menu == 4 ? 'active' : ''" @click="changeMenu(4)">
+        </router-link>
+        <router-link to="/training" class="menu_item">
             <div style="min-width: 145px">
-                <div style="display: inline-block;vertical-align:middle;margin-right:5px;"><img src="./icons/8500036.png" width="30" height="30"/></div>
+                <div class="icon"><img src="./icons/8500036.png" width="30" height="30"/></div>
                 <div style="display: inline-block;">Обучение</div>
             </div>
-        </div>
-        <div @click="delLocal()" class="menu_item">
+        </router-link>
+        <div @click="logOut()" class="menu_item">
             <div style="min-width: 107px">
-                <div style="display: inline-block;vertical-align:middle;margin-right:5px;"><img src="./icons/1286969.png" width="30" height="30"/></div>
+                <div class="icon"><img src="./icons/1286969.png" width="30" height="30"/></div>
                 <div style="display: inline-block;">Выход</div>
             </div>
         </div>
@@ -53,26 +48,42 @@ function changeMenu(index) {
 
 <style scoped>
 .nav {
-    padding: 99px 14.4% 0 20.7%;
+    margin: 10px auto 0px;
+    max-width: 1200px;
     display: flex;
     justify-content: space-between;
-}
-.menu_item {
-    color: #000;
-    font-family: Arial;
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    border-radius: 20px;
-    padding: 15px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-.active {
-    background: rgba(103, 96, 106, 0.50);
-}
-.menu_item:hover {
-    background: rgba(182, 168, 189, 0.50);
+
+    .shape {
+        cursor: pointer;
+    }
+
+    .menu_item {
+        color: #000;
+        font-family: Arial;
+        font-size: 24px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+        border-radius: 20px;
+        padding: 15px;
+        cursor: pointer;
+        transition: 0.2s;
+
+        &:hover {
+            background: rgba(182, 168, 189, 0.50);
+        }
+
+        .icon {
+            display: inline-block;
+            vertical-align:middle;
+            margin-right:5px;
+        }
+    }
+
+    .router-link-active {
+        &.menu_item {
+            background: rgb(255 255 255 / 50%);
+        }
+    }
 }
 </style>

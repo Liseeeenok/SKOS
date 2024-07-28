@@ -1,11 +1,57 @@
 import axios from 'axios';
 import { useStore } from '../stores/PlanStore';
+import { jwtDecode } from "jwt-decode";
 import router from '../router';
 
 const host = 'mypew.ru:7070'; //имя или ip хоста api
 const admin = useStore();
 
+//---------------------------------------------------------------------------------------------------
+//--------------------------------------------------AUTH---------------------------------------------
+//---------------------------------------------------------------------------------------------------
+export async function authorization(login, password) {
+    let response = '';
+    let request = {
+        login: login,
+        password: password
+    }
+    await axios
+        .post('https://' + host + '/login', request)
+        .then((response_jwt) => {
+            console.log(response_jwt);
+            if (response_jwt.data.jwt) {
+                //-----------------
+                let responseJwt = jwtDecode(response_jwt.data.jwt);
+                console.log(responseJwt);
+                //-----------------
+                localStorage.setItem('skos-token', response_jwt.data.jwt);
+
+                response = 'successfully';
+            } else {
+                response = response_jwt.data.error;
+            }
+        })
+    return response;
+}
+
+export function verify() {
+    admin.isAuth = false;
+    let request = {
+        'jwt': localStorage.getItem('skos-token'),
+    }
+    axios
+        .post('https://' + host + '/token_verify', request)
+        .then((response) => {
+            if (response.data.token_verify) admin.isAuth = true;
+            else router.push('/');
+        })
+}
+//---------------------------------------------------------------------------------------------------
+//--------------------------------------------------GET----------------------------------------------
+//---------------------------------------------------------------------------------------------------
+
 export function preLoad() {
+    if (admin.isPreLoad) return;
     getDirection();
     getDivision();
     getProfession();
@@ -15,6 +61,10 @@ export function preLoad() {
     getUsers();
     getPlan();
     getStatement();
+    getCompany();
+    getNotify();
+    getPosition();
+    admin.isPreLoad = true;
 }
 
 export function getDirection() {
@@ -25,7 +75,10 @@ export function getDirection() {
     axios
         .post('https://'+host+'/directions', request)
         .then(response => {
-            admin.directions = response.data; 
+            admin.directions = {};
+            response.data.forEach((direction) => {
+                admin.directions[direction.id] = direction;
+            })
         });
 }
 
@@ -37,7 +90,10 @@ export function getDivision() {
     axios
         .post('https://'+host+'/divisions', request)
         .then(response => {
-            admin.divisions = response.data;
+            admin.divisions = {};
+            response.data.forEach((division) => {
+                admin.divisions[division.id] = division;
+            })
         });
 }
 
@@ -50,9 +106,8 @@ export function getProfession() {
     axios
         .post('https://'+host+'/professions', request)
         .then(response => {
-            let professions = response.data;
-            professions.forEach((element) => {
-                admin.professions[element.id] = element;
+            response.data.forEach((profession) => {
+                admin.professions[profession.id] = profession;
             });
         });
 }
@@ -80,7 +135,12 @@ export function getSection() {
     };
     axios
         .post('https://'+host+'/sections', request)
-        .then(response => {admin.sections = response.data});
+        .then(response => {
+            admin.sections = {};
+            response.data.forEach((section) => {
+                admin.sections[section.id] = section;
+            })
+        });
 }
 
 export function getRole() {
@@ -88,10 +148,13 @@ export function getRole() {
         'jwt': localStorage.getItem('skos-token'),
         'type_request': 'roles_info',
     };
-    axios.post('https://'+host+'/roles', request).then(response => {
-        admin.roles = response.data;
-        admin.role = admin.roles.find(x => x.id == admin.roleId);
-        console.log(admin.role);
+    axios
+        .post('https://'+host+'/roles', request)
+        .then(response => {
+            admin.roles = {};
+            response.data.forEach((role) => {
+                admin.roles[role.id] = role;
+            })
     });
 }
 
@@ -166,12 +229,12 @@ export function getNotify() {
         'jwt': localStorage.getItem('skos-token'),
         'type_request': 'notifications_info',
     };
-    console.log(request);
     axios
         .post('https://'+host+'/notifications', request)
         .then(response => {
-            admin.notify = response.data;
-            console.log(response.data);
+            response.data.forEach((notif) => {
+                admin.notify[notif.id] = notif;
+            })
         });
 }
 
@@ -184,7 +247,6 @@ export function getCompany() {
         .post('https://'+host+'/companies', request)
         .then(response => {
             admin.companies = response.data;
-            console.log(response.data);
         });
 }
 
@@ -197,17 +259,20 @@ export function getPosition() {
         .post('https://'+host+'/positions', request)
         .then(response => {
             admin.positions = response.data;
-            console.log(response.data);
         });
 }
+
 //---------------------------------------------------------------------------------------------------
 //--------------------------------------------------SAVE---------------------------------------------
 //---------------------------------------------------------------------------------------------------
 
 export function saveDirection() {
+    let directions = [];
+    for (let i in admin.directions) if (typeof admin.directions[i].status !== "undefined" && admin.directions[i].status != 3) directions.push(admin.directions[i]);
+
     let request = {
         'jwt': localStorage.getItem('skos-token'),
-        'directions': admin.directions.filter((direction) => typeof direction.status !== "undefined" && direction.status != 3),
+        'directions': directions,
         'type_request': 'directions_change',
     };
     axios
@@ -220,9 +285,12 @@ export function saveDirection() {
 }
 
 export function saveDivision() {
+    let divisions = [];
+    for (let i in admin.divisions) if (typeof admin.divisions[i].status !== "undefined" && admin.divisions[i].status != 3) divisions.push(admin.divisions[i]);
+
     let request = {
         'jwt': localStorage.getItem('skos-token'),
-        'divisions': admin.divisions.filter((division) => typeof division.status !== "undefined" && division.status != 3),
+        'divisions': divisions,
         'type_request': 'divisions_change',
     };
     axios
@@ -235,14 +303,20 @@ export function saveDivision() {
 }
 
 export function saveRole() {
+    let roles = [];
+    for (let i in admin.roles) {
+        if (typeof admin.roles[i].status !== "undefined" && admin.roles[i].status != 3) roles.push(admin.roles[i]);
+    }
+
     let request = {
         'jwt': localStorage.getItem('skos-token'),
-        'roles': admin.roles.filter((role) => typeof role.status !== "undefined" && role.status != 3),
+        'roles': roles,
         'type_request': 'roles_change',
     };
     axios
         .post('https://' + host + '/roles', request)
         .then((response) => {
+            console.log(request);
             getRole();
             if (response.data == 'OK') alert('Успешно сохранено!');
             else console.log(response);
@@ -254,6 +328,7 @@ export function saveProfession() {
     for (let id in admin.professions) {
         if (typeof admin.professions[id].status !== "undefined" && admin.professions[id].status != 3) professions.push(admin.professions[id]);
     }
+
     let request = {
         'jwt': localStorage.getItem('skos-token'),
         'professions': professions,
@@ -298,9 +373,12 @@ export async function saveProfessionGroup() {
 }
 
 export function saveSection() {
+    let sections = [];
+    for (let i in admin.sections) if (typeof admin.sections[i].status !== "undefined" && admin.sections[i].status != 3) sections.push(admin.sections[i]);
+
     let request = {
         'jwt': localStorage.getItem('skos-token'),
-        'sections': admin.sections.filter((section) => typeof section.status !== "undefined" && section.status != 3),
+        'sections': sections,
         'type_request': 'sections_change',
     };
     axios
@@ -312,18 +390,24 @@ export function saveSection() {
         })
 }
 
-export function saveUsers(idx) {
+export function saveUsers(id) {
     let request = {
         'jwt': localStorage.getItem('skos-token'),
-        'user': admin.users[idx],
+        'user': admin.users[id],
         'type_request': 'user_change',
     }
     axios
         .post('https://' + host + '/accounts', request)
         .then((response) => {
-            getUsers();
-            if (response.data == 'OK') alert('Успешно сохранено!');
-            else console.log(request, response);
+            if (response.data == 'OK') {
+                getUsers();
+                alert('Успешно сохранено!');
+            }
+            else {
+                alert('Ошибка при сохранении');
+                console.log(request, response)
+            };
+            router.push('/admin/users/all');
         })
 }
 
@@ -417,7 +501,7 @@ export function saveCompany() {
     axios
         .post('https://' + host + '/companies', request)
         .then((response) => {
-            getUsers();
+            getCompany();
             if (response.data == 'OK') alert('Успешно сохранено!');
             else console.log(request, response);
         })
@@ -439,9 +523,13 @@ export function savePosition() {
 }
 
 export function saveNotification() {
+    let notifications = [];
+    for (var key of Object.keys(admin.notify)) {
+        if (typeof admin.notify[key].status !== "undefined" && admin.notify[key].status != 3) notifications.push(admin.notify[key])
+    }
     let request = {
         'jwt': localStorage.getItem('skos-token'),
-        'notifications': admin.notify.filter((notify) => typeof notify.status !== "undefined" && notify.status != 3),
+        'notifications': notifications,
         'type_request': 'notifications_change',
     }
     axios

@@ -2,19 +2,19 @@
 import { useStore } from '../stores/PlanStore';
 import { getDirection, saveDirection } from '../helpers/API.js';
 //------------------------------------
-const admin = useStore();
+const store = useStore();
 getDirection();
 //------------------------------------
 function setStatus(index_direction) {
-    if (admin.directions[index_direction].status != 2) admin.directions[index_direction].status = 1;
+    if (store.directions[index_direction].status != 2) store.directions[index_direction].status = 1;
 }
 function addDirection() {
-    admin.directions.push({'id': null, 'name': '', 'status': 2});
+    store.directions[Object.keys(store.directions).pop() + 1] = {'id': null, 'name': '', 'status': 2};
 }
 function deleteDirection(index_direction) {
-    let result = confirm(`Вы уверены что хотите удалить подразделение ${admin.directions[index_direction].name}?`);
+    let result = confirm(`Вы уверены что хотите удалить подразделение ${store.directions[index_direction].name}?`);
     if (result) {
-        admin.directions[index_direction].status != 2 ? admin.directions[index_direction].status = 0 : admin.directions[index_direction].status = 3;
+        store.directions[index_direction].status = store.directions[index_direction].status != 2 ? 0 : 3;
         saveDirection();
     }
 }
@@ -28,11 +28,11 @@ function deleteDirection(index_direction) {
             <tr>
                 <th>ID</th>
                 <th>Название</th>
-                <th>Действия</th>
+                <th style="width: 80px;">Действия</th>
             </tr>
         </thead>
         <tbody>
-            <template v-for="(direction, index_direction) in admin.directions" :key="index_direction">
+            <template v-for="(direction, index_direction) in store.directions" :key="index_direction">
                 <tr v-if="direction.status != 0 && direction.status != 3">
                     <td>{{ direction.id}}</td>
                     <td><input type="text" v-model="direction.name" @change="setStatus(index_direction)"/></td>
@@ -49,54 +49,89 @@ function deleteDirection(index_direction) {
 
 <style scoped>
 table {
+    background-color: #ffffff;
+    font-size: 16px;
     border-collapse: collapse;
-}
-th {
-    text-align: center;
-    color: #000;
-    font-family: Arial;
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    border: 1px solid #000;
-}
-td {
-    padding: 5px 10px;
-    text-align: center;
-    color: #000;
-    font-family: Arial;
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    border: 1px solid #000;
+    width: 100%;
+    max-width: 1660px;
+    border-radius: 10px;
+    overflow: hidden;
+
+    tr {
+
+        th, td {
+            text-align: center;
+            padding: 5px 15px;
+            box-sizing: border-box;
+        }
+
+        th {
+            color: #ffffff;
+            font-weight: normal;
+            background-color: #8f8f8f;
+            border: solid 1px #8f8f8f;
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            border: solid 1px #d8d8d8;
+            cursor: pointer;
+        }
+    }
+
+    tbody tr {
+        transition: background-color 150ms ease-out;
+
+        &:nth-child(2n+1) {
+            background-color: rgb(255 255 255);
+        }
+
+        &:nth-child(2n) {
+            background-color: rgb(245 245 245);
+        }
+
+        &:hover {
+            background-color: rgb(216 216 216);
+        }
+    }
 }
 input {
     padding: 5px 10px;
-    font-size: 20px;
-    width: 400px;
+    width: 1000px;
 }
 button {
     padding: 5px 10px;
-    font-size: 20px;
     margin: 0 10px;
     border-radius: 5px;
     border: solid 1px #000;
     cursor: pointer;
     transition: 0.15s;
-}
-button:hover {
-    transform: scale(1.05);
-}
-.green {
-    color: black;
-    background-color: #2a9630b0;
-}
-.red {
-    background-color: #cc5e5e;
-}
-.add {
-    margin: 15px 0 0 0;
+
+    &.green {
+        color: black;
+        background-color: rgb(217 255 228);
+
+        &:hover {
+            background: rgb(198, 226, 193);
+        }
+    }
+    
+    &.red {
+        background-color: rgb(253 220 214);
+
+        &:hover {
+            background: rgb(252 191 179);
+        }
+    }
+
+    &.add {
+        margin: 15px 0 0 0;
+        background: rgb(240 237 255);
+
+        &:hover {
+            background: rgb(208, 228, 239);
+        }
+    }
 }
 </style>

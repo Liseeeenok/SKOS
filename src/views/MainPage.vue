@@ -30,5 +30,7 @@ const admin = useStore();
 </template>
 
 <style scoped>
-
+.wrapper {
+    width: 100vw;
+}
 </style>

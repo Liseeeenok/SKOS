@@ -1,24 +1,18 @@
 <script setup>
+import router from '../router/index.js';
 import { useStore } from '../stores/PlanStore';
-import { getUsers, getRole } from '../helpers/API.js';
+import { getUsers } from '../helpers/API.js';
 //------------------------------------
-const admin = useStore();
+const store = useStore();
 getUsers();
-getRole();
 //------------------------------------
 function addUser() {
-    admin.users.push({ "login": "", "surname": "", "name": "", "patronymic": "", "phone_number": "", "role": null, "id_direction": null, "id_division": null, "id_profession": null, "id_company": null, "status": 2 });
-    admin.userIdx = admin.users.length - 1;
-    admin.chapterStatus = 'edit';
-}
-function openUserEdit(userIdx) {
-    admin.userIdx = userIdx;
-    admin.chapterStatus = 'edit';
-    localStorage.setItem('skos-user-idx', userIdx);
-    localStorage.setItem('skos-chapter-status', 'edit');
+    store.users.push({ "login": "", "surname": "", "name": "", "patronymic": "", "phone_number": "", "role": null, "id_direction": null, "id_division": null, "id_profession": null, "id_company": null, "status": 2 });
+    router.push(`/admin/users/edit/${store.users.length - 1}`);
 }
 //------------------------------------
 </script>
+
 <template>
     <h1>Настройка пользователей</h1>
     <table>
@@ -32,8 +26,8 @@ function openUserEdit(userIdx) {
             </tr>
         </thead>
         <tbody>
-            <template v-for="(user, index_user) in admin.users" :key="index_user">
-                <tr v-if="user.status != 0 && user.status != 3" @click="openUserEdit(index_user)">
+            <template v-for="(user, index_user) in store.users" :key="index_user">
+                <tr v-if="user.status != 0 && user.status != 3" @click="router.push(`/admin/users/edit/${index_user}`)">
                     <td>{{ user.login }}</td>
                     <td>{{ user.surname }}</td>
                     <td>{{ user.name }}</td>
@@ -48,62 +42,68 @@ function openUserEdit(userIdx) {
 
 <style scoped>
 table {
+    background-color: #ffffff;
+    font-size: 16px;
     border-collapse: collapse;
-}
-tr td {
-    cursor: pointer;
-}
-th {
-    text-align: center;
-    color: #000;
-    font-family: Arial;
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    border: 1px solid #000;
-}
-td {
-    padding: 15px 20px;
-    text-align: center;
-    color: #000;
-    font-family: Arial;
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    border: 1px solid #000;
-}
-input {
-    padding: 5px 10px;
-    font-size: 20px;
-    width: 150px;
-}
-select {
-    padding: 5px 10px;
-    font-size: 20px;
-    max-width: 370px;
+    width: 100%;
+    max-width: 1660px;
+    border-radius: 10px;
+    overflow: hidden;
+
+    tr {
+
+        th, td {
+            text-align: center;
+            padding: 5px 15px;
+            box-sizing: border-box;
+        }
+
+        th {
+            color: #ffffff;
+            font-weight: normal;
+            background-color: #8f8f8f;
+            border: solid 1px #8f8f8f;
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            border: solid 1px #d8d8d8;
+            cursor: pointer;
+        }
+    }
+
+    tbody tr {
+        transition: background-color 150ms ease-out;
+
+        &:nth-child(2n+1) {
+            background-color: rgb(255 255 255);
+        }
+
+        &:nth-child(2n) {
+            background-color: rgb(245 245 245);
+        }
+
+        &:hover {
+            background-color: rgb(216 216 216);
+        }
+    }
 }
 button {
     padding: 5px 10px;
-    font-size: 20px;
     margin: 0 10px;
     border-radius: 5px;
     border: solid 1px #000;
     cursor: pointer;
     transition: 0.15s;
-}
-button:hover {
-    transform: scale(1.05);
-}
-.green {
-    color: black;
-    background-color: #2a9630b0;
-}
-.red {
-    background-color: #cc5e5e;
-}
-.add {
-    margin: 15px 0 0 0;
+
+    &.add {
+        margin: 15px 0 0 0;
+        background: rgb(240 237 255);
+
+        &:hover {
+            background: rgb(208, 228, 239);
+        }
+    }
 }
 </style>

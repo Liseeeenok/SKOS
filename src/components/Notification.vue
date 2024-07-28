@@ -1,39 +1,26 @@
 <script setup>
-import { useStore } from '../stores/PlanStore';
-import { getDirection, getDivision, getNotify, getSection } from '../helpers/API.js';
 import { ref } from 'vue';
+import { useStore } from '../stores/PlanStore';
+import { verify, preLoad, getDirection, getDivision, getNotify, getSection } from '../helpers/API.js';
+import router from '../router/index.js';
+//-------------AUTH-------------------
+verify();
+preLoad();
 //------------------------------------
-const admin = useStore();
+const store = useStore();
 getNotify();
 getDirection();
 getDivision();
 getSection();
+const bc = ref({0: 'bc_red'});
+//-------while not use---------------
 const page = ref(1);
-//-----------------------------------
-function getNameById(arr, id) {
-    let name = '';
-    if (arr != undefined)
-        arr.forEach(item => {
-            if (item.id == id) {
-                name = item.name;
-                return;
-            }
-        });
-    return name;
-}
-function changeMenuStatus(index, notifyId) {
-    admin.menuStatus = index;
-    admin.notifyId = notifyId;
-    localStorage.setItem('skos-menu-status', index);
-    localStorage.setItem('skos-notify-id', notifyId);
-}
 //-----------------------------------
 </script>
 
 <template>
-    <div>
-        <div class="title">Уведомления</div>
-        <div>
+    <div v-if="store.isAuth">   
+        <div class="main_table" :class="$route.params.id && 'hide'">
             <table>
                 <thead>
                     <tr>
@@ -48,87 +35,101 @@ function changeMenuStatus(index, notifyId) {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(notification, index_notification) in admin.notify" :key="index_notification" class="tr_notification" @click="changeMenuStatus('notifyEdit', notification.id)">
-                        <td>{{ index_notification + 1 + 12 * (page - 1)}}</td>
-                        <td>{{ getNameById(admin.directions, notification.id_direction) }}</td>
-                        <td>{{ getNameById(admin.divisions, notification.id_division) }}</td>
-                        <td>{{ getNameById(admin.sections, notification.id_section) }}</td>
-                        <td>{{  notification.count_people }}</td>
-                        <td :class="notification.status_notification ? '' : 'red'">{{ notification.status_notification ? 'Прочитано' : 'Не прочитано' }}</td>
-                        <td>{{ notification.date_start_training }}</td>
-                        <td>{{ notification.date_reading }}</td>
-                    </tr>
+                    <template v-for="(notification, key, index_notification) in store.notify" :key="index_notification">
+                        <tr 
+                        :class="bc[notification.status_notification]" 
+                        @click="router.push(`/notification/edit/${key}`)"
+                        >
+                            <td>{{ index_notification + 1 }}</td>
+                            <td>{{ store.directions[notification.id_direction] && store.directions[notification.id_direction].name }}</td>
+                            <td>{{ store.divisions[notification.id_division] && store.divisions[notification.id_division].name }}</td>
+                            <td>{{ store.sections[notification.id_section] && store.sections[notification.id_section].name }}</td>
+                            <td>{{ notification.count_people }}</td>
+                            <td>{{ notification.status_notification ? 'Прочитано' : 'Не прочитано' }}</td>
+                            <td>{{ notification.date_start_training }}</td>
+                            <td>{{ notification.date_reading }}</td>
+                        </tr>
+                    </template>
                 </tbody>
             </table>
         </div>
-        <div class="nav"  v-if="false">
+        
+        <div class="nav" v-if="false">
             <button class="decrement but" v-if="page > 1" @click="page -= 1">>></button>
             <button class="but" @click="page += 1" v-if="arr_notifications.length > page*12">>></button>
         </div>
+
     </div>
 </template>
 
-<style scoped>
-.title {
-    text-align: center;
-    margin-top: 41px;
-    color: #000;
-    font-family: Arial;
-    font-size: 30px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-}
+<style lang="scss" scoped>
 table {
-    width: 80%;
-    margin: auto;
-    text-align: center;
-}
-th {
-    color: #000;
-    font-family: Arial;
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-}
-td {
-    color: #000;
-    font-family: Arial;
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-    padding: 10px;
-}
-.red {
-    color: #F00;
-}
-.nav {
-    margin: 10px 0 0 140px;
-    width: 80%;
-    display: flex;
-    justify-content: end;
-}
-.but {
-    width: 54px;
-    height: 52px;
-    border: 0;
+    margin: 30px auto 0px;
+    max-width: 1660px;
+    background-color: #ffffff;
+    font-size: 16px;
+    border-collapse: collapse;
+    width: 100%;
     border-radius: 10px;
-    background-color: rgba(103, 96, 106, 0.50);
-    color: #000;
-    font-family: Arial;
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    margin: 0 10px;
-    cursor: pointer;
-}
-.decrement {
-    transform: rotate(179.195deg);
-}
-.tr_notification {
-    cursor: pointer;
+    overflow: hidden;
+
+    tr {
+
+        th, td {
+            text-align: center;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        th {
+            color: #ffffff;
+            font-weight: normal;
+            background-color: #8f8f8f;
+            border: solid 1px #8f8f8f;
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            border: solid 1px #d8d8d8;
+            cursor: pointer;
+        }
+    }
+
+    tbody tr {
+        transition: background-color 150ms ease-out;
+
+        &:nth-child(2n+1) {
+            background-color: rgb(255 255 255);
+
+            &.bc_red {
+                background-color: rgb(255 202 202);
+
+                td {
+                    border: solid 1px rgb(205 152 152);
+                }
+            }
+        }
+
+        &:nth-child(2n) {
+            background-color: rgb(245 245 245);
+
+            &.bc_red {
+                background-color: rgb(245 192 192);
+
+                td {
+                    border: solid 1px rgb(205 152 152);
+                }
+            }
+        }
+
+        &:hover {
+            background-color: rgb(216 216 216);
+
+            &.bc_red {
+                background-color: rgb(205 152 152);
+            }
+        }
+    }
 }
 </style>
