@@ -28,7 +28,7 @@ function deleteDivision(index_division) {
             <tr>
                 <th>ID</th>
                 <th>Название</th>
-                <th>Действия</th>
+                <th style="width: 80px;">Действия</th>
             </tr>
         </thead>
         <tbody>
@@ -98,7 +98,7 @@ table {
 }
 input {
     padding: 5px 10px;
-    width: 400px;
+    width: 1000px;
 }
 button {
     padding: 5px 10px;

@@ -28,7 +28,7 @@ function deleteRole(index_role) {
             <tr>
                 <th>ID</th>
                 <th>Название</th>
-                <th>Действия</th>
+                <th style="width: 250px;">Действия</th>
             </tr>
         </thead>
         <tbody>
@@ -101,7 +101,7 @@ table {
 }
 input {
     padding: 5px 10px;
-    width: 500px;
+    width: 1000px;
 }
 button {
     padding: 5px 10px;

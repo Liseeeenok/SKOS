@@ -30,7 +30,7 @@ function deleteCompany(index_company) {
                 <th>ID</th>
                 <th>Название</th>
                 <th>Дирекция</th>
-                <th>Действия</th>
+                <th style="width: 80px;">Действия</th>
             </tr>
         </thead>
         <tbody>

@@ -37,7 +37,7 @@ function deleteProfession(index_profession) {
                 <th>ID</th>
                 <th>Название</th>
                 <th>Группы</th>
-                <th>Действия</th>
+                <th style="width: 250px;">Действия</th>
             </tr>
         </thead>
         <tbody>

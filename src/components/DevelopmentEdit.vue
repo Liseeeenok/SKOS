@@ -1,7 +1,9 @@
 <script setup>
-//------------------------------------
 import { useStore } from '../stores/PlanStore';
-import { getDirection, getDivision, getPlan, getProfession, getSection, savePlan } from '../helpers/API.js';
+import { verify, preLoad, getDirection, getDivision, getPlan, getProfession, getSection, savePlan } from '../helpers/API.js';
+//-------------AUTH-------------------
+verify();
+preLoad();
 //------------------------------------
 const admin = useStore();
 getPlan();

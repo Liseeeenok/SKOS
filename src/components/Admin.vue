@@ -82,6 +82,7 @@ preLoad();
         }
 
         .container_content {
+            width: 100%;
             padding-bottom: 50px;
         }
     }
