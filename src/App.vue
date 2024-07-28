@@ -44,8 +44,6 @@ main {
         width: 100vw;
 
         .content {
-            margin: 30px auto 0px;
-            max-width: 1660px;
             height: calc(100vh - 120px);
             overflow: auto;
 

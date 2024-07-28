@@ -82,21 +82,29 @@ const router = createRouter({
             },
         ]
     },
-
     {
         path: '/training', //Страница обучения
-        name: 'training',
-        component: () => import('../views/TrainingPage.vue')
-    },
-    {
-        path: '/development', //Страница план графика
-        name: 'development',
-        component: () => import('../views/DevelopmentPage.vue')
-    },
-    {
-        path: '/developmentEdit', //Страница редактирования план графика
-        name: 'developmentEdit',
-        component: () => import('../views/DevelopmentEditPage.vue')
+        redirect: '/training/all',
+        children: [
+            {
+                path: 'all', //Главное меню
+                component: () => import('../components/Training.vue')
+            },
+            {
+                path: 'development', //Страница план графика
+                redirect: '/training/development/view',
+                children: [
+                    {
+                        path: 'view', //Просмотр
+                        component: () => import('../components/Development.vue')
+                    },
+                    {
+                        path: 'edit', //Редактор
+                        component: () => import('../components/DevelopmentEdit.vue')
+                    },
+                ]
+            },
+        ]
     },
     {
         path: '/statement', //Страница ведомости

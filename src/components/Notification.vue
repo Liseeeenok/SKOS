@@ -64,11 +64,12 @@ const page = ref(1);
 
 <style lang="scss" scoped>
 table {
+    margin: 30px auto 0px;
+    max-width: 1660px;
     background-color: #ffffff;
     font-size: 16px;
     border-collapse: collapse;
     width: 100%;
-    max-width: 1660px;
     border-radius: 10px;
     overflow: hidden;
 
