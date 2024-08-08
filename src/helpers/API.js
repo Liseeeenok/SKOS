@@ -9,6 +9,7 @@ const admin = useStore();
 //---------------------------------------------------------------------------------------------------
 //--------------------------------------------------AUTH---------------------------------------------
 //---------------------------------------------------------------------------------------------------
+
 export async function authorization(login, password) {
     let response = '';
     let request = {
@@ -44,8 +45,11 @@ export function verify() {
         .then((response) => {
             if (response.data.token_verify) admin.isAuth = true;
             else router.push('/');
-        })
+        });
+
+    getUserRole();
 }
+
 //---------------------------------------------------------------------------------------------------
 //--------------------------------------------------GET----------------------------------------------
 //---------------------------------------------------------------------------------------------------
@@ -64,6 +68,7 @@ export function preLoad() {
     getCompany();
     getNotify();
     getPosition();
+    getNotificationPlan();
     admin.isPreLoad = true;
 }
 
@@ -155,6 +160,19 @@ export function getRole() {
             response.data.forEach((role) => {
                 admin.roles[role.id] = role;
             })
+    });
+}
+
+export function getUserRole() {
+    let request = {
+        'jwt': localStorage.getItem('skos-token'),
+        'type_request': 'role_info',
+    };
+    axios
+        .post('https://'+host+'/roles', request)
+        .then(response => {
+            admin.userRole = response.data;
+            console.log(response);
     });
 }
 

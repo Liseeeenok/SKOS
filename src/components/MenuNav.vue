@@ -1,6 +1,8 @@
 <script setup>
 import { ref } from 'vue';
 import router from '../router';
+import { useStore } from '../stores/PlanStore';
+const store = useStore();
 const menuItem = ref('/');
 router.beforeEach((to,from,next) => {menuItem.value = to.path; next()});
 function logOut() {
@@ -13,7 +15,7 @@ function logOut() {
     <nav class="nav" v-if="menuItem !== '/'">
         <img alt="СКОС" class="shape" src="@/assets/logo.svg" width="66" height="66" draggable="false"/>
 
-        <router-link to="/admin" class="menu_item">
+        <router-link to="/admin" class="menu_item" v-if="store.userRole && store.userRole.perm_admin_panel.access === '*'">
             <div style="min-width: 264px;">
                 <div class="icon"><img src="./icons/5909015.png" width="30" height="30"/></div>
                 <div style="display: inline-block;">Администрирование</div>

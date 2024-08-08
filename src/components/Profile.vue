@@ -14,7 +14,7 @@ getPosition();
 
 <template>
     <div class="wrapper_profile">
-        <div class="card">
+        <div class="card" v-if="admin.user && admin.positions[admin.user.id_position]">
             <img class="card-image" src="../assets/0c17a445397e137ca3dcc70f7cbd396b.jpg" width="300" height="460"/>
             <div class="inform">
                 <div class="profile">
