@@ -1,9 +1,10 @@
 @import "./base.css";
 
 #app {
-  max-width: 1920px;
+  max-width: 1660px;
   width: 100%;
   font-weight: normal;
+  margin: auto;
 }
 
 a,

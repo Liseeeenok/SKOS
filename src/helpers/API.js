@@ -262,6 +262,18 @@ export function getPosition() {
         });
 }
 
+export function getNotificationPlan() {
+    let request = {
+        'jwt': localStorage.getItem('skos-token'),
+        'type_request': 'notifications_plan_info',
+    };
+    axios
+        .post('https://'+host+'/notifications', request)
+        .then(response => {
+            admin.notificationPlan = response.data;
+        });
+}
+
 //---------------------------------------------------------------------------------------------------
 //--------------------------------------------------SAVE---------------------------------------------
 //---------------------------------------------------------------------------------------------------
@@ -536,6 +548,21 @@ export function saveNotification() {
         .post('https://' + host + '/notifications', request)
         .then((response) => {
             getPosition();
+            if (response.data == 'OK') alert('Успешно сохранено!');
+            else console.log(request, response);
+        })
+}
+
+export function saveNotificationPlan() {
+    let request = {
+        'jwt': localStorage.getItem('skos-token'),
+        'notifications_plan': admin.notificationPlan.filter((plan) => typeof plan.status !== "undefined" && plan.status != 3),
+        'type_request': 'notifications_plan_change',
+    }
+    axios
+        .post('https://' + host + '/notifications', request)
+        .then((response) => {
+            getNotificationPlan();
             if (response.data == 'OK') alert('Успешно сохранено!');
             else console.log(request, response);
         })

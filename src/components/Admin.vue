@@ -38,6 +38,9 @@ preLoad();
                     <router-link to="/admin/positions">
                         <div class="menu_item">Должности</div>
                     </router-link>
+                    <router-link to="/admin/notificationPlan">
+                        <div class="menu_item">Уведомления</div>
+                    </router-link>
                 </div>
             </div>
             <div class="container_content">

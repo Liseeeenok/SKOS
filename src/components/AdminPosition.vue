@@ -98,7 +98,7 @@ table {
 }
 input {
     padding: 5px 10px;
-    width: 400px;
+    width: 1000px;
 }
 button {
     padding: 5px 10px;

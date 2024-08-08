@@ -23,7 +23,7 @@ async function logIn() {
 </script>
 
 <template>
-    <div>
+    <div class="container">
         <form>
             <h3>СИСТЕМА КОНТРОЛЯ ОБУЧЕНИЯ СОТРУДНИКОВ</h3>
             <label for="username" class="noselect">Логин</label>

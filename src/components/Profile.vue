@@ -1,6 +1,6 @@
 <script setup>
 import { useStore } from '../stores/PlanStore';
-import { getUser } from '../helpers/API.js';
+import { getPosition, getUser } from '../helpers/API.js';
 import { verify, preLoad } from '../helpers/API.js';
 //-------------AUTH-------------------
 verify();
@@ -8,6 +8,7 @@ preLoad();
 //------------------------------------
 const admin = useStore();
 getUser();
+getPosition();
 //------------------------------------
 </script>
 
@@ -35,6 +36,10 @@ getUser();
                     <tr>
                         <td class="title_table">Номер телефона:</td>
                         <td class="item_table">{{ admin.user.phone_number }}</td>
+                    </tr>
+                    <tr>
+                        <td class="title_table">Должность:</td>
+                        <td class="item_table">{{ admin.positions[admin.user.id_position].name }}</td>
                     </tr>
                     <tr>
                         <td class="title_table">Роль:</td>

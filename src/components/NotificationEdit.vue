@@ -15,12 +15,11 @@ getNotify();
 getProfession();
 const bc = ref({0: 'bc_red'});
 const notifyId = ref(-1);
-//console.log('TEST', $route);
-router.beforeEach((to,from,next) => {console.log(to); notifyId.value = to.params.id ?? -1; next();});
+router.beforeEach((to,from,next) => {notifyId.value = to.params.id ?? -1; next();});
 //-----------------------------------
-const arr_company = ref([]);
-function addCompany() {
-    arr_company.value.push({telegram:'',name:'',count:0});
+function addCompany(id) {
+    admin.notify[id].companies.push({'id': null, 'telegram': '', 'id_company': '', 'count_people': 0, 'status': 2, 'writ': null});
+    admin.notify[id].status = 1;
 };
 function changeNotifyStatus(id, status) {
     admin.notify[id].status = 1;
@@ -77,20 +76,20 @@ function changeNotifyStatus(id, status) {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(company, index_company) in arr_company" :key="index_company">
+                        <tr v-for="(company, index_company) in admin.notify[$route.params.id].companies" :key="index_company">
                             <td>
                                 <input type="text" v-model="company.telegram">
                             </td>
                             <td>
-                                <select v-model="company.id">
+                                <select v-model="company.id_company">
                                     <option v-for="company_name in admin.companies" :key="company_name.id" :value="company_name.id">{{ company_name.name }}</option>
                                 </select>
                             </td>
                             <td>
-                                <input type="number" v-model="company.count">
+                                <input type="number" v-model="company.count_people">
                             </td>
                         </tr>
-                        <tr @click="addCompany()" class="addCompany">
+                        <tr @click="addCompany($route.params.id)" class="addCompany">
                             <td colspan="3">
                                 <button>Добавить предприятие</button>
                             </td>

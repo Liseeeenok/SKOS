@@ -80,6 +80,10 @@ const router = createRouter({
                 path: 'positions', //Страница должностей
                 component: () => import('../components/AdminPosition.vue')
             },
+            {
+                path: 'notificationPlan', //Страница должностей
+                component: () => import('../components/AdminNotification.vue')
+            },
         ]
     },
     {
