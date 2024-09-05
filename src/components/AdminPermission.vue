@@ -175,6 +175,8 @@ function updateRole(id) {
                 <td>
                     <select v-model="store.roles[$route.params.id].perm_notifications.access" @change="setStatus($route.params.id)">
                         <option value="-">Закрыт</option>
+                        <option value="limitedCompany">Своё предприятие</option>
+                        <option value="limitedDirection">Своя дирекция</option>
                         <option value="*">Все</option>
                     </select>
                 </td>
