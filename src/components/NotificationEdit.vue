@@ -98,6 +98,58 @@ function changeNotifyStatus(id, status) {
                         </tbody>
                     </table>
                 </section>
+                <section v-if="admin.notify[$route.params.id].status_perm === 2">
+                    <table class="answer_table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Номер телеграммы
+                                </th>
+                                <th>
+                                    Предприятие
+                                </th>
+                                <th>
+                                    Количество человек
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(company, index_company) in admin.notify[$route.params.id].companies" :key="index_company">
+                                <td>
+                                    {{ company.telegram }}
+                                </td>
+                                <td>
+                                    {{ admin.companies[company.id_company] }}
+                                </td>
+                                <td>
+                                    {{ company.count_people }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="answer_table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Номер приказа
+                                </th>
+                                <th>
+                                    Количество человек
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    {{ admin.notify[$route.params.id].writ }}
+                                </td>
+                                <td>
+                                    -
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
                 <section v-if="admin.notify[$route.params.id].status_perm === 3">
                     <table class="answer_table">
                         <thead>

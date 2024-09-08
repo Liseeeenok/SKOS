@@ -45,7 +45,7 @@ export const useStore = defineStore('admin', {
             statement: null,
             notify: {},
             menuId: localStorage.getItem('skos-menu-id') ?? null,
-            companies: null,
+            companies: {},
             isPreLoad: false,
             isAuth: false,
             notificationPlan: [],

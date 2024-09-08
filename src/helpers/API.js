@@ -265,7 +265,9 @@ export function getCompany() {
     axios
         .post('https://'+host+'/companies', request)
         .then(response => {
-            admin.companies = response.data;
+            response.data.forEach((company) => {
+                admin.companies[company.id] = company;
+            })
         });
 }
 
