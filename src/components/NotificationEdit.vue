@@ -61,41 +61,67 @@ function changeNotifyStatus(id, status) {
                 </tbody>
             </table>
             <div>
-                <table class="answer_table">
-                    <thead>
-                        <tr>
-                            <th>
-                                Номер телеграммы
-                            </th>
-                            <th>
-                                Предприятие
-                            </th>
-                            <th>
-                                Количество человек
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(company, index_company) in admin.notify[$route.params.id].companies" :key="index_company">
-                            <td>
-                                <input type="text" v-model="company.telegram">
-                            </td>
-                            <td>
-                                <select v-model="company.id_company">
-                                    <option v-for="company_name in admin.companies" :key="company_name.id" :value="company_name.id">{{ company_name.name }}</option>
-                                </select>
-                            </td>
-                            <td>
-                                <input type="number" v-model="company.count_people">
-                            </td>
-                        </tr>
-                        <tr @click="addCompany($route.params.id)" class="addCompany">
-                            <td colspan="3">
-                                <button>Добавить предприятие</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <section v-if="admin.notify[$route.params.id].status_perm === 1">
+                    <table class="answer_table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Номер телеграммы
+                                </th>
+                                <th>
+                                    Предприятие
+                                </th>
+                                <th>
+                                    Количество человек
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(company, index_company) in admin.notify[$route.params.id].companies" :key="index_company">
+                                <td>
+                                    <input type="text" v-model="company.telegram">
+                                </td>
+                                <td>
+                                    <select v-model="company.id_company">
+                                        <option v-for="company_name in admin.companies" :key="company_name.id" :value="company_name.id">{{ company_name.name }}</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" v-model="company.count_people">
+                                </td>
+                            </tr>
+                            <tr @click="addCompany($route.params.id)" class="addCompany">
+                                <td colspan="3">
+                                    <button>Добавить предприятие</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+                <section v-if="admin.notify[$route.params.id].status_perm === 3">
+                    <table class="answer_table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Номер приказа
+                                </th>
+                                <th>
+                                    Количество человек
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <input type="text" v-model="admin.notify[$route.params.id].writ">
+                                </td>
+                                <td>
+                                    <input type="number">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
                 <div class="div_button">
                     <a class="button_save" @click="saveNotification()">Сохранить</a>
                     <a v-if="admin.notify[$route.params.id].status_notification" class="button_status_0" @click="changeNotifyStatus($route.params.id, 0)">
