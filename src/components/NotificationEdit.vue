@@ -168,14 +168,14 @@ function changeNotifyStatus(id, status) {
                                     <input type="text" v-model="admin.notify[$route.params.id].writ">
                                 </td>
                                 <td>
-                                    <input type="number">
+                                    <input type="number" v-model="admin.notify[$route.params.id].count_people_fact">
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </section>
                 <div class="div_button">
-                    <a class="button_save" @click="saveNotification()">Сохранить</a>
+                    <a class="button_save" @click="changeNotifyStatus($route.params.id, 1)">Сохранить</a>
                     <a v-if="admin.notify[$route.params.id].status_notification" class="button_status_0" @click="changeNotifyStatus($route.params.id, 0)">
                         Отметить не прочитанным
                     </a>
