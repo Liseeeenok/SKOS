@@ -14,7 +14,7 @@ getPosition();
 
 <template>
     <div class="wrapper_profile">
-        <div class="card" v-if="admin.user && admin.positions[admin.user.id_position]">
+        <div class="card" v-if="admin.user && (admin.user.id_position === null || admin.positions[admin.user.id_position])">
             <img class="card-image" src="../assets/0c17a445397e137ca3dcc70f7cbd396b.jpg" width="300" height="460"/>
             <div class="inform">
                 <div class="profile">
@@ -39,7 +39,7 @@ getPosition();
                     </tr>
                     <tr>
                         <td class="title_table">Должность:</td>
-                        <td class="item_table">{{ admin.positions[admin.user.id_position].name }}</td>
+                        <td class="item_table">{{ admin.positions[admin.user.id_position]?.name }}</td>
                     </tr>
                     <tr>
                         <td class="title_table">Роль:</td>

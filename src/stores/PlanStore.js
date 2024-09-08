@@ -16,7 +16,7 @@ export const useStore = defineStore('admin', {
             professions: {},
             sections: {},
             users: [],
-            positions: [],
+            positions: {},
             role: {
                 'perm_admin_panel': {'access': '-'},
                 'perm_directions': {'access': '-'},

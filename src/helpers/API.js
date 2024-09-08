@@ -156,6 +156,7 @@ export function getRole() {
     axios
         .post('https://'+host+'/roles', request)
         .then(response => {
+            if (response.data.error) return;
             admin.roles = {};
             response.data.forEach((role) => {
                 admin.roles[role.id] = role;
@@ -224,6 +225,7 @@ export function getStatement() {
     };
     axios.post('https://'+host+'/table', request)
         .then(response => {
+            if (response.data.error) return;
             let statement = response.data;
             statement.forEach(profession => {
                 profession.count_directions = 0;
@@ -275,7 +277,9 @@ export function getPosition() {
     axios
         .post('https://'+host+'/positions', request)
         .then(response => {
-            admin.positions = response.data;
+            response.data.forEach((position) => {
+                admin.positions[position.id] = position;
+            })
         });
 }
 

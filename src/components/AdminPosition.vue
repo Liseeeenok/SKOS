@@ -33,7 +33,7 @@ function deletePosition(index_position) {
         </thead>
         <tbody>
             <template v-for="(position, index_position) in admin.positions" :key="index_position">
-                <tr v-if="position.status != 0 && position.status != 3">
+                <tr v-if="position && position.status != 0 && position.status != 3">
                     <td>{{ position.id}}</td>
                     <td><input type="text" v-model="position.name" @change="setStatus(index_position)"/></td>
                     <td>
