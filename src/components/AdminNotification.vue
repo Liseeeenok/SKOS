@@ -1,10 +1,10 @@
 <script setup>
 import { useStore } from '../stores/PlanStore';
-import { getNotificationPlan, getPosition, saveNotificationPlan } from '../helpers/API.js';
+import { getNotificationPlan, getRole, saveNotificationPlan } from '../helpers/API.js';
 //------------------------------------
 const admin = useStore();
 getNotificationPlan();
-getPosition();
+getRole();
 //------------------------------------
 function setStatus(id) {
     if (admin.notificationPlan[id].status != 2) admin.notificationPlan[id].status = 1;
@@ -30,7 +30,7 @@ function deleteNotificationPlan(index_notification_plan) {
                 <th>ID</th>
                 <th>За какое количество дней до начала обучения формировать уведомление</th>
                 <th>Количество уведомлений которые будет отправляться</th>
-                <th>Должность, которой будут приходить уведомления</th>
+                <th>Роль, которой будут приходить уведомления</th>
                 <th>Тип уведомления</th>
                 <th style="width: 80px;">Действия</th>
             </tr>
@@ -46,9 +46,9 @@ function deleteNotificationPlan(index_notification_plan) {
                         <input type="number" v-model="notification_plan.count_notifications" @change="setStatus(index_notification_plan)"/>
                     </td>
                     <td>
-                        <select v-model="notification_plan.id_position" @change="setStatus(index_notification_plan)">
-                            <template v-for="(position, index_position) in admin.positions" :key="index_position">
-                                <option :value="position.id">{{ position.name }}</option>
+                        <select v-model="notification_plan.id_role" @change="setStatus(index_notification_plan)">
+                            <template v-for="(role, index_role) in admin.roles" :key="index_role">
+                                <option :value="role.id">{{ role.name }}</option>
                             </template>
                         </select>
                     </td>

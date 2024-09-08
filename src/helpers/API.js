@@ -172,7 +172,6 @@ export function getUserRole() {
         .post('https://'+host+'/roles', request)
         .then(response => {
             admin.userRole = response.data;
-            console.log(response);
     });
 }
 
