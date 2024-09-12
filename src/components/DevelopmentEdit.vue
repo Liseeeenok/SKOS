@@ -46,13 +46,14 @@ function addDirection(index_division, index_chapter, index_profession) {
     console.log('addDirection +');
     setProfessionStatusChange(index_division, index_chapter, index_profession);
     admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].direction.push(
-        {id: null, id_direction: admin.directions[0].id, status: 2}
+        {id: null, id_direction: 0, status: 2}
     );
     admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].count.push(0);
     admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].start_o.push('');
     admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].start_po.push('');
     admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].end_po.push('');
     admin.plan.arr_plan[index_division].arr_chapter[index_chapter].arr_profession[index_profession].qual_ex.push('');
+    console.log('addDirection +');
 }
 function getProfessionResults(index_division, index_chapter) {
     console.log('getProfessionResults +');
@@ -490,7 +491,7 @@ function changeMenuStatus(index) {
                     </tr>
                     <tr v-for="(result, index_result) in chapter.arr_profession_results['directions']" :key="index_result">
                         <td></td>
-                        <td>{{ admin.directions[index_result].name }}</td>
+                        <td>{{ admin.directions[index_result] ? admin.directions[index_result].name : '-' }}</td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -539,7 +540,7 @@ function changeMenuStatus(index) {
                     </tr>
                     <tr v-for="(result, index_result) in division.arr_chapter_results['directions']" :key="index_result">
                         <td></td>
-                        <td>{{ admin.directions[index_result].name }}</td>
+                        <td>{{ admin.directions[index_result] ? admin.directions[index_result].name : '-' }}</td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -589,7 +590,7 @@ function changeMenuStatus(index) {
                     </tr>
                     <tr v-for="(result, index_result) in admin.plan.arr_plan_result['directions']" :key="index_result">
                         <td></td>
-                        <td>{{ admin.directions[index_result].name }}</td>
+                        <td>{{ admin.directions[index_result] ? admin.directions[index_result].name : '-' }}</td>
                         <td></td>
                         <td></td>
                         <td></td>
