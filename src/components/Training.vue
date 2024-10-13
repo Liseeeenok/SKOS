@@ -22,7 +22,7 @@ preLoad();
                 </div>
             </div>
         </router-link>
-        <router-link to="/none">
+        <router-link to="/training/report/view">
             <div class="block none">
                 <div>
                     Отчет (в разработке)

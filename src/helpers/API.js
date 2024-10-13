@@ -4,6 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import router from '../router';
 
 const host = 'mypew.ru:7070'; //имя или ip хоста api
+const hostExcel = 'skos.mypew.ru'; //имя или ip хоста api
 const admin = useStore();
 
 //---------------------------------------------------------------------------------------------------
@@ -294,6 +295,20 @@ export function getNotificationPlan() {
         .post('https://'+host+'/notifications', request)
         .then(response => {
             admin.notificationPlan = response.data;
+        });
+}
+
+export function getExcel() {
+    let request = {
+        'jwt': localStorage.getItem('skos-token'),
+        'type_request': 'generate',
+        'form': 'report'
+    };
+    axios
+        .post('https://'+host+'/excel', request)
+        .then(response => {
+            console.log(response);
+            window.open('https://'+hostExcel+'/excel/'+response.data+'.xlsx');
         });
 }
 

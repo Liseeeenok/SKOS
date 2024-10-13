@@ -122,6 +122,16 @@ const router = createRouter({
                     },
                 ]
             },
+            {
+                path: 'report', //Страница отчета
+                redirect: '/training/report/view',
+                children: [
+                    {
+                        path: 'view', //Просмотр
+                        component: () => import('../components/Report.vue')
+                    },
+                ]
+            },
         ]
     },
     {
