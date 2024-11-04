@@ -8,6 +8,10 @@ verify();
 preLoad();
 //------------------------------------
 const admin = useStore();
+
+let date = new Date();
+admin.from_date = date.getFullYear() + '-01-01';
+admin.to_date = date.getFullYear() + '-12-31';
 getStatement();
 getDirection();
 getDivision();
@@ -82,7 +86,8 @@ function filterStatement() {
             </div>
         </div>
         <div class="title">
-            Ведомость на <input type="number" style="width: 100px; font-size: 16px;" v-model="admin.academic_year" @change="getStatement()"/> год
+            Ведомость с <input type="date" style="width: 150px; font-size: 16px;" v-model="admin.from_date" @change="getStatement()"/> по 
+            <input type="date" style="width: 150px; font-size: 16px;" v-model="admin.to_date" @change="getStatement()"/>
         </div>
         <table class="table">
             <thead>

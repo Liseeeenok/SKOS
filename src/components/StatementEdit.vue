@@ -86,7 +86,8 @@ function setStatus(index_profession, index_direction) {
             </div>
         </div>
         <div class="title">
-            Ведомость на <input type="number" style="width: 100px; font-size: 1em;" v-model="admin.academic_year" @change="getStatement()"/> год
+            Ведомость с <input type="date" style="width: 150px; font-size: 16px;" v-model="admin.from_date" @change="getStatement()"/> по 
+            <input type="date" style="width: 150px; font-size: 16px;" v-model="admin.to_date" @change="getStatement()"/>
         </div>
         <table class="table">
             <thead>

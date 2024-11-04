@@ -65,7 +65,6 @@ export function preLoad() {
     getUser();
     getUsers();
     getPlan();
-    getStatement();
     getCompany();
     getNotify();
     getPosition();
@@ -223,6 +222,8 @@ export function getStatement() {
         'type_request': 'VIEW_STATEMENT',
         'academic_year': admin.academic_year,
         'table_type': 2,
+        'from_date': admin.from_date,
+        'to_date': admin.to_date,
     };
     axios.post('https://'+host+'/table', request)
         .then(response => {
@@ -298,17 +299,51 @@ export function getNotificationPlan() {
         });
 }
 
+export function getReport() {
+    let request = {
+        'jwt': localStorage.getItem('skos-token'),
+        'type_request': 'data',
+        'form': 'report',
+        'from_date': admin.from_date,
+        'to_date': admin.to_date,
+    };
+    axios
+        .post('https://'+host+'/excel', request)
+        .then(response => {
+            console.log(response);
+            admin.report = response.data;
+        });
+}
+
 export function getExcel() {
     let request = {
         'jwt': localStorage.getItem('skos-token'),
         'type_request': 'generate',
-        'form': 'report'
+        'form': 'report',
+        'from_date': admin.from_date,
+        'to_date': admin.to_date,
     };
     axios
         .post('https://'+host+'/excel', request)
         .then(response => {
             console.log(response);
             window.open('https://'+hostExcel+'/excel/'+response.data+'.xlsx');
+        });
+}
+
+export function getPDF() {
+    let request = {
+        'jwt': localStorage.getItem('skos-token'),
+        'type_request': 'generate',
+        'form': 'report',
+        'from_date': admin.from_date,
+        'to_date': admin.to_date,
+    };
+    axios
+        .post('https://'+host+'/pdf', request)
+        .then(response => {
+            console.log(response);
+            window.open('https://'+hostExcel+'/pdf/'+response.data+'.pdf');
         });
 }
 

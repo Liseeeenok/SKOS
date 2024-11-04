@@ -1,23 +1,86 @@
 <script setup>
 import { ref } from 'vue';
-import { useStore } from '../stores/PlanStore';
-import { verify, preLoad, getDirection, getDivision, getProfession, getStatement, getExcel } from '../helpers/API.js';
-import router from '../router/index.js';
+import { useStore } from '../stores/PlanStore'; 
+import { verify, preLoad, getExcel, getReport, getPDF } from '../helpers/API.js';
 //-------------AUTH-------------------
 verify();
 preLoad();
 //------------------------------------
 const admin = useStore();
+
+let date = new Date();
+admin.from_date = date.getFullYear() + '-01-01';
+admin.to_date = date.getFullYear() + '-12-31';
+
+getReport();
+function toggleDirection(name_section, name_division) 
+{
+    admin.report.data[name_section][name_division]['showDirection'] = !admin.report.data[name_section][name_division]['showDirection'] ?? true;
+}
 </script>
 
 <template>
     <div class="container">
         <div class="title">
-            Отчет на <input type="number" style="width: 100px; font-size: 16px;" v-model="admin.academic_year" @change=""/> год
+            Отчет с <input type="date" style="width: 150px; font-size: 16px;" v-model="admin.from_date" @change="getReport(from_date, to_date)"/> по 
+            <input type="date" style="width: 150px; font-size: 16px;" v-model="admin.to_date" @change="getReport(from_date, to_date)"/>
         </div>
-        <table class="table"></table>
+        <div>
+            <table class="table" v-if="admin.report">
+                <thead>
+                    <tr>
+                        <th>
+                            Наименование подразделений
+                        </th>
+                        <th>
+                            План
+                        </th>
+                        <th>
+                            Факт
+                        </th>
+                    </tr>
+                </thead>
+                <tbody v-for="(divisions, name_section) in admin.report.data" :key="name_section" v-if="admin.report.data">
+                    <tr>
+                        <td colspan="18">
+                            {{ name_section }}
+                        </td>
+                    </tr>
+                    <template v-for="(directions, name_division) in divisions" :key="name_division">
+                        <tr @click="toggleDirection(name_section, name_division)" :class="directions[-1][0] > directions[-1][1] ? 'bc_red' : ''">
+                            <td>
+                                {{ name_division }}
+                            </td>
+                            <td>
+                                {{ directions[-1][0] }}
+                            </td>
+                            <td>
+                                {{ directions[-1][1] }}
+                            </td>
+                        </tr>
+                        <template v-if="directions['showDirection']">
+                            <template v-for="(direction, name_direction) in directions" :key="name_direction">
+                                <tr v-if="name_direction !== '-1' && name_direction !== 'showDirection'" 
+                                :class="[(directions['showDirection'] ? 'open-direction' : 'close-direction'), (direction[0] > direction[1] ? 'bc_red' : '')]">
+                                    <td>
+                                        {{ name_direction }}
+                                    </td>
+                                    <td>
+                                        {{ direction[0] }}
+                                    </td>
+                                    <td>
+                                        {{ direction[1] }}
+                                    </td>
+                                </tr>
+                            </template> 
+                        </template>
+                    </template> 
+                </tbody>
+            </table>
+        </div>
         <div class="div_button">
             <button class="add" @click="getExcel()">Скачать excel</button>
+            <button class="add" @click="getPDF()">Скачать pdf</button>
         </div>
     </div>
 </template>
@@ -86,14 +149,34 @@ const admin = useStore();
 
             &:nth-child(2n+1) {
                 background-color: rgb(255 255 255);
+
+                &.bc_red {
+                    background-color: rgb(255 202 202);
+
+                    td {
+                        border: solid 1px rgb(205 152 152);
+                    }
+                }
             }
 
             &:nth-child(2n) {
                 background-color: rgb(245 245 245);
+
+                &.bc_red {
+                    background-color: rgb(245 192 192);
+
+                    td {
+                        border: solid 1px rgb(205 152 152);
+                    }
+                }
             }
 
             &:hover {
                 background-color: rgb(216 216 216);
+
+                &.bc_red {
+                    background-color: rgb(205 152 152);
+                }
             }
         }
     }
@@ -146,4 +229,77 @@ const admin = useStore();
         }
     }
 }
+
+.open-direction {
+    animation-name: openDirection;
+    animation-duration: 0.5s;
+    animation-timing-function: cubic-bezier(0.6, -0.28, 0.735, 0.045);
+
+    &:nth-child(2n+1) {
+        background-color: rgb(230 230 230) !important;
+
+        &.bc_red {
+            background-color: rgb(255 202 202) !important;
+
+            td {
+                border: solid 1px rgb(205 152 152) !important;
+            }
+        }
+    }
+
+    &:nth-child(2n) {
+        background-color: rgb(220 220 220) !important;
+
+        &.bc_red {
+            background-color: rgb(245 192 192) !important;
+
+            td {
+                border: solid 1px rgb(205 152 152) !important;
+            }
+        }
+    }
+
+    &:hover {
+        background-color: rgb(191 191 191) !important;
+
+        &.bc_red {
+            background-color: rgb(205 152 152) !important;
+        }
+    }
+}
+
+@keyframes openDirection {
+    0% {
+        height: 0;
+        opacity: 0;
+        transform: scaleY(0);
+    }
+
+    100% {
+        height: auto;
+        opacity: 1;
+        transform: scaleY(1);
+    }
+}
+
+.close-direction {
+    animation-name: closeDirection;
+    animation-duration: 0.5s;
+    animation-timing-function: cubic-bezier(0.6, -0.28, 0.735, 0.045);
+}
+
+@keyframes closeDirection {
+    0% {
+        height: auto;
+        opacity: 1;
+        transform: scaleY(1);
+    }
+
+    100% {
+        height: 0;
+        opacity: 0;
+        transform: scaleY(0);
+    }
+}
+
 </style>
