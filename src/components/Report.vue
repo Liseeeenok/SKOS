@@ -47,29 +47,31 @@ function toggleDirection(name_section, name_division)
                         </td>
                     </tr>
                     <template v-for="(directions, name_division) in divisions" :key="name_division">
-                        <tr @click="toggleDirection(name_section, name_division)" :class="directions[-1][0] > directions[-1][1] ? 'bc_red' : ''">
+                        <tr @click="toggleDirection(name_section, name_division)" 
+                        v-if="name_division !== 'Итого'"
+                        :class="directions['Итого']['план'] > directions['Итого']['факт'] ? 'bc_red' : ''">
                             <td>
                                 {{ name_division }}
                             </td>
                             <td>
-                                {{ directions[-1][0] }}
+                                {{ directions['Итого']['план'] }}
                             </td>
                             <td>
-                                {{ directions[-1][1] }}
+                                {{ directions['Итого']['факт'] }}
                             </td>
                         </tr>
                         <template v-if="directions['showDirection']">
                             <template v-for="(direction, name_direction) in directions" :key="name_direction">
-                                <tr v-if="name_direction !== '-1' && name_direction !== 'showDirection'" 
-                                :class="[(directions['showDirection'] ? 'open-direction' : 'close-direction'), (direction[0] > direction[1] ? 'bc_red' : '')]">
+                                <tr v-if="name_direction !== 'Итого' && name_direction !== 'showDirection'" 
+                                :class="[(directions['showDirection'] ? 'open-direction' : 'close-direction'), (direction['план'] > direction['факт'] ? 'bc_red' : '')]">
                                     <td>
                                         {{ name_direction }}
                                     </td>
                                     <td>
-                                        {{ direction[0] }}
+                                        {{ direction['план'] }}
                                     </td>
                                     <td>
-                                        {{ direction[1] }}
+                                        {{ direction['факт'] }}
                                     </td>
                                 </tr>
                             </template> 
@@ -239,7 +241,7 @@ function toggleDirection(name_section, name_division)
         background-color: rgb(230 230 230) !important;
 
         &.bc_red {
-            background-color: rgb(255 202 202) !important;
+            background-color: rgb(230 202 202) !important;
 
             td {
                 border: solid 1px rgb(205 152 152) !important;
@@ -251,7 +253,7 @@ function toggleDirection(name_section, name_division)
         background-color: rgb(220 220 220) !important;
 
         &.bc_red {
-            background-color: rgb(245 192 192) !important;
+            background-color: rgb(220 192 192) !important;
 
             td {
                 border: solid 1px rgb(205 152 152) !important;
@@ -263,7 +265,7 @@ function toggleDirection(name_section, name_division)
         background-color: rgb(191 191 191) !important;
 
         &.bc_red {
-            background-color: rgb(205 152 152) !important;
+            background-color: rgb(190 152 152) !important;
         }
     }
 }
