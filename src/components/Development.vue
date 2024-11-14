@@ -186,7 +186,7 @@ function getNameById(arr, id) {
                             <table class="table_nested">
                                 <tr v-for="(dir, index_dir) in profession.direction" :key="index_dir">
                                     <td class="nested_input">
-                                        {{ admin.directions[dir.id_direction].name }}
+                                        {{ admin.directions[dir.id_direction] ? admin.directions[dir.id_direction].name : dir.id_direction }}
                                     </td>
                                 </tr>
                             </table>
@@ -225,7 +225,7 @@ function getNameById(arr, id) {
                     </tr>
                     <tr v-for="(result, index_result) in chapter.arr_profession_results['directions']" :key="result">
                         <td></td>
-                        <td>{{ admin.directions[index_result].name }}</td>
+                        <td>{{ admin.directions[index_result] ? admin.directions[index_result].name : index_result }}</td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -268,7 +268,7 @@ function getNameById(arr, id) {
                     </tr>
                     <tr v-for="(result, index_result) in division.arr_chapter_results['directions']" :key="result">
                         <td></td>
-                        <td>{{ admin.directions[index_result].name }}</td>
+                        <td>{{ admin.directions[index_result] ? admin.directions[index_result].name : index_result }}</td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -312,7 +312,7 @@ function getNameById(arr, id) {
                     </tr>
                     <tr v-for="(result, index_result) in admin.plan.arr_plan_result['directions']" :key="result">
                         <td></td>
-                        <td>{{ admin.directions[index_result].name }}</td>
+                        <td>{{ admin.directions[index_result] ? admin.directions[index_result].name : index_result }}</td>
                         <td></td>
                         <td></td>
                         <td></td>

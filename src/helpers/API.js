@@ -518,16 +518,19 @@ export function savePlan() {
                 });
                 let directions = [];
                 profession.direction.forEach((direction, index_direction) => {
-                    directions.push({
-                        "id":direction.id,
-                        "status":direction.status,
-                        "id_direction":direction.id_direction,
-                        "count_people":profession.count[index_direction],
-                        "date_start_training":profession.start_o[index_direction],
-                        "date_start_industrial_training":profession.start_po[index_direction],
-                        "date_end_industrial_training":profession.end_po[index_direction],
-                        "date_exam":profession.qual_ex[index_direction],
-                    });
+                    if (direction.id_direction)
+                    {
+                        directions.push({
+                            "id":direction.id,
+                            "status":direction.status,
+                            "id_direction":direction.id_direction,
+                            "count_people":profession.count[index_direction],
+                            "date_start_training":profession.start_o[index_direction],
+                            "date_start_industrial_training":profession.start_po[index_direction],
+                            "date_end_industrial_training":profession.end_po[index_direction],
+                            "date_exam":profession.qual_ex[index_direction],
+                        });
+                    }
                 });
                 request.training_list.push({
                     "id":profession.id, 
