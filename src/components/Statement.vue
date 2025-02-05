@@ -132,7 +132,8 @@ function filterStatement() {
                                 <td :rowspan="Math.max(profession.count_directions + 1, 2)">{{ profession.count_people_trained }}</td>
                             </tr>
                             <template v-for="(direction, index_direction) in profession.directions" :key="index_direction">
-                                <tr v-if="direction_filter == '' || direction_filter == direction.id_direction">
+                                <tr v-if="direction_filter == '' || direction_filter == direction.id_direction"
+                                :class="direction.count_people > direction.count_people_fact ? 'bc_red' : ''">
                                     <td>{{ admin.directions[direction.id_direction].name }}</td>
                                     <td>{{ direction.count_people }}</td>
                                     <td>{{ direction.count_people_fact }}</td>
@@ -214,14 +215,34 @@ function filterStatement() {
 
             &:nth-child(2n+1) {
                 background-color: rgb(255 255 255);
+
+                &.bc_red {
+                    background-color: rgb(255 202 202);
+
+                    td {
+                        border: solid 1px rgb(205 152 152);
+                    }
+                }
             }
 
             &:nth-child(2n) {
                 background-color: rgb(245 245 245);
+
+                &.bc_red {
+                    background-color: rgb(245 192 192);
+
+                    td {
+                        border: solid 1px rgb(205 152 152);
+                    }
+                }
             }
 
             &:hover {
                 background-color: rgb(216 216 216);
+
+                &.bc_red {
+                    background-color: rgb(205 152 152);
+                }
             }
         }
     }

@@ -220,7 +220,6 @@ export function getStatement() {
     let request = {
         'jwt': localStorage.getItem('skos-token'),
         'type_request': 'VIEW_STATEMENT',
-        'academic_year': admin.academic_year,
         'table_type': 2,
         'from_date': admin.from_date,
         'to_date': admin.to_date,
