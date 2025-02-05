@@ -23,9 +23,9 @@ preLoad();
             </div>
         </router-link>
         <router-link to="/training/report/view">
-            <div class="block none">
+            <div class="block report">
                 <div>
-                    Отчет (в разработке)
+                    Отчет
                 </div>
             </div>
         </router-link>
@@ -86,6 +86,16 @@ $g: .75em;
             width: 90px;
             height: 100px;
             background: url('../assets/statement.svg');
+            background-repeat: no-repeat;
+            background-size: contain;
+        }
+
+        &.report:before {
+            opacity: 0.2;
+            content: "";
+            width: 90px;
+            height: 100px;
+            background: url('../assets/report.webp');
             background-repeat: no-repeat;
             background-size: contain;
         }
